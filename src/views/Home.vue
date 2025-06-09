@@ -156,20 +156,21 @@
       </div>
 
       <!-- 控制按钮 -->
-      <div class="fixed bottom-8 right-8 z-50 space-y-4">
+      <div class="fixed bottom-4 right-4 z-50 flex flex-col gap-2 md:gap-4">
         <button 
           @click="toggleMusic" 
-          class="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-full shadow-lg transition-all duration-300 hover:scale-110 flex items-center gap-2 pixel-border"
+          class="control-btn bg-red-600 hover:bg-red-700 text-white rounded-full shadow-lg transition-all duration-300 hover:scale-110 flex items-center justify-center gap-2 pixel-border"
         >
           <span v-if="isPlaying">🔊</span>
           <span v-else>🔇</span>
-          {{ isPlaying ? '静音' : '播放BGM' }}
+          <span class="btn-text">{{ isPlaying ? '静音' : 'BGM' }}</span>
         </button>
         <button 
           @click="toggleFullscreen" 
-          class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-full shadow-lg transition-all duration-300 hover:scale-110 flex items-center gap-2 pixel-border"
+          class="control-btn bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg transition-all duration-300 hover:scale-110 flex items-center justify-center gap-2 pixel-border"
         >
-          🖥️ 全屏
+          <span>🖥️</span>
+          <span class="btn-text">全屏</span>
         </button>
       </div>
     </div>
@@ -709,10 +710,71 @@ onUnmounted(() => {
   
   .container {
     padding: 1rem;
+    padding-bottom: 120px; /* 为按钮留出空间 */
   }
   
   .pixel-bg {
     background-size: 10px 10px;
+  }
+  
+  /* 移动端按钮样式 */
+  .control-btn {
+    width: 56px;
+    height: 56px;
+    padding: 0;
+    font-size: 12px;
+    min-height: 56px;
+    touch-action: manipulation; /* 优化触摸响应 */
+  }
+  
+  .control-btn .btn-text {
+    display: none;
+  }
+  
+  .control-btn span:first-child {
+    font-size: 24px;
+  }
+  
+  /* 移动端按钮容器 */
+  .fixed.bottom-4.right-4 {
+    bottom: 20px;
+    right: 16px;
+  }
+  
+  /* 优化移动端卡片间距 */
+  .equipment-card {
+    margin-bottom: 1rem;
+  }
+  
+  .atmosphere-card {
+    padding: 12px;
+  }
+  
+  /* 移动端字体调整 */
+  .pixel-font {
+    letter-spacing: 1px;
+  }
+  
+  /* 移动端霓虹效果优化 */
+  .neon-title {
+    text-shadow: 
+      0 0 3px #ff0040,
+      0 0 6px #ff0040,
+      0 0 9px #ff0040;
+  }
+}
+
+/* 桌面端按钮样式 */
+@media (min-width: 769px) {
+  .control-btn {
+    padding: 12px 24px;
+    width: auto;
+    height: auto;
+    min-height: auto;
+  }
+  
+  .control-btn .btn-text {
+    display: inline;
   }
 }
 </style>
