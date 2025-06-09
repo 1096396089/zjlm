@@ -298,7 +298,7 @@ const downloadTicket = async () => {
     await generateQR()
     
     // 等待渲染完成
-    await new Promise(resolve => setTimeout(resolve, 500))
+    await new Promise(resolve => setTimeout(resolve, 1000))
     
     // 选中目标元素
     const element = ticketRef.value
@@ -307,29 +307,113 @@ const downloadTicket = async () => {
       return
     }
 
-    // 计算高分辨率比例，假设目标打印 300ppi，屏幕通常是 96dpi
-    const dpi = 96
-    const targetPPI = 300
-    const scale = targetPPI / dpi
+    // 滚动到元素位置，确保完全可见
+    element.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    await new Promise(resolve => setTimeout(resolve, 500))
 
-    console.log(`开始截图，缩放比例: ${scale}`)
+    // 300 DPI 设置
+    const scale = 300 / 96 // 3.125
+    const targetWidth = 1588
+    const targetHeight = 760
 
-    // 用 html2canvas 渲染
+    console.log(`开始截图 - 目标尺寸: ${targetWidth}x${targetHeight}px, 缩放: ${scale}x`)
+
+    // 使用最简单但最稳定的配置
     const canvas = await html2canvas(element, {
+      useCORS: true,
       scale: scale,
-      useCORS: true
+      logging: false,
+      width: targetWidth,
+      height: targetHeight,
+      backgroundColor: '#f5f5dc',
+      onclone: (clonedDoc, clonedElement) => {
+        // 处理克隆的文档
+        const style = clonedDoc.createElement('style')
+        style.textContent = `
+          * {
+            box-sizing: border-box !important;
+          }
+          .ticket {
+            width: ${targetWidth}px !important;
+            height: ${targetHeight}px !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            transform: none !important;
+            position: relative !important;
+          }
+          /* 确保flex布局正确 */
+          .flex {
+            display: flex !important;
+          }
+          .flex-1 {
+            flex: 1 1 0% !important;
+          }
+          .flex-col {
+            flex-direction: column !important;
+          }
+          .justify-between {
+            justify-content: space-between !important;
+          }
+          .justify-center {
+            justify-content: center !important;
+          }
+          .items-center {
+            align-items: center !important;
+          }
+          .text-center {
+            text-align: center !important;
+          }
+          /* 确保绝对定位正确 */
+          .absolute {
+            position: absolute !important;
+          }
+          .relative {
+            position: relative !important;
+          }
+        `
+        clonedDoc.head.appendChild(style)
+        
+        // 强制设置票据容器尺寸
+        const ticketElement = clonedDoc.querySelector('.ticket') as HTMLElement
+        if (ticketElement) {
+          ticketElement.style.width = `${targetWidth}px`
+          ticketElement.style.height = `${targetHeight}px`
+          ticketElement.style.minWidth = `${targetWidth}px`
+          ticketElement.style.minHeight = `${targetHeight}px`
+          ticketElement.style.maxWidth = `${targetWidth}px`
+          ticketElement.style.maxHeight = `${targetHeight}px`
+        }
+      }
     })
 
-    console.log(`截图完成，尺寸: ${canvas.width}x${canvas.height}px`)
-    console.log(`期望尺寸: ${1588 * scale}x${726 * scale}px`)
-    console.log(`元素实际尺寸: ${element.offsetWidth}x${element.offsetHeight}px`)
+    const actualWidth = canvas.width
+    const actualHeight = canvas.height
+    const expectedWidth = Math.round(targetWidth * scale)
+    const expectedHeight = Math.round(targetHeight * scale)
 
-    // 生成图片下载
-    const imgData = canvas.toDataURL('image/png')
+    console.log(`截图完成:`)
+    console.log(`  实际尺寸: ${actualWidth}x${actualHeight}px`)
+    console.log(`  期望尺寸: ${expectedWidth}x${expectedHeight}px`)
+    console.log(`  DPI: 300 (缩放 ${scale}x)`)
+
+    // 检查尺寸是否正确
+    if (Math.abs(actualWidth - expectedWidth) > 10 || Math.abs(actualHeight - expectedHeight) > 10) {
+      console.warn('尺寸偏差较大，可能存在布局问题')
+    }
+
+    // 生成高质量PNG
+    const imgData = canvas.toDataURL('image/png', 1.0)
+    
+    // 创建下载链接
     const link = document.createElement('a')
     link.href = imgData
-    link.download = `boarding-pass-${flightNumber.value}-${Date.now()}.png`
+    link.download = `boarding-pass-${flightNumber.value}-300dpi-${Date.now()}.png`
+    
+    document.body.appendChild(link)
     link.click()
+    document.body.removeChild(link)
+    
+    console.log('下载完成')
     
   } catch (error) {
     console.error('下载失败:', error)
