@@ -6,7 +6,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
     component: () => import('../views/Home.vue'),
-    meta: { title: '给最爱的妹妹 - 兄妹情深' },
+    meta: { title: '付生传' },
   },
   {
     path: '/police',
