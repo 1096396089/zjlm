@@ -151,7 +151,7 @@
                 
                 <!-- 顶部VIP标签 -->
                 <div class="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-blue-900 to-indigo-900 text-white px-4 py-1.5 rounded-full text-xs font-bold shadow-lg border-2 border-yellow-400">
-                  <span class="mr-1">⭐</span>VIP QR<span class="ml-1">⭐</span>
+                  <span class="">⭐</span>VIP <span class="">⭐</span>
                 </div>
                 
                 <!-- 底部装饰线 -->
@@ -186,15 +186,8 @@
     <!-- 控制面板 -->
     <div class="max-w-[1588px] mx-auto mt-5 p-5 bg-white rounded-lg shadow-md">
       <h3 class="mb-5 text-blue-900 text-lg font-semibold">机票信息编辑</h3>
-      <div class="mb-4 flex items-center gap-3">
-        <label class="min-w-[100px] font-medium">二维码内容:</label>
-        <input 
-          v-model="qrContent" 
-          @input="generateQR" 
-          placeholder="输入二维码内容"
-          class="flex-1 px-3 py-2 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-      </div>
+      
+      <!-- 第一行：基本信息 -->
       <div class="mb-4 flex items-center gap-3">
         <label class="min-w-[100px] font-medium">航班号:</label>
         <input 
@@ -202,21 +195,123 @@
           class="flex-1 px-3 py-2 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
       </div>
+      
       <div class="mb-4 flex items-center gap-3">
         <label class="min-w-[100px] font-medium">乘客姓名:</label>
         <input 
           v-model="passengerName"
+          placeholder="请输入中英文姓名（支持换行）"
           class="flex-1 px-3 py-2 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
       </div>
+
+      <!-- 第二行：证件和会员信息 -->
+      <div class="mb-4 flex items-center gap-3">
+        <label class="min-w-[100px] font-medium">证件号 ID:</label>
+        <input 
+          v-model="idNumber"
+          placeholder="请输入证件号码"
+          class="flex-1 px-3 py-2 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+      </div>
+
+      <div class="mb-4 flex items-center gap-3">
+        <label class="min-w-[100px] font-medium">会员编号:</label>
+        <input 
+          v-model="vipNumber"
+          placeholder="请输入VIP会员编号"
+          class="flex-1 px-3 py-2 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+      </div>
+
+      <!-- 第三行：日期和时间 -->
+      <div class="mb-4 flex items-center gap-3">
+        <label class="min-w-[100px] font-medium">航班日期:</label>
+        <input 
+          v-model="flightDate"
+          placeholder="如：15 MAR 2000"
+          class="flex-1 px-3 py-2 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+      </div>
+
+      <div class="mb-4 flex items-center gap-3">
+        <label class="min-w-[100px] font-medium">星期:</label>
+        <input 
+          v-model="dayOfWeek"
+          placeholder="如：星期三 WED"
+          class="flex-1 px-3 py-2 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+      </div>
+
+      <!-- 第四行：时间信息 -->
+      <div class="mb-4 grid grid-cols-3 gap-3">
+        <div class="flex items-center gap-2">
+          <label class="font-medium text-sm">登机时间:</label>
+          <input 
+            v-model="boardingTime"
+            placeholder="10:30"
+            class="flex-1 px-3 py-2 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+        <div class="flex items-center gap-2">
+          <label class="font-medium text-sm">起飞时间:</label>
+          <input 
+            v-model="departureTime"
+            placeholder="11:13"
+            class="flex-1 px-3 py-2 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+        <div class="flex items-center gap-2">
+          <label class="font-medium text-sm">到达时间:</label>
+          <input 
+            v-model="arrivalTime"
+            placeholder="01:13"
+            class="flex-1 px-3 py-2 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+      </div>
+
+      <!-- 第五行：座位和登机口信息 -->
+      <div class="mb-4 grid grid-cols-2 gap-3">
+        <div class="flex items-center gap-2">
+          <label class="font-medium">登机口:</label>
+          <input 
+            v-model="gate"
+            placeholder="15"
+            class="flex-1 px-3 py-2 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+        <div class="flex items-center gap-2">
+          <label class="font-medium">座位号:</label>
+          <input 
+            v-model="seat"
+            placeholder="25A"
+            class="flex-1 px-3 py-2 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+      </div>
+
+      <!-- 第六行：票号和二维码 -->
       <div class="mb-4 flex items-center gap-3">
         <label class="min-w-[100px] font-medium">票号:</label>
         <input 
           v-model="ticketNumber"
-          @input="updateQRContent"
+          placeholder="请输入票号"
           class="flex-1 px-3 py-2 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
       </div>
+      
+      <div class="mb-4 flex items-center gap-3">
+        <label class="min-w-[100px] font-medium">二维码内容:</label>
+        <input 
+          v-model="qrContent" 
+          @input="generateQR" 
+          placeholder="输入二维码内容（独立于票号）"
+          class="flex-1 px-3 py-2 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+      </div>
+
+      <!-- 下载按钮 -->
       <button 
         @click="downloadTicket" 
         :disabled="isDownloading"
@@ -279,12 +374,6 @@ const generateQR = async (): Promise<void> => {
       ctx.fillText('二维码生成失败', 72, 72)
     }
   }
-}
-
-// 更新二维码内容
-const updateQRContent = () => {
-  qrContent.value = ticketNumber.value
-  generateQR()
 }
 
 // 下载机票
