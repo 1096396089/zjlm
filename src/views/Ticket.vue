@@ -330,9 +330,9 @@ import QRCode from 'qrcode'
 
 // 响应式数据
 const qrContent = ref('52631561526')
-const flightNumber = ref('MZH315')
-const flightDate = ref('15 MAR 2000')
-const dayOfWeek = ref('星期三 WED')
+const flightNumber = ref('MZH615')
+const flightDate = ref('15 JUN 2000')
+const dayOfWeek = ref('星期日 SUN')
 const boardingTime = ref('10:30')
 const departureTime = ref('11:13')
 const arrivalTime = ref('01:13')

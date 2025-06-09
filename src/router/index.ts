@@ -3,9 +3,13 @@ import type { RouteRecordRaw } from 'vue-router'
 
 // 定义路由
 const routes: Array<RouteRecordRaw> = [
-
   {
     path: '/',
+    component: () => import('../views/Home.vue'),
+    meta: { title: '给最爱的妹妹 - 兄妹情深' },
+  },
+  {
+    path: '/police',
     component: () => import('../views/Letter.vue'),
     meta: { title: '给最爱的妹妹 - 兄妹情深' },
   },
