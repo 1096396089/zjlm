@@ -17,6 +17,11 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import('../views/PoliceLetter.vue'),
     meta: { title: 'To 曼臻 - 父亲给卧底女儿的信' },
   },
+  {
+    path: '/ticket',
+    component: () => import('../views/Ticket.vue'),
+    meta: { title: '登机牌 - MZH315航班' },
+  },
 ]
 
 const router = createRouter({
