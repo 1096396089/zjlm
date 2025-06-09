@@ -386,8 +386,8 @@ const downloadTicket = async () => {
     // 确保二维码已经生成
     await generateQR()
     
-    // 等待渲染完成
-    await new Promise(resolve => setTimeout(resolve, 1000))
+    // 等待所有样式和资源加载完成
+    await new Promise(resolve => setTimeout(resolve, 1500))
     
     // 选中目标元素
     const element = ticketRef.value
@@ -396,106 +396,136 @@ const downloadTicket = async () => {
       return
     }
 
+    // 确保元素完全可见和正确定位
+    const elementRect = element.getBoundingClientRect()
+    console.log('元素位置信息:', {
+      width: elementRect.width,
+      height: elementRect.height,
+      top: elementRect.top,
+      left: elementRect.left
+    })
+
     // 滚动到元素位置，确保完全可见
-    element.scrollIntoView({ behavior: 'smooth', block: 'center' })
-    await new Promise(resolve => setTimeout(resolve, 500))
+    element.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' })
+    await new Promise(resolve => setTimeout(resolve, 800))
+    
+    // 再次检查元素位置
+    const updatedRect = element.getBoundingClientRect()
+    console.log('滚动后元素位置:', {
+      width: updatedRect.width,
+      height: updatedRect.height,
+      top: updatedRect.top,
+      left: updatedRect.left
+    })
 
     // 300 DPI 设置
     const scale = 300 / 96 // 3.125
     const targetWidth = 1588
     const targetHeight = 760
+    
+    // 获取元素的实际尺寸
+    const actualWidth = element.offsetWidth
+    const actualHeight = element.offsetHeight
 
-    console.log(`开始截图 - 目标尺寸: ${targetWidth}x${targetHeight}px, 缩放: ${scale}x`)
+    console.log(`开始截图:`)
+    console.log(`  目标尺寸: ${targetWidth}x${targetHeight}px`)
+    console.log(`  实际元素尺寸: ${actualWidth}x${actualHeight}px`)
+    console.log(`  缩放: ${scale}x`)
 
-    // 使用最简单但最稳定的配置
+    // 临时隔离票据元素，避免页面其他元素干扰
+    const originalParent = element.parentNode
+    const originalNextSibling = element.nextSibling
+    const tempContainer = document.createElement('div')
+    
+    // 设置临时容器样式
+    tempContainer.style.position = 'fixed'
+    tempContainer.style.top = '0'
+    tempContainer.style.left = '0'
+    tempContainer.style.zIndex = '9999'
+    tempContainer.style.background = '#f5f5dc'
+    tempContainer.style.padding = '0'
+    tempContainer.style.margin = '0'
+    
+    // 将票据元素移动到临时容器
+    document.body.appendChild(tempContainer)
+    tempContainer.appendChild(element)
+    
+    // 等待重新渲染
+    await new Promise(resolve => setTimeout(resolve, 100))
+
+    // 使用改进的html2canvas配置
     const canvas = await html2canvas(element, {
       useCORS: true,
       scale: scale,
-      logging: false,
+      logging: true,
+      backgroundColor: '#f5f5dc',
+      allowTaint: false,
+      foreignObjectRendering: true,
+      removeContainer: true,
+      imageTimeout: 0,
       width: targetWidth,
       height: targetHeight,
-      backgroundColor: '#f5f5dc',
       onclone: (clonedDoc, clonedElement) => {
-        // 处理克隆的文档
+        console.log('开始处理克隆元素')
+        
+        // 确保票据容器尺寸正确
+        const ticketElement = clonedElement
+        if (ticketElement) {
+          console.log('设置票据容器样式')
+          ticketElement.style.setProperty('width', `${targetWidth}px`, 'important')
+          ticketElement.style.setProperty('height', `${targetHeight}px`, 'important')
+          ticketElement.style.setProperty('position', 'relative', 'important')
+          ticketElement.style.setProperty('overflow', 'hidden', 'important')
+          ticketElement.style.setProperty('display', 'block', 'important')
+          ticketElement.style.setProperty('margin', '0', 'important')
+          ticketElement.style.setProperty('padding', '0', 'important')
+          ticketElement.style.setProperty('background', 'linear-gradient(135deg, #f5f5dc 0%, #faf0e6 100%)', 'important')
+        }
+        
+        // 添加字体优化
         const style = clonedDoc.createElement('style')
         style.textContent = `
           * {
-            box-sizing: border-box !important;
+            -webkit-font-smoothing: antialiased !important;
+            -moz-osx-font-smoothing: grayscale !important;
+            text-rendering: optimizeLegibility !important;
           }
-          .ticket {
-            width: ${targetWidth}px !important;
-            height: ${targetHeight}px !important;
+          body {
             margin: 0 !important;
             padding: 0 !important;
-            transform: none !important;
-            position: relative !important;
-          }
-          /* 确保flex布局正确 */
-          .flex {
-            display: flex !important;
-          }
-          .flex-1 {
-            flex: 1 1 0% !important;
-          }
-          .flex-col {
-            flex-direction: column !important;
-          }
-          .justify-between {
-            justify-content: space-between !important;
-          }
-          .justify-center {
-            justify-content: center !important;
-          }
-          .items-center {
-            align-items: center !important;
-          }
-          .text-center {
-            text-align: center !important;
-          }
-          /* 确保绝对定位正确 */
-          .absolute {
-            position: absolute !important;
-          }
-          .relative {
-            position: relative !important;
           }
         `
         clonedDoc.head.appendChild(style)
         
-        // 强制设置票据容器尺寸
-        const ticketElement = clonedDoc.querySelector('.ticket') as HTMLElement
-        if (ticketElement) {
-          ticketElement.style.width = `${targetWidth}px`
-          ticketElement.style.height = `${targetHeight}px`
-          ticketElement.style.minWidth = `${targetWidth}px`
-          ticketElement.style.minHeight = `${targetHeight}px`
-          ticketElement.style.maxWidth = `${targetWidth}px`
-          ticketElement.style.maxHeight = `${targetHeight}px`
-        }
+        console.log('克隆处理完成')
       }
     })
 
-    const actualWidth = canvas.width
-    const actualHeight = canvas.height
+    // 恢复元素到原位置
+    tempContainer.removeChild(element)
+    if (originalNextSibling) {
+      originalParent?.insertBefore(element, originalNextSibling)
+    } else {
+      originalParent?.appendChild(element)
+    }
+    document.body.removeChild(tempContainer)
+
+    const canvasWidth = canvas.width
+    const canvasHeight = canvas.height
     const expectedWidth = Math.round(targetWidth * scale)
     const expectedHeight = Math.round(targetHeight * scale)
 
     console.log(`截图完成:`)
-    console.log(`  实际尺寸: ${actualWidth}x${actualHeight}px`)
+    console.log(`  Canvas尺寸: ${canvasWidth}x${canvasHeight}px`)
     console.log(`  期望尺寸: ${expectedWidth}x${expectedHeight}px`)
     console.log(`  DPI: 300 (缩放 ${scale}x)`)
 
-    // 检查尺寸是否正确
-    if (Math.abs(actualWidth - expectedWidth) > 10 || Math.abs(actualHeight - expectedHeight) > 10) {
-      console.warn('尺寸偏差较大，可能存在布局问题')
-    }
-
     // 生成高质量PNG
-    const imgData = canvas.toDataURL('image/png', 1.0)
+    const dataUrl = canvas.toDataURL('image/png', 1.0)
     
     // 创建下载链接
     const link = document.createElement('a')
-    link.href = imgData
+    link.href = dataUrl
     link.download = `boarding-pass-${flightNumber.value}-300dpi-${Date.now()}.png`
     
     document.body.appendChild(link)
