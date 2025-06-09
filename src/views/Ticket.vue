@@ -1,6 +1,6 @@
 <template>
   <div class="p-5 bg-gray-100 min-h-screen">
-    <div class="w-[1588px] h-[726px] mx-auto relative overflow-hidden" ref="ticketRef" 
+    <div class="ticket w-[1588px] h-[760px] mx-auto relative overflow-hidden" ref="ticketRef" 
          style="background: linear-gradient(135deg, #f5f5dc 0%, #faf0e6 100%);">
       
       <!-- 顶部标题栏 -->
@@ -126,12 +126,54 @@
 
             <!-- 二维码区域 -->
             <div class="mb-6 text-center flex-1 flex flex-col justify-center">
-              <div class="w-36 h-36 mx-auto border-2 border-blue-900 bg-white flex items-center justify-center mb-4">
-                <canvas ref="qrCanvas" width="144" height="144"></canvas>
+              <div class="relative w-44 h-44 mx-auto mb-4">
+                <!-- 外层金色装饰环 -->
+                <div class="absolute inset-0 rounded-2xl bg-gradient-to-br from-yellow-400 via-amber-500 to-orange-500 p-0.5 shadow-xl">
+                  <!-- 中层蓝色环 -->
+                  <div class="w-full h-full rounded-xl bg-gradient-to-br from-blue-600 to-indigo-700 p-0.5">
+                    <!-- 内层白色背景 -->
+                    <div class="w-full h-full rounded-lg bg-white p-3 relative overflow-hidden">
+                      <!-- 背景装饰图案 -->
+                      <div class="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-indigo-50 opacity-70"></div>
+                      <div class="absolute top-2 right-2 w-6 h-6 bg-yellow-400 rounded-full opacity-20 animate-pulse"></div>
+                      <div class="absolute bottom-3 left-3 w-4 h-4 bg-blue-400 rounded-full opacity-30"></div>
+                      <div class="absolute top-1/3 left-2 w-2 h-2 bg-amber-400 rounded-full opacity-40"></div>
+                      
+                      <!-- 二维码容器 -->
+                      <div class="relative z-10 w-full h-full flex items-center justify-center">
+                        <div class="bg-white rounded-lg p-2 shadow-inner border border-gray-100">
+                          <canvas ref="qrCanvas" width="144" height="144" class="rounded-md"></canvas>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- 顶部VIP标签 -->
+                <div class="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-blue-900 to-indigo-900 text-white px-4 py-1.5 rounded-full text-xs font-bold shadow-lg border-2 border-yellow-400">
+                  <span class="mr-1">⭐</span>VIP QR<span class="ml-1">⭐</span>
+                </div>
+                
+                <!-- 底部装饰线 -->
+                <div class="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-16 h-1 bg-gradient-to-r from-transparent via-yellow-400 to-transparent rounded-full"></div>
+                
+                <!-- 四角钻石装饰 -->
+                <div class="absolute -top-2 -left-2 w-4 h-4 bg-yellow-400 transform rotate-45 shadow-md"></div>
+                <div class="absolute -top-2 -right-2 w-3 h-3 bg-blue-500 transform rotate-45 shadow-md"></div>
+                <div class="absolute -bottom-2 -left-2 w-3 h-3 bg-indigo-500 transform rotate-45 shadow-md"></div>
+                <div class="absolute -bottom-2 -right-2 w-4 h-4 bg-amber-400 transform rotate-45 shadow-md"></div>
               </div>
+              
+              <!-- 票号区域 -->
               <div class="text-center">
-                <div class="text-xs text-gray-600 mb-1">票号 TICKET:</div>
-                <div class="text-sm font-bold text-blue-900 px-2">{{ ticketNumber }}</div>
+                <div class="text-xs text-gray-600 mb-2 flex items-center justify-center gap-2">
+                  <div class="w-8 h-0.5 bg-gradient-to-r from-transparent to-yellow-400"></div>
+                  <span class="px-2 bg-blue-50 rounded-full border border-blue-200 text-blue-800 font-medium">票号 TICKET</span>
+                  <div class="w-8 h-0.5 bg-gradient-to-l from-transparent to-yellow-400"></div>
+                </div>
+                <div class="text-sm font-bold text-blue-900 bg-gradient-to-r from-yellow-50 to-amber-50 border-2 border-yellow-300 rounded-xl px-4 py-2 inline-block shadow-sm">
+                  {{ ticketNumber }}
+                </div>
               </div>
             </div>
           </div>
@@ -167,6 +209,14 @@
           class="flex-1 px-3 py-2 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
       </div>
+      <div class="mb-4 flex items-center gap-3">
+        <label class="min-w-[100px] font-medium">票号:</label>
+        <input 
+          v-model="ticketNumber"
+          @input="updateQRContent"
+          class="flex-1 px-3 py-2 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+      </div>
       <button 
         @click="downloadTicket" 
         :disabled="isDownloading"
@@ -181,6 +231,7 @@
 <script setup lang="ts">
 import { ref, onMounted, nextTick } from 'vue'
 import html2canvas from 'html2canvas'
+import QRCode from 'qrcode'
 
 // 响应式数据
 const qrContent = ref('52631561526')
@@ -204,63 +255,36 @@ const qrCanvas = ref<HTMLCanvasElement>()
 
 // 生成二维码
 const generateQR = async (): Promise<void> => {
-  return new Promise((resolve) => {
-    if (!qrCanvas.value) {
-      resolve()
-      return
-    }
-    
-    const canvas = qrCanvas.value
-    const ctx = canvas.getContext('2d')
-    if (!ctx) {
-      resolve()
-      return
-    }
-
-    // 清除画布
-    ctx.clearRect(0, 0, 144, 144)
-    
-    // 绘制一个模拟的二维码图案
-    ctx.fillStyle = '#000'
-    const padding = 12
-    const qrSize = (144 - padding * 2) / 18
-    
-    // 生成一个基于内容的伪随机二维码图案
-    const content = qrContent.value
-    let hash = 0
-    for (let i = 0; i < content.length; i++) {
-      hash = ((hash << 5) - hash + content.charCodeAt(i)) & 0xffffffff
-    }
-    
-    for (let i = 0; i < 18; i++) {
-      for (let j = 0; j < 18; j++) {
-        // 使用简单的算法生成图案
-        const shouldFill = ((hash + i * 17 + j * 13) % 3) === 0
-        if (shouldFill) {
-          ctx.fillRect(padding + i * qrSize, padding + j * qrSize, qrSize, qrSize)
-        }
-      }
-    }
-    
-    // 绘制定位标记（三个角）
-    const drawPositionMarker = (x: number, y: number) => {
-      // 外框
-      ctx.fillRect(padding + x * qrSize, padding + y * qrSize, qrSize * 3, qrSize * 3)
-      ctx.fillStyle = '#fff'
-      ctx.fillRect(padding + (x + 0.5) * qrSize, padding + (y + 0.5) * qrSize, qrSize * 2, qrSize * 2)
-      ctx.fillStyle = '#000'
-      ctx.fillRect(padding + (x + 1) * qrSize, padding + (y + 1) * qrSize, qrSize, qrSize)
-    }
-    
-    drawPositionMarker(0, 0)
-    drawPositionMarker(15, 0)
-    drawPositionMarker(0, 15)
-    
-    // 使用requestAnimationFrame确保渲染完成
-    requestAnimationFrame(() => {
-      resolve()
+  if (!qrCanvas.value) return
+  
+  try {
+    await QRCode.toCanvas(qrCanvas.value, qrContent.value, {
+      width: 144,
+      margin: 1,
+      color: {
+        dark: '#000000',
+        light: '#FFFFFF'
+      },
+      errorCorrectionLevel: 'M'
     })
-  })
+  } catch (error) {
+    console.error('二维码生成失败:', error)
+    // 如果二维码生成失败，显示错误信息
+    const ctx = qrCanvas.value.getContext('2d')
+    if (ctx) {
+      ctx.clearRect(0, 0, 144, 144)
+      ctx.fillStyle = '#ff0000'
+      ctx.font = '12px Arial'
+      ctx.textAlign = 'center'
+      ctx.fillText('二维码生成失败', 72, 72)
+    }
+  }
+}
+
+// 更新二维码内容
+const updateQRContent = () => {
+  qrContent.value = ticketNumber.value
+  generateQR()
 }
 
 // 下载机票
@@ -317,6 +341,8 @@ const downloadTicket = async () => {
 
 onMounted(() => {
   nextTick(() => {
+    // 初始化时让二维码内容和票号保持一致
+    qrContent.value = ticketNumber.value
     generateQR()
   })
 })
