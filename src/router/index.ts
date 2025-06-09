@@ -3,12 +3,9 @@ import type { RouteRecordRaw } from 'vue-router'
 
 // 定义路由
 const routes: Array<RouteRecordRaw> = [
+
   {
     path: '/',
-    redirect: '/police-letter'
-  },
-  {
-    path: '/letter',
     component: () => import('../views/Letter.vue'),
     meta: { title: '给最爱的妹妹 - 兄妹情深' },
   },
