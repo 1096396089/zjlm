@@ -1,282 +1,304 @@
 <template>
   <div class="ticket-container">
-    <!-- 背景装饰 -->
-    <div class="background-decoration">
-      <div class="clouds"></div>
-      <div class="flying-planes">
-        <div class="plane" v-for="i in 3" :key="i">✈️</div>
-      </div>
-    </div>
-
-    <!-- 机票主体 -->
-    <div class="ticket-wrapper">
-      <div class="ticket">
-        <!-- 机票头部 -->
-        <div class="ticket-header">
-          <div class="airport-info">
-            <span class="airport-cn">香港国际机场</span>
-            <span class="airport-en">HONG KONG INTERNATIONAL AIRPORT</span>
-          </div>
-          <div class="boarding-pass">
-            <span class="boarding-text">BOARDING PASS</span>
-            <span class="boarding-cn">登机牌</span>
-          </div>
+    <div class="ticket" ref="ticketRef">
+      <!-- 顶部标题栏 -->
+      <div class="header">
+        <div class="airport-title">
+          <span class="chinese">香港国际机场</span>
+          <span class="english">HONG KONG INTERNATIONAL AIRPORT</span>
         </div>
+        <div class="boarding-pass">
+          <span class="boarding-text">BOARDING PASS</span>
+          <span class="chinese-boarding">登机牌</span>
+        </div>
+      </div>
 
-        <!-- 机票主要内容 -->
-        <div class="ticket-content">
-          <!-- 左侧信息 -->
-          <div class="left-section">
-            <div class="flight-info">
-              <div class="flight-number">
-                <span class="plane-icon">✈</span>
-                <span class="number">MZH315</span>
-                <span class="vip-badge">VIP PRIORITY</span>
-              </div>
-              
-              <div class="date-info">
-                <span class="date">15 MAR 2000</span>
-                <span class="weekday">星期三 WED</span>
-              </div>
+      <!-- 主要内容区域 -->
+      <div class="main-content">
+        <!-- 左侧主要信息 -->
+        <div class="left-section">
+          <!-- 航班信息行 -->
+          <div class="flight-info-row">
+            <div class="flight-number">
+              <span class="plane-icon">✈</span>
+              <span class="flight-code">{{ flightNumber }}</span>
             </div>
-
-            <div class="route-section">
-              <div class="route">
-                <div class="departure">
-                  <span class="code">HKG</span>
-                  <span class="city">香港国际机场</span>
-                </div>
-                <div class="arrow">
-                  <div class="arrow-line"></div>
-                  <span class="plane-small">✈</span>
-                </div>
-                <div class="arrival">
-                  <span class="code">CDG</span>
-                  <span class="city">法国巴黎</span>
-                </div>
-              </div>
+            <div class="vip-priority">VIP PRIORITY</div>
+            <div class="flight-date">
+              <div class="date">{{ flightDate }}</div>
+              <div class="day">{{ dayOfWeek }}</div>
             </div>
+            <div class="star-icon">★</div>
+          </div>
 
-            <div class="time-section">
-              <div class="time-group">
+          <!-- 路线信息 -->
+          <div class="route-section">
+            <div class="origin">
+              <div class="airport-code">HKG</div>
+              <div class="airport-name">香港国际机场</div>
+            </div>
+            <div class="route-arrow">
+              <div class="arrow-line"></div>
+              <div class="arrow-head">→</div>
+            </div>
+            <div class="destination">
+              <div class="airport-code">CDG</div>
+              <div class="airport-name">法国巴黎</div>
+            </div>
+          </div>
+
+          <!-- 详细信息 -->
+          <div class="details-section">
+            <div class="detail-row">
+              <div class="detail-item">
                 <div class="label">登机时间 BOARDING</div>
-                <div class="time">10:30</div>
+                <div class="value">{{ boardingTime }}</div>
               </div>
-              <div class="time-group">
+              <div class="detail-item">
                 <div class="label">起飞 DEPARTURE</div>
-                <div class="time">11:13</div>
+                <div class="value">{{ departureTime }}</div>
               </div>
-              <div class="time-group">
+              <div class="detail-item">
                 <div class="label">到达 ARRIVAL</div>
-                <div class="time">次日 01:13</div>
+                <div class="value">次日 {{ arrivalTime }}</div>
               </div>
             </div>
-
-            <div class="seat-section">
-              <div class="seat-group">
+            <div class="detail-row">
+              <div class="detail-item">
                 <div class="label">登机口 GATE</div>
-                <div class="value">15</div>
+                <div class="value">{{ gate }}</div>
               </div>
-              <div class="seat-group">
+              <div class="detail-item">
                 <div class="label">座位 SEAT</div>
-                <div class="value">25A</div>
+                <div class="value">{{ seat }}</div>
               </div>
-              <div class="seat-group">
+              <div class="detail-item">
                 <div class="label">舱位 CLASS</div>
                 <div class="value">商务舱</div>
               </div>
             </div>
-
-            <div class="priority-text">
-              贵宾通道优先登机 PRIORITY BOARDING THROUGH VIP CHANNEL
-            </div>
           </div>
 
-          <!-- 分割线 -->
-          <div class="divider">
-            <div class="perforation"></div>
-          </div>
-
-          <!-- 右侧信息 -->
-          <div class="right-section">
-            <div class="vip-header">
-              <div class="stars">
-                <span>★</span>
-                <span>★</span>
-                <span>★</span>
-              </div>
-              <div class="vip-title">贵宾乘客 VIP</div>
-              <div class="vip-subtitle">PASSENGER</div>
-            </div>
-
-            <div class="passenger-info">
-              <div class="name-section">
-                <div class="label">姓名 NAME</div>
-                <div class="name">秦淑慎</div>
-                <div class="name-en">QIN SHU SHEN</div>
-              </div>
-
-              <div class="id-section">
-                <div class="label">证件号 ID</div>
-                <div class="id-number">F5263156152б</div>
-              </div>
-
-              <div class="vip-section">
-                <div class="label">会员编号 VIP NO.</div>
-                <div class="vip-number">VIP88888888</div>
-                <div class="gold-badge">GOLD</div>
-              </div>
-            </div>
-
-            <div class="qr-section">
-              <div class="qr-code">
-                <div class="qr-pattern"></div>
-              </div>
-              <div class="ticket-number">票号 TICKET: 5263156152б</div>
-            </div>
+          <!-- 底部说明 -->
+          <div class="bottom-text">
+            贵宾通道优先登机 PRIORITY BOARDING THROUGH VIP CHANNEL
           </div>
         </div>
+
+        <!-- 分割线 -->
+        <div class="separator"></div>
+
+        <!-- 右侧乘客信息 -->
+        <div class="right-section">
+          <div class="vip-header">
+            <span class="vip-text">贵宾乘客 VIP</span>
+            <span class="passenger-text">PASSENGER</span>
+          </div>
+
+          <div class="passenger-info">
+            <div class="name-section">
+              <div class="label">姓名 NAME</div>
+              <div class="passenger-name">{{ passengerName }}</div>
+            </div>
+
+            <div class="id-section">
+              <div class="label">证件号 ID</div>
+              <div class="id-number">{{ idNumber }}</div>
+            </div>
+
+            <div class="vip-number">
+              <div class="label">会员编号 VIP NO.</div>
+              <div class="vip-no">{{ vipNumber }}</div>
+              <div class="gold-badge">GOLD</div>
+            </div>
+
+            <!-- 二维码区域 -->
+            <div class="qr-section">
+              <div class="qr-code" ref="qrCodeRef">
+                <canvas ref="qrCanvas" width="160" height="160"></canvas>
+              </div>
+            </div>
+
+            <div class="ticket-number">
+              <div class="label">票号 TICKET:</div>
+              <div class="ticket-no">{{ ticketNumber }}</div>
+            </div>
+          </div>
+
+          <div class="star-bottom">★</div>
+        </div>
       </div>
+    </div>
+
+    <!-- 控制面板 -->
+    <div class="controls">
+      <h3>机票信息编辑</h3>
+      <div class="control-group">
+        <label>二维码内容:</label>
+        <input v-model="qrContent" @input="generateQR" placeholder="输入二维码内容" />
+      </div>
+      <div class="control-group">
+        <label>航班号:</label>
+        <input v-model="flightNumber" />
+      </div>
+      <div class="control-group">
+        <label>乘客姓名:</label>
+        <input v-model="passengerName" />
+      </div>
+      <button @click="downloadTicket" class="download-btn">下载机票</button>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { ref, onMounted, nextTick } from 'vue'
+import html2canvas from 'html2canvas'
+
+// 响应式数据
+const qrContent = ref('52631561526')
+const flightNumber = ref('MZH315')
+const flightDate = ref('15 MAR 2000')
+const dayOfWeek = ref('星期三 WED')
+const boardingTime = ref('10:30')
+const departureTime = ref('11:13')
+const arrivalTime = ref('01:13')
+const gate = ref('15')
+const seat = ref('25A')
+const passengerName = ref('秦淑慎\nQIN SHU SHEN')
+const idNumber = ref('F52631561526')
+const vipNumber = ref('VIP88888888')
+const ticketNumber = ref('52631561526')
+
+// DOM 引用
+const ticketRef = ref<HTMLElement>()
+const qrCanvas = ref<HTMLCanvasElement>()
+const qrCodeRef = ref<HTMLElement>()
+
+// 生成二维码
+const generateQR = async () => {
+  if (!qrCanvas.value) return
+  
+  // 这里使用一个简单的二维码生成方法
+  // 在实际项目中，你可能需要安装 qrcode 库
+  const canvas = qrCanvas.value
+  const ctx = canvas.getContext('2d')
+  if (!ctx) return
+
+  // 清除画布
+  ctx.clearRect(0, 0, 160, 160)
+  
+  // 绘制一个模拟的二维码图案
+  ctx.fillStyle = '#000'
+  const size = 8
+  const padding = 16
+  const qrSize = (160 - padding * 2) / 18
+  
+  // 生成一个基于内容的伪随机二维码图案
+  const content = qrContent.value
+  let hash = 0
+  for (let i = 0; i < content.length; i++) {
+    hash = ((hash << 5) - hash + content.charCodeAt(i)) & 0xffffffff
+  }
+  
+  for (let i = 0; i < 18; i++) {
+    for (let j = 0; j < 18; j++) {
+      // 使用简单的算法生成图案
+      const shouldFill = ((hash + i * 17 + j * 13) % 3) === 0
+      if (shouldFill) {
+        ctx.fillRect(padding + i * qrSize, padding + j * qrSize, qrSize, qrSize)
+      }
+    }
+  }
+  
+  // 绘制定位标记（三个角）
+  const drawPositionMarker = (x: number, y: number) => {
+    // 外框
+    ctx.fillRect(padding + x * qrSize, padding + y * qrSize, qrSize * 3, qrSize * 3)
+    ctx.fillStyle = '#fff'
+    ctx.fillRect(padding + (x + 0.5) * qrSize, padding + (y + 0.5) * qrSize, qrSize * 2, qrSize * 2)
+    ctx.fillStyle = '#000'
+    ctx.fillRect(padding + (x + 1) * qrSize, padding + (y + 1) * qrSize, qrSize, qrSize)
+  }
+  
+  drawPositionMarker(0, 0)
+  drawPositionMarker(15, 0)
+  drawPositionMarker(0, 15)
+}
+
+// 下载机票
+const downloadTicket = async () => {
+  if (!ticketRef.value) return
+  
+  try {
+    const canvas = await html2canvas(ticketRef.value, {
+      width: 1588,
+      height: 726,
+      scale: 2,
+      backgroundColor: '#f5f5dc'
+    })
+    
+    const link = document.createElement('a')
+    link.download = `ticket-${flightNumber.value}-${Date.now()}.png`
+    link.href = canvas.toDataURL()
+    link.click()
+  } catch (error) {
+    console.error('下载失败:', error)
+  }
+}
 
 onMounted(() => {
-  console.log('机票页面加载完成')
+  nextTick(() => {
+    generateQR()
+  })
 })
 </script>
 
 <style scoped>
 .ticket-container {
-  min-height: 100vh;
-  background: linear-gradient(135deg, #87CEEB 0%, #4682B4 50%, #1E90FF 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
   padding: 20px;
-  font-family: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
-  position: relative;
-  overflow: hidden;
-}
-
-.background-decoration {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: 1;
-}
-
-.clouds {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  background-image: 
-    radial-gradient(circle at 20% 50%, rgba(255,255,255,0.3) 20%, transparent 21%),
-    radial-gradient(circle at 80% 20%, rgba(255,255,255,0.2) 15%, transparent 16%),
-    radial-gradient(circle at 40% 80%, rgba(255,255,255,0.25) 18%, transparent 19%);
-  animation: cloudMove 20s linear infinite;
-}
-
-@keyframes cloudMove {
-  0% { transform: translateX(-100px); }
-  100% { transform: translateX(100px); }
-}
-
-.flying-planes {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-}
-
-.plane {
-  position: absolute;
-  font-size: 24px;
-  color: rgba(255,255,255,0.6);
-  animation: flyAcross 15s linear infinite;
-}
-
-.plane:nth-child(1) {
-  top: 20%;
-  animation-delay: 0s;
-}
-
-.plane:nth-child(2) {
-  top: 60%;
-  animation-delay: 5s;
-}
-
-.plane:nth-child(3) {
-  top: 80%;
-  animation-delay: 10s;
-}
-
-@keyframes flyAcross {
-  0% {
-    left: -50px;
-    transform: rotate(0deg);
-  }
-  100% {
-    left: calc(100% + 50px);
-    transform: rotate(0deg);
-  }
-}
-
-.ticket-wrapper {
-  position: relative;
-  z-index: 2;
-  animation: slideIn 1s ease-out;
-}
-
-@keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateY(30px) scale(0.9);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
+  background: #f0f0f0;
+  min-height: 100vh;
 }
 
 .ticket {
-  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-  border-radius: 15px;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+  width: 1588px;
+  height: 726px;
+  background: linear-gradient(135deg, #f5f5dc 0%, #faf0e6 100%);
+  margin: 0 auto;
+  position: relative;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
   overflow: hidden;
-  max-width: 900px;
-  min-height: 400px;
-  border: 3px solid #1e3c72;
 }
 
-.ticket-header {
-  background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-  color: #FFD700;
-  padding: 15px 30px;
+/* 顶部标题栏 */
+.header {
+  background: linear-gradient(90deg, #1e3a8a 0%, #3730a3 100%);
+  color: white;
+  padding: 16px 32px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  height: 80px;
 }
 
-.airport-info {
+.airport-title {
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
 }
 
-.airport-cn {
-  font-size: 1.5rem;
+.chinese {
+  font-size: 24px;
   font-weight: bold;
-  margin-bottom: 5px;
+  color: #ffd700;
+  margin-bottom: 4px;
 }
 
-.airport-en {
-  font-size: 1rem;
-  opacity: 0.9;
+.english {
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: 1px;
 }
 
 .boarding-pass {
@@ -286,358 +308,353 @@ onMounted(() => {
 }
 
 .boarding-text {
-  font-size: 1.2rem;
+  font-size: 24px;
   font-weight: bold;
+  letter-spacing: 2px;
 }
 
-.boarding-cn {
-  font-size: 1rem;
-  opacity: 0.9;
+.chinese-boarding {
+  font-size: 16px;
+  color: #ffd700;
+  margin-top: 4px;
 }
 
-.ticket-content {
+/* 主要内容区域 */
+.main-content {
   display: flex;
-  min-height: 350px;
+  height: 646px;
+  position: relative;
 }
 
 .left-section {
-  flex: 2;
-  padding: 30px;
-  background: white;
+  flex: 1;
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
-.flight-info {
+.separator {
+  width: 2px;
+  background: linear-gradient(to bottom, transparent 0%, #ddd 20%, #ddd 80%, transparent 100%);
+  margin: 20px 0;
+  position: relative;
+}
+
+.separator::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 20px;
+  height: 20px;
+  background: #f5f5dc;
+  border: 2px dashed #ddd;
+  border-radius: 50%;
+}
+
+.right-section {
+  width: 420px;
+  padding: 40px;
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+  position: relative;
+}
+
+/* 航班信息行 */
+.flight-info-row {
+  display: flex;
   align-items: center;
-  margin-bottom: 30px;
+  justify-content: space-between;
+  margin-bottom: 40px;
 }
 
 .flight-number {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 16px;
 }
 
 .plane-icon {
-  font-size: 1.5rem;
-  color: #1e3c72;
+  color: #ffd700;
+  font-size: 32px;
+  transform: rotate(-45deg);
 }
 
-.number {
-  font-size: 2rem;
+.flight-code {
+  font-size: 36px;
   font-weight: bold;
-  color: #1e3c72;
+  color: #1e3a8a;
 }
 
-.vip-badge {
-  background: #1e3c72;
-  color: #FFD700;
-  padding: 5px 15px;
+.vip-priority {
+  background: #1e3a8a;
+  color: white;
+  padding: 8px 20px;
   border-radius: 20px;
-  font-size: 0.9rem;
+  font-size: 14px;
   font-weight: bold;
+  letter-spacing: 1px;
 }
 
-.date-info {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
+.flight-date {
+  text-align: right;
 }
 
 .date {
-  font-size: 1.5rem;
+  font-size: 24px;
   font-weight: bold;
-  color: #1e3c72;
+  color: #1e3a8a;
 }
 
-.weekday {
-  font-size: 1rem;
+.day {
+  font-size: 14px;
   color: #666;
+  margin-top: 4px;
 }
 
+.star-icon {
+  color: #ffd700;
+  font-size: 32px;
+}
+
+/* 路线信息 */
 .route-section {
-  margin-bottom: 30px;
-}
-
-.route {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  margin-bottom: 60px;
 }
 
-.departure,
-.arrival {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+.origin, .destination {
+  text-align: center;
 }
 
-.code {
-  font-size: 3rem;
+.airport-code {
+  font-size: 72px;
   font-weight: bold;
-  color: #1e3c72;
-  margin-bottom: 5px;
+  color: #1e3a8a;
+  line-height: 1;
 }
 
-.city {
-  font-size: 1rem;
+.airport-name {
+  font-size: 16px;
   color: #666;
+  margin-top: 8px;
 }
 
-.arrow {
+.route-arrow {
+  flex: 1;
   display: flex;
   align-items: center;
-  flex: 1;
-  margin: 0 30px;
-  position: relative;
+  margin: 0 40px;
 }
 
 .arrow-line {
   flex: 1;
-  height: 3px;
-  background: linear-gradient(to right, #FFD700, #FFA500);
-  position: relative;
+  height: 4px;
+  background: linear-gradient(90deg, #ffd700 0%, #ffa500 100%);
+  border-radius: 2px;
 }
 
-.arrow-line::after {
-  content: '';
-  position: absolute;
-  right: -10px;
-  top: -5px;
-  width: 0;
-  height: 0;
-  border-left: 15px solid #FFA500;
-  border-top: 8px solid transparent;
-  border-bottom: 8px solid transparent;
+.arrow-head {
+  color: #ffd700;
+  font-size: 48px;
+  font-weight: bold;
+  margin-left: 8px;
 }
 
-.plane-small {
-  position: absolute;
-  right: 50%;
-  transform: translateX(50%);
-  font-size: 1.5rem;
-  color: #1e3c72;
-  background: white;
-  padding: 5px;
-  border-radius: 50%;
+/* 详细信息 */
+.details-section {
+  margin-bottom: 40px;
 }
 
-.time-section {
+.detail-row {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 25px;
+  margin-bottom: 32px;
 }
 
-.time-group {
-  text-align: center;
-}
-
-.seat-section {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 25px;
-}
-
-.seat-group {
-  text-align: center;
+.detail-item {
+  text-align: left;
 }
 
 .label {
-  font-size: 0.9rem;
+  font-size: 14px;
   color: #666;
-  margin-bottom: 5px;
+  margin-bottom: 8px;
 }
 
-.time,
 .value {
-  font-size: 1.5rem;
+  font-size: 24px;
   font-weight: bold;
-  color: #1e3c72;
+  color: #1e3a8a;
 }
 
-.priority-text {
+/* 底部文字 */
+.bottom-text {
   text-align: center;
-  font-size: 0.9rem;
+  font-size: 16px;
   color: #666;
-  padding: 15px;
-  border-top: 2px dashed #ddd;
-  margin-top: 20px;
+  letter-spacing: 1px;
+  border-top: 2px solid #ffd700;
+  padding-top: 20px;
 }
 
-.divider {
-  width: 2px;
-  background: #ddd;
-  position: relative;
-  margin: 0 10px;
-}
-
-.perforation {
-  position: absolute;
-  left: -1px;
-  top: 0;
-  bottom: 0;
-  width: 4px;
-  background-image: repeating-linear-gradient(
-    to bottom,
-    #ddd 0px,
-    #ddd 10px,
-    transparent 10px,
-    transparent 20px
-  );
-}
-
-.right-section {
-  flex: 1;
-  background: linear-gradient(135deg, #f8f9fa 0%, #fff 100%);
-  padding: 30px 25px;
-  border-left: 2px dashed #ddd;
-}
-
+/* 右侧乘客信息 */
 .vip-header {
   text-align: center;
-  margin-bottom: 25px;
+  margin-bottom: 40px;
 }
 
-.stars {
-  font-size: 1.5rem;
-  color: #FFD700;
-  margin-bottom: 10px;
+.vip-text {
+  color: #ffd700;
+  font-size: 18px;
+  font-weight: bold;
+  display: block;
+  margin-bottom: 4px;
 }
 
-.vip-title {
-  font-size: 1.2rem;
-  color: #FFD700;
+.passenger-text {
+  color: #1e3a8a;
+  font-size: 16px;
   font-weight: bold;
 }
 
-.vip-subtitle {
-  font-size: 1rem;
-  color: #1e3c72;
-  font-weight: bold;
-}
-
-.passenger-info {
-  margin-bottom: 25px;
-}
-
-.name-section,
-.id-section,
-.vip-section {
-  margin-bottom: 20px;
-}
-
-.name {
-  font-size: 1.3rem;
-  font-weight: bold;
-  color: #1e3c72;
-  margin-bottom: 5px;
-}
-
-.name-en {
-  font-size: 1.1rem;
+.passenger-info .label {
+  font-size: 12px;
   color: #666;
+  margin-bottom: 8px;
 }
 
-.id-number,
-.vip-number {
-  font-size: 1.2rem;
+.name-section {
+  margin-bottom: 24px;
+}
+
+.passenger-name {
+  font-size: 20px;
   font-weight: bold;
-  color: #1e3c72;
+  color: #1e3a8a;
+  line-height: 1.3;
+}
+
+.id-section {
+  margin-bottom: 24px;
+}
+
+.id-number {
+  font-size: 18px;
+  font-weight: bold;
+  color: #1e3a8a;
+}
+
+.vip-number {
+  margin-bottom: 32px;
+  position: relative;
+}
+
+.vip-no {
+  font-size: 18px;
+  font-weight: bold;
+  color: #1e3a8a;
+  margin-bottom: 8px;
 }
 
 .gold-badge {
-  background: linear-gradient(45deg, #FFD700, #FFA500);
-  color: #1e3c72;
-  padding: 3px 10px;
-  border-radius: 10px;
-  font-size: 0.8rem;
-  font-weight: bold;
-  margin-top: 5px;
   display: inline-block;
+  background: #ffd700;
+  color: #1e3a8a;
+  padding: 4px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: bold;
+  border: 2px solid #1e3a8a;
 }
 
+/* 二维码区域 */
 .qr-section {
+  margin: 32px 0;
   text-align: center;
 }
 
 .qr-code {
-  width: 100px;
-  height: 100px;
-  border: 2px solid #1e3c72;
-  margin: 0 auto 15px;
-  position: relative;
-  border-radius: 10px;
-  overflow: hidden;
-}
-
-.qr-pattern {
-  width: 100%;
-  height: 100%;
-  background-image: 
-    linear-gradient(45deg, #1e3c72 25%, transparent 25%),
-    linear-gradient(-45deg, #1e3c72 25%, transparent 25%),
-    linear-gradient(45deg, transparent 75%, #1e3c72 75%),
-    linear-gradient(-45deg, transparent 75%, #1e3c72 75%);
-  background-size: 10px 10px;
-  background-position: 0 0, 0 5px, 5px -5px, -5px 0px;
+  width: 160px;
+  height: 160px;
+  margin: 0 auto;
+  border: 2px solid #1e3a8a;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .ticket-number {
-  font-size: 0.9rem;
-  color: #666;
+  text-align: center;
 }
 
-/* 响应式设计 */
-@media (max-width: 768px) {
-  .ticket {
-    max-width: 100%;
-    margin: 10px;
-  }
-  
-  .ticket-content {
-    flex-direction: column;
-  }
-  
-  .left-section,
-  .right-section {
-    flex: none;
-    padding: 20px;
-  }
-  
-  .divider {
-    height: 2px;
-    width: auto;
-    margin: 0;
-  }
-  
-  .perforation {
-    left: 0;
-    right: 0;
-    top: -1px;
-    bottom: auto;
-    height: 4px;
-    width: auto;
-    background-image: repeating-linear-gradient(
-      to right,
-      #ddd 0px,
-      #ddd 10px,
-      transparent 10px,
-      transparent 20px
-    );
-  }
-  
-  .right-section {
-    border-left: none;
-    border-top: 2px dashed #ddd;
-  }
-  
-  .code {
-    font-size: 2rem;
-  }
-  
-  .arrow {
-    margin: 0 15px;
-  }
+.ticket-no {
+  font-size: 16px;
+  font-weight: bold;
+  color: #1e3a8a;
 }
-</style> 
+
+.star-bottom {
+  position: absolute;
+  bottom: 40px;
+  right: 40px;
+  color: #ffd700;
+  font-size: 32px;
+}
+
+/* 控制面板 */
+.controls {
+  max-width: 1588px;
+  margin: 20px auto;
+  padding: 20px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.controls h3 {
+  margin-bottom: 20px;
+  color: #1e3a8a;
+}
+
+.control-group {
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.control-group label {
+  min-width: 100px;
+  font-weight: 500;
+}
+
+.control-group input {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.download-btn {
+  background: #1e3a8a;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.download-btn:hover {
+  background: #3730a3;
+}
+</style>
