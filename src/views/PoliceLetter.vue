@@ -95,14 +95,14 @@ const memoryFragments = [
 {
     icon: '🍼',
     title: '最早的依赖',
-    content: '小时候你忙着社团的事，妈妈吸毒发作，我在角落里哭着问你：“你到底有没有爱过她？”',
+    content: '小时候你忙着社团的事，妈妈吸毒发作，我在角落里哭着问你："你到底有没有爱过她？"',
     date: '2006年秋天',
     position: { left: '20%', top: '15%' }
   },
   {
     icon: '🚪',
     title: '角落里的哭声',
-    content: '你拒绝回答我关于妈妈的问题，我在门边听你说“我不会爱任何人”。那一刻我失望极了。',
+    content: '你拒绝回答我关于妈妈的问题，我在门边听你说"我不会爱任何人"。那一刻我失望极了。',
     date: '2006年冬天',
     position: { left: '30%', top: '20%' }
   },
@@ -130,7 +130,7 @@ const memoryFragments = [
   {
     icon: '🧵',
     title: '遗愿未竟',
-    content: '我说想给你做一件西服，那原是我在法国的生日愿望。如今你说“咱们都实现了吧”，我眼圈泛红。',
+    content: '我说想给你做一件西服，那原是我在法国的生日愿望。如今你说"咱们都实现了吧"，我眼圈泛红。',
     date: '1999年10月中旬',
     position: { left: '85%', top: '70%' }
   },
@@ -754,10 +754,39 @@ onUnmounted(() => {
   justify-content: center;
   box-shadow: 0 6px 20px rgba(30,60,114,0.4);
   transition: all 0.3s ease;
-  animation: memoryPulse 3s ease-in-out infinite;
+  animation: memoryFloat 15s ease-in-out infinite;
   backdrop-filter: blur(5px);
   border: 3px solid rgba(255,215,0,0.8);
   z-index: 101;
+}
+
+.memory-fragment:nth-child(1) { 
+  animation-delay: 0s; 
+  animation-duration: 12s;
+}
+.memory-fragment:nth-child(2) { 
+  animation-delay: 0s; 
+  animation-duration: 14s;
+}
+.memory-fragment:nth-child(3) { 
+  animation-delay: 0s; 
+  animation-duration: 16s;
+}
+.memory-fragment:nth-child(4) { 
+  animation-delay: 0s; 
+  animation-duration: 13s;
+}
+.memory-fragment:nth-child(5) { 
+  animation-delay: 0s; 
+  animation-duration: 15s;
+}
+.memory-fragment:nth-child(6) { 
+  animation-delay: 0s; 
+  animation-duration: 17s;
+}
+.memory-fragment:nth-child(7) { 
+  animation-delay: 0s; 
+  animation-duration: 14s;
 }
 
 .memory-fragment:active {
@@ -765,16 +794,26 @@ onUnmounted(() => {
   box-shadow: 0 4px 15px rgba(30,60,114,0.6);
 }
 
-@keyframes memoryPulse {
-  0%, 100% { 
+@keyframes memoryFloat {
+  0% { 
     opacity: 0.8;
-    transform: scale(1);
-    box-shadow: 0 6px 20px rgba(30,60,114,0.4);
+    transform: translate(0, 0) scale(1) rotate(0deg);
+  }
+  25% { 
+    opacity: 1;
+    transform: translate(30px, -20px) scale(1.05) rotate(90deg);
   }
   50% { 
+    opacity: 0.9;
+    transform: translate(-20px, -40px) scale(1.1) rotate(180deg);
+  }
+  75% { 
     opacity: 1;
-    transform: scale(1.1);
-    box-shadow: 0 8px 25px rgba(30,60,114,0.5);
+    transform: translate(-40px, 20px) scale(1.05) rotate(270deg);
+  }
+  100% { 
+    opacity: 0.8;
+    transform: translate(0, 0) scale(1) rotate(360deg);
   }
 }
 

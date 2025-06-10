@@ -169,21 +169,21 @@ const memoryFragments = [
   {
     icon: '📚',
     title: '寒夜守护',
-    content: '你偷来压缩饼干放在我床头，那晚你被打断一根肋骨，却告诉我“哥不疼，哥没事”。',
+    content: '你偷来压缩饼干放在我床头，那晚你被打断一根肋骨，却告诉我"哥不疼，哥没事"。',
     date: '1964年冬天',
     position: { left: '60%', top: '20%' }
   },
   {
     icon: '🏠',
     title: '被赶出家门',
-    content: '被那对夫妇抛弃时，是你拉着我的手说：“有哥的地方就是家。”那一刻，我觉得再苦也不怕了。',
+    content: '被那对夫妇抛弃时，是你拉着我的手说："有哥的地方就是家"。那一刻，我觉得再苦也不怕了。',
     date: '1967年春天',
     position: { left: '30%', top: '60%' }
   },
   {
     icon: '📖',
     title: '书桌下的灯光',
-    content: '你每天打好几份工，只为供我读书，回家看我在台灯下学习，你笑着说“我妹最有出息”。',
+    content: '你每天打好几份工，只为供我读书，回家看我在台灯下学习，你笑着说"我妹最有出息"。',
     date: '1971年秋天',
     position: { left: '40%', top: '45%' }
   },
@@ -718,10 +718,27 @@ onUnmounted(() => {
   justify-content: center;
   box-shadow: 0 6px 20px rgba(139,69,19,0.4);
   transition: all 0.3s ease;
-  animation: memoryPulse 3s ease-in-out infinite;
+  animation: memoryFloat 15s ease-in-out infinite;
   backdrop-filter: blur(5px);
   border: 3px solid rgba(222,184,135,0.8);
   z-index: 101;
+}
+
+.memory-fragment:nth-child(1) { 
+  animation-delay: 0s; 
+  animation-duration: 12s;
+}
+.memory-fragment:nth-child(2) { 
+  animation-delay: 0s; 
+  animation-duration: 14s;
+}
+.memory-fragment:nth-child(3) { 
+  animation-delay: 0s; 
+  animation-duration: 16s;
+}
+.memory-fragment:nth-child(4) { 
+  animation-delay: 0s; 
+  animation-duration: 13s;
 }
 
 .memory-fragment:active {
@@ -729,16 +746,26 @@ onUnmounted(() => {
   box-shadow: 0 4px 15px rgba(139,69,19,0.6);
 }
 
-@keyframes memoryPulse {
-  0%, 100% { 
+@keyframes memoryFloat {
+  0% { 
     opacity: 0.8;
-    transform: scale(1);
-    box-shadow: 0 6px 20px rgba(139,69,19,0.4);
+    transform: translate(0, 0) scale(1) rotate(0deg);
+  }
+  25% { 
+    opacity: 1;
+    transform: translate(25px, -30px) scale(1.05) rotate(90deg);
   }
   50% { 
+    opacity: 0.9;
+    transform: translate(-30px, -20px) scale(1.1) rotate(180deg);
+  }
+  75% { 
     opacity: 1;
-    transform: scale(1.1);
-    box-shadow: 0 8px 25px rgba(139,69,19,0.5);
+    transform: translate(-25px, 30px) scale(1.05) rotate(270deg);
+  }
+  100% { 
+    opacity: 0.8;
+    transform: translate(0, 0) scale(1) rotate(360deg);
   }
 }
 
