@@ -49,6 +49,34 @@
       </div>
       <div class="music-text">{{ isPlaying ? '暂停' : '播放' }}</div>
     </div>
+
+    <!-- 回忆碎片 - 独立层级 -->
+    <div class="memory-fragments">
+      <div 
+        v-for="(fragment, index) in memoryFragments" 
+        :key="index"
+        class="memory-fragment"
+        :style="{ left: fragment.position.left, top: fragment.position.top }"
+        @click="openMemoryModal(fragment)"
+      >
+        {{ fragment.icon }}
+      </div>
+    </div>
+
+    <!-- 回忆碎片弹窗 -->
+    <div v-if="showMemoryModal" class="memory-modal-overlay" @click="closeMemoryModal">
+      <div class="memory-modal" @click.stop>
+        <div class="memory-modal-header">
+          <h3>{{ selectedMemory?.title }}</h3>
+          <button class="close-btn" @click="closeMemoryModal">×</button>
+        </div>
+        <div class="memory-modal-content">
+          <div class="memory-image">{{ selectedMemory?.icon }}</div>
+          <p>{{ selectedMemory?.content }}</p>
+          <div class="memory-date">{{ selectedMemory?.date }}</div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -57,6 +85,63 @@ import { ref, onMounted, onUnmounted } from 'vue'
 
 const isPlaying = ref(false)
 let musicGenerator: any = null
+
+// 回忆碎片相关状态
+const showMemoryModal = ref(false)
+const selectedMemory = ref<any>(null)
+
+// 回忆碎片数据 - 警察主题
+const memoryFragments = [
+{
+    icon: '🍼',
+    title: '最早的依赖',
+    content: '小时候你忙着社团的事，妈妈吸毒发作，我在角落里哭着问你：“你到底有没有爱过她？”',
+    date: '2006年秋天',
+    position: { left: '20%', top: '15%' }
+  },
+  {
+    icon: '🚪',
+    title: '角落里的哭声',
+    content: '你拒绝回答我关于妈妈的问题，我在门边听你说“我不会爱任何人”。那一刻我失望极了。',
+    date: '2006年冬天',
+    position: { left: '30%', top: '20%' }
+  },
+  {
+    icon: '✈️',
+    title: '机场离别',
+    content: '我离开法国那天，你没有出现。我带着行李独自走进登机口，回头看时，仿佛整个世界都空了。',
+    date: '1999年8月',
+    position: { left: '40%', top: '35%' }
+  },
+  {
+    icon: '💊',
+    title: '为你端药',
+    content: '你生病那阵子我端水喂你吃药，你却总说公司事多。其实我只想了解你，不是钱能代替的了解。',
+    date: '1999年9月',
+    position: { left: '65%', top: '25%' }
+  },
+  {
+    icon: '🍲',
+    title: '家的味道',
+    content: '你为我下厨做饭，笨拙地问好不好吃。那一顿饭，我第一次觉得我们像真正的父女。',
+    date: '1999年10月初',
+    position: { left: '35%', top: '65%' }
+  },
+  {
+    icon: '🧵',
+    title: '遗愿未竟',
+    content: '我说想给你做一件西服，那原是我在法国的生日愿望。如今你说“咱们都实现了吧”，我眼圈泛红。',
+    date: '1999年10月中旬',
+    position: { left: '85%', top: '70%' }
+  },
+  {
+    icon: '🗡️',
+    title: '我不是你女儿',
+    content: '你对我说，如果你愿意永远当曼臻，我可以当作什么都没发生。我没回答，但眼神已经说了再见。',
+    date: '1999年10月下旬',
+    position: { left: '75%', top: '80%' }
+  }
+]
 
 const letterParagraphs = [
   {
@@ -145,6 +230,18 @@ const toggleMusic = async () => {
   } catch (error) {
     console.log('音乐播放切换失败:', error)
   }
+}
+
+// 打开回忆弹窗
+const openMemoryModal = (fragment: any) => {
+  selectedMemory.value = fragment
+  showMemoryModal.value = true
+}
+
+// 关闭回忆弹窗
+const closeMemoryModal = () => {
+  showMemoryModal.value = false
+  selectedMemory.value = null
 }
 
 onMounted(() => {
@@ -631,5 +728,164 @@ onUnmounted(() => {
   .music-text {
     font-size: 0.6rem;
   }
+}
+
+.memory-fragments {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 100;
+}
+
+.memory-fragment {
+  position: absolute;
+  font-size: 32px;
+  cursor: pointer;
+  pointer-events: auto;
+  background: rgba(248,248,255,0.95);
+  border-radius: 50%;
+  width: 70px;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 20px rgba(30,60,114,0.4);
+  transition: all 0.3s ease;
+  animation: memoryPulse 3s ease-in-out infinite;
+  backdrop-filter: blur(5px);
+  border: 3px solid rgba(255,215,0,0.8);
+  z-index: 101;
+}
+
+.memory-fragment:active {
+  transform: scale(0.95);
+  box-shadow: 0 4px 15px rgba(30,60,114,0.6);
+}
+
+@keyframes memoryPulse {
+  0%, 100% { 
+    opacity: 0.8;
+    transform: scale(1);
+    box-shadow: 0 6px 20px rgba(30,60,114,0.4);
+  }
+  50% { 
+    opacity: 1;
+    transform: scale(1.1);
+    box-shadow: 0 8px 25px rgba(30,60,114,0.5);
+  }
+}
+
+.memory-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(5px);
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.memory-modal {
+  background: linear-gradient(135deg, #F8F8FF, #E6E6FA);
+  padding: 30px;
+  border-radius: 20px;
+  max-width: 500px;
+  width: 90%;
+  max-height: 80%;
+  overflow: auto;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  animation: slideUp 0.4s ease-out;
+  border: 2px solid rgba(255,215,0,0.3);
+}
+
+@keyframes slideUp {
+  from { 
+    opacity: 0;
+    transform: translateY(50px) scale(0.9);
+  }
+  to { 
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.memory-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  border-bottom: 2px solid rgba(255,215,0,0.3);
+  padding-bottom: 15px;
+}
+
+.memory-modal-header h3 {
+  font-size: 1.8rem;
+  color: #1e3c72;
+  margin: 0;
+  text-shadow: 1px 1px 2px rgba(30,60,114,0.2);
+}
+
+.close-btn {
+  background: rgba(255,215,0,0.3);
+  border: 2px solid rgba(255,215,0,0.6);
+  border-radius: 50%;
+  width: 45px;
+  height: 45px;
+  font-size: 1.8rem;
+  color: #1e3c72;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+.close-btn:active {
+  background: rgba(255,215,0,0.5);
+  transform: scale(0.95);
+}
+
+.memory-modal-content {
+  text-align: center;
+}
+
+.memory-image {
+  font-size: 4rem;
+  margin-bottom: 20px;
+  filter: drop-shadow(2px 2px 4px rgba(30,60,114,0.3));
+}
+
+.memory-modal-content p {
+  font-size: 1.2rem;
+  line-height: 1.8;
+  color: #1e3c72;
+  margin: 20px 0;
+  text-align: left;
+  text-indent: 2em;
+}
+
+.memory-date {
+  font-size: 1rem;
+  color: #4a90e2;
+  margin-top: 20px;
+  font-style: italic;
+  padding: 10px;
+  background: rgba(255,215,0,0.2);
+  border-radius: 10px;
+  border-left: 4px solid #FFD700;
 }
 </style> 

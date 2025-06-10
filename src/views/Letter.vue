@@ -12,6 +12,19 @@
       </div>
     </div>
 
+    <!-- 回忆碎片 - 移到独立层级 -->
+    <div class="memory-fragments">
+      <div 
+        v-for="(fragment, index) in memoryFragments" 
+        :key="index"
+        class="memory-fragment"
+        :style="{ left: fragment.position.left, top: fragment.position.top }"
+        @click="openMemoryModal(fragment)"
+      >
+        {{ fragment.icon }}
+      </div>
+    </div>
+
     <!-- 主内容 -->
     <div class="content-wrapper">
       <!-- 标题部分 -->
@@ -39,6 +52,11 @@
         <div class="signature-text">最疼你的哥哥</div>
         <div class="signature-heart">❤️</div>
       </div>
+
+      <!-- 提示文字 -->
+      <div class="memory-hint">
+        <div class="hint-text">💫 轻触屏幕上的回忆碎片，发现更多故事</div>
+      </div>
     </div>
 
     <!-- 音乐控制 -->
@@ -48,6 +66,21 @@
       </div>
       <div class="music-text">{{ isPlaying ? '暂停' : '播放' }}</div>
     </div>
+
+    <!-- 回忆碎片弹窗 -->
+    <div v-if="showMemoryModal" class="memory-modal-overlay" @click="closeMemoryModal">
+      <div class="memory-modal" @click.stop>
+        <div class="memory-modal-header">
+          <h3>{{ selectedMemory?.title }}</h3>
+          <button class="close-btn" @click="closeMemoryModal">×</button>
+        </div>
+        <div class="memory-modal-content">
+          <div class="memory-image">{{ selectedMemory?.icon }}</div>
+          <p>{{ selectedMemory?.content }}</p>
+          <div class="memory-date">{{ selectedMemory?.date }}</div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -56,6 +89,10 @@ import { ref, onMounted, onUnmounted } from 'vue'
 
 const isPlaying = ref(false)
 let musicGenerator: any = null
+
+// 回忆碎片相关状态
+const showMemoryModal = ref(false)
+const selectedMemory = ref<any>(null)
 
 const letterParagraphs = [
   {
@@ -120,6 +157,52 @@ const letterParagraphs = [
   }
 ]
 
+// 回忆碎片数据
+const memoryFragments = [
+{
+    icon: '🍡',
+    title: '初识时光',
+    content: '你把冰棍分给我，明明自己也饿得发慌。我坐在台阶上看你赶走别的孩子，只为了让我玩一次滑梯。',
+    date: '1963年夏天',
+    position: { left: '10%', top: '25%' }
+  },
+  {
+    icon: '📚',
+    title: '寒夜守护',
+    content: '你偷来压缩饼干放在我床头，那晚你被打断一根肋骨，却告诉我“哥不疼，哥没事”。',
+    date: '1964年冬天',
+    position: { left: '60%', top: '20%' }
+  },
+  {
+    icon: '🏠',
+    title: '被赶出家门',
+    content: '被那对夫妇抛弃时，是你拉着我的手说：“有哥的地方就是家。”那一刻，我觉得再苦也不怕了。',
+    date: '1967年春天',
+    position: { left: '30%', top: '60%' }
+  },
+  {
+    icon: '📖',
+    title: '书桌下的灯光',
+    content: '你每天打好几份工，只为供我读书，回家看我在台灯下学习，你笑着说“我妹最有出息”。',
+    date: '1971年秋天',
+    position: { left: '40%', top: '45%' }
+  },
+  {
+    icon: '🎓',
+    title: '出国决定',
+    content: '你攒下第一桶金，替我办理了出国手续。我却不愿离开，是你一次次劝我走向更光明的未来。',
+    date: '1974年夏天',
+    position: { left: '55%', top: '50%' }
+  },
+  {
+    icon: '💔',
+    title: '无声恳求',
+    content: '我拉着你的衣袖，哭着求你放过耀仁。你不说话，但我知道，你还是我唯一的家人。',
+    date: '1999年10月（黎明行动前）',
+    position: { left: '75%', top: '75%' }
+  }
+]
+
 const toggleMusic = async () => {
   try {
     if (isPlaying.value) {
@@ -144,6 +227,18 @@ const toggleMusic = async () => {
   } catch (error) {
     console.log('音乐播放切换失败:', error)
   }
+}
+
+// 打开回忆弹窗
+const openMemoryModal = (fragment: any) => {
+  selectedMemory.value = fragment
+  showMemoryModal.value = true
+}
+
+// 关闭回忆弹窗
+const closeMemoryModal = () => {
+  showMemoryModal.value = false
+  selectedMemory.value = null
 }
 
 onMounted(() => {
@@ -597,5 +692,187 @@ onUnmounted(() => {
     transform: translateY(-30px) rotate(180deg) scale(1.1);
     opacity: 0.7;
   }
+}
+
+.memory-fragments {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 100;
+}
+
+.memory-fragment {
+  position: absolute;
+  font-size: 32px;
+  cursor: pointer;
+  pointer-events: auto;
+  background: rgba(255,248,220,0.95);
+  border-radius: 50%;
+  width: 70px;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 20px rgba(139,69,19,0.4);
+  transition: all 0.3s ease;
+  animation: memoryPulse 3s ease-in-out infinite;
+  backdrop-filter: blur(5px);
+  border: 3px solid rgba(222,184,135,0.8);
+  z-index: 101;
+}
+
+.memory-fragment:active {
+  transform: scale(0.95);
+  box-shadow: 0 4px 15px rgba(139,69,19,0.6);
+}
+
+@keyframes memoryPulse {
+  0%, 100% { 
+    opacity: 0.8;
+    transform: scale(1);
+    box-shadow: 0 6px 20px rgba(139,69,19,0.4);
+  }
+  50% { 
+    opacity: 1;
+    transform: scale(1.1);
+    box-shadow: 0 8px 25px rgba(139,69,19,0.5);
+  }
+}
+
+.memory-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(5px);
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.memory-modal {
+  background: linear-gradient(135deg, #FFF8DC, #F5DEB3);
+  padding: 30px;
+  border-radius: 20px;
+  max-width: 500px;
+  width: 90%;
+  max-height: 80%;
+  overflow: auto;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  animation: slideUp 0.4s ease-out;
+  border: 2px solid rgba(222,184,135,0.3);
+}
+
+@keyframes slideUp {
+  from { 
+    opacity: 0;
+    transform: translateY(50px) scale(0.9);
+  }
+  to { 
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.memory-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  border-bottom: 2px solid rgba(222,184,135,0.3);
+  padding-bottom: 15px;
+}
+
+.memory-modal-header h3 {
+  font-size: 1.8rem;
+  color: #654321;
+  margin: 0;
+  text-shadow: 1px 1px 2px rgba(139,69,19,0.2);
+}
+
+.close-btn {
+  background: rgba(222,184,135,0.3);
+  border: 2px solid rgba(222,184,135,0.6);
+  border-radius: 50%;
+  width: 45px;
+  height: 45px;
+  font-size: 1.8rem;
+  color: #654321;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+.close-btn:active {
+  background: rgba(222,184,135,0.5);
+  transform: scale(0.95);
+}
+
+.memory-modal-content {
+  text-align: center;
+}
+
+.memory-image {
+  font-size: 4rem;
+  margin-bottom: 20px;
+  filter: drop-shadow(2px 2px 4px rgba(139,69,19,0.3));
+}
+
+.memory-modal-content p {
+  font-size: 1.2rem;
+  line-height: 1.8;
+  color: #654321;
+  margin: 20px 0;
+  text-align: left;
+  text-indent: 2em;
+}
+
+.memory-date {
+  font-size: 1rem;
+  color: #8B4513;
+  margin-top: 20px;
+  font-style: italic;
+  padding: 10px;
+  background: rgba(222,184,135,0.2);
+  border-radius: 10px;
+  border-left: 4px solid #DEB887;
+}
+
+.memory-hint {
+  text-align: center;
+  margin-top: 15px;
+  padding: 12px 20px;
+  background: rgba(255,248,220,0.6);
+  border-radius: 25px;
+  border: 1px solid rgba(222,184,135,0.4);
+  backdrop-filter: blur(5px);
+  animation: hintFade 4s ease-in-out infinite;
+}
+
+.hint-text {
+  font-size: 0.9rem;
+  color: rgba(101,67,33,0.8);
+  font-style: italic;
+  text-shadow: 1px 1px 2px rgba(255,255,255,0.5);
+}
+
+@keyframes hintFade {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
 }
 </style> 
