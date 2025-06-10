@@ -54,9 +54,7 @@
       </div>
 
       <!-- 提示文字 -->
-      <div class="memory-hint">
-        <div class="hint-text">💫 轻触屏幕上的回忆碎片，发现更多故事</div>
-      </div>
+
     </div>
 
     <!-- 音乐控制 -->

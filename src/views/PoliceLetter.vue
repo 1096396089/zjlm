@@ -37,7 +37,7 @@
 
       <!-- 签名 -->
       <div class="signature">
-        <div class="signature-text">最疼你嘅爹哋</div>
+        <div class="signature-text">最锡你嘅爹哋</div>
         <div class="signature-heart">❤️</div>
       </div>
     </div>
