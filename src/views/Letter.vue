@@ -17,7 +17,7 @@
       <!-- 标题部分 -->
       <div class="header">
         <h1 class="title">给最爱的妹妹</h1>
-        <div class="date">付生 March 12, 2025</div>
+        <div class="date">付生 June 15th</div>
       </div>
 
       <!-- 信件内容 - 可滚动区域 -->
@@ -333,6 +333,9 @@ onUnmounted(() => {
   position: relative;
   animation: slideInLeft 0.8s ease-out forwards;
   animation-delay: calc(var(--paragraph-index, 0) * 0.1s);
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
 }
 
 @keyframes slideInLeft {
@@ -368,16 +371,17 @@ onUnmounted(() => {
   color: #654321;
   margin: 0;
   text-indent: 2em;
+  flex: 1;
 }
 
 .emoji {
-  position: absolute;
-  right: -10px;
-  top: 50%;
-  transform: translateY(-50%);
+  flex-shrink: 0;
   font-size: 1.5rem;
   animation: bounce 2s ease-in-out infinite;
   filter: drop-shadow(1px 1px 2px rgba(139,69,19,0.3));
+  margin-top: 0.2em;
+  min-width: 30px;
+  text-align: center;
 }
 
 @keyframes bounce {

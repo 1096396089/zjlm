@@ -9,7 +9,7 @@ const routes: Array<RouteRecordRaw> = [
     meta: { title: '付生传' },
   },
   {
-    path: '/police',
+    path: '/letter',
     component: () => import('../views/Letter.vue'),
     meta: { title: '给最爱的妹妹 - 兄妹情深' },
   },

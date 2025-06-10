@@ -18,7 +18,7 @@
       <!-- 标题部分 -->
       <div class="header">
         <h1 class="title">To 曼臻</h1>
-        <div class="date">付生 March 12, 2025</div>
+        <div class="date">付生 June 15th</div>
       </div>
 
       <!-- 信件内容 - 可滚动区域 -->
