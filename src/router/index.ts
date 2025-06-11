@@ -16,7 +16,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/police-letter',
     component: () => import('../views/PoliceLetter.vue'),
-    meta: { title: 'To 曼臻 - 父亲给卧底女儿的信' },
+    meta: { title: 'To 曼臻 - 父亲给女儿的信' },
   },
   {
     path: '/ticket',
