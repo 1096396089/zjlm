@@ -33,6 +33,52 @@
       v-show="showControlPanel"
       class="absolute top-20 right-5 bg-white bg-opacity-95 backdrop-blur-sm rounded-lg p-5 shadow-lg max-w-xs z-10 md:max-w-sm lg:max-w-md transition-all duration-300"
     >
+      <!-- 相机位置控制 -->
+      <div class="mb-5">
+        <label class="block mb-2 font-semibold text-gray-700">相机位置:</label>
+        <div class="space-y-3">
+          <!-- X轴控制 -->
+          <div>
+            <label class="block text-sm text-gray-600 mb-1">X轴: {{ cameraPosition.x.toFixed(1) }}</label>
+            <input 
+              type="range" 
+              v-model.number="cameraPosition.x" 
+              min="-20" 
+              max="20" 
+              step="0.1"
+              @input="updateCameraPosition"
+              class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
+            >
+          </div>
+          <!-- Y轴控制 -->
+          <div>
+            <label class="block text-sm text-gray-600 mb-1">Y轴: {{ cameraPosition.y.toFixed(1) }}</label>
+            <input 
+              type="range" 
+              v-model.number="cameraPosition.y" 
+              min="-20" 
+              max="20" 
+              step="0.1"
+              @input="updateCameraPosition"
+              class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
+            >
+          </div>
+          <!-- Z轴控制 -->
+          <div>
+            <label class="block text-sm text-gray-600 mb-1">Z轴: {{ cameraPosition.z.toFixed(1) }}</label>
+            <input 
+              type="range" 
+              v-model.number="cameraPosition.z" 
+              min="1" 
+              max="30" 
+              step="0.1"
+              @input="updateCameraPosition"
+              class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
+            >
+          </div>
+        </div>
+      </div>
+
       <!-- 颜色控制 -->
       <div class="mb-5">
         <label class="block mb-2 font-semibold text-gray-700">鞋子颜色:</label>
@@ -97,6 +143,7 @@ const selectedEnvironment = ref('studio')
 const isAnimating = ref(true)
 const showGestureHint = ref(true)
 const showControlPanel = ref(false)
+const cameraPosition = ref({ x: 0, y: 0, z: 5 })
 
 // Three.js 相关变量
 let scene: THREE.Scene
@@ -122,6 +169,14 @@ const toggleControlPanel = () => {
   showControlPanel.value = !showControlPanel.value
 }
 
+// 更新相机位置
+const updateCameraPosition = () => {
+  if (camera) {
+    camera.position.set(cameraPosition.value.x, cameraPosition.value.y, cameraPosition.value.z)
+    camera.updateProjectionMatrix()
+  }
+}
+
 // 初始化Three.js
 const initThree = async () => {
   if (!containerRef.value) return
@@ -139,7 +194,7 @@ const initThree = async () => {
       0.1,
       1000
     )
-    camera.position.set(0, 0, 10)
+    camera.position.set(0, 0, 5)
 
     // 创建渲染器
     renderer = new THREE.WebGLRenderer({ 
@@ -152,7 +207,8 @@ const initThree = async () => {
     renderer.shadowMap.enabled = true
     renderer.shadowMap.type = THREE.PCFSoftShadowMap
     renderer.toneMapping = THREE.ACESFilmicToneMapping
-    renderer.toneMappingExposure = 1
+    renderer.toneMappingExposure = 1.5  // 增加曝光度
+    renderer.outputColorSpace = THREE.SRGBColorSpace
     container.appendChild(renderer.domElement)
 
     // 创建控制器
@@ -195,22 +251,50 @@ const initThree = async () => {
 
 // 设置光照
 const setupLighting = () => {
-  // 环境光
-  const ambientLight = new THREE.AmbientLight(0xffffff, 0.6)
+  // 环境光 - 增强亮度
+  const ambientLight = new THREE.AmbientLight(0xffffff, 1.0)
   scene.add(ambientLight)
 
-  // 主光源
-  const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8)
+  // 主光源 - 增强亮度
+  const directionalLight = new THREE.DirectionalLight(0xffffff, 1.2)
   directionalLight.position.set(5, 5, 5)
   directionalLight.castShadow = true
   directionalLight.shadow.mapSize.width = 2048
   directionalLight.shadow.mapSize.height = 2048
   scene.add(directionalLight)
 
-  // 补充光源
-  const fillLight = new THREE.DirectionalLight(0xffffff, 0.3)
+  // 补充光源 - 增强亮度
+  const fillLight = new THREE.DirectionalLight(0xffffff, 0.8)
   fillLight.position.set(-5, 0, -5)
   scene.add(fillLight)
+  
+  // 添加顶部光源
+  const topLight = new THREE.DirectionalLight(0xffffff, 0.6)
+  topLight.position.set(0, 10, 0)
+  scene.add(topLight)
+  
+  // 添加底部光源
+  const bottomLight = new THREE.DirectionalLight(0xffffff, 0.4)
+  bottomLight.position.set(0, -10, 0)
+  scene.add(bottomLight)
+  
+  // 添加左侧光源
+  const leftLight = new THREE.DirectionalLight(0xffffff, 0.5)
+  leftLight.position.set(-10, 0, 0)
+  scene.add(leftLight)
+  
+  // 添加右侧光源
+  const rightLight = new THREE.DirectionalLight(0xffffff, 0.5)
+  rightLight.position.set(10, 0, 0)
+  scene.add(rightLight)
+  
+  // 添加前方聚光灯
+  const spotLight = new THREE.SpotLight(0xffffff, 1.0, 100, Math.PI / 6, 0.5)
+  spotLight.position.set(0, 0, 15)
+  spotLight.target.position.set(0, 0, 0)
+  spotLight.castShadow = true
+  scene.add(spotLight)
+  scene.add(spotLight.target)
 }
 
 // 加载鞋子模型
@@ -324,10 +408,11 @@ const toggleAnimation = () => {
 
 // 重置视角
 const resetView = () => {
-  camera.position.set(0, 0, 10)
+  cameraPosition.value = { x: 0, y: 0, z: 5 }
+  camera.position.set(0, 0, 5)
   controls.reset()
   if (shoeModel) {
-    shoeModel.rotation.set(-Math.PI / 2, 0, 0)
+    shoeModel.rotation.set(0, 0, 0)
   }
 }
 
