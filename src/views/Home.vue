@@ -171,6 +171,17 @@
         <button @click="resetView" class="px-4 py-2 mr-2.5 mb-2.5 border border-gray-300 rounded bg-white cursor-pointer text-sm transition-all duration-200 hover:bg-gray-100">重置视角</button>
       </div>
 
+      <!-- 自动材质切换控制 -->
+      <div class="mb-5">
+        <label class="block mb-2 font-semibold text-gray-700">自动材质切换:</label>
+        <button @click="toggleAutoMaterialChange" :class="['px-4 py-2 mr-2.5 mb-2.5 border border-gray-300 rounded bg-white cursor-pointer text-sm transition-all duration-200 hover:bg-gray-100', autoMaterialChange ? 'bg-green-500 text-white border-green-500' : '']">
+          {{ autoMaterialChange ? '停止切换' : '开始切换' }}
+        </button>
+        <div class="text-xs text-gray-600 mt-2">
+          {{ autoMaterialChange ? `正在自动切换材质 (${currentTextureIndex + 1}/${textureUrls.length})` : '每5秒自动切换所有Mesh的材质' }}
+        </div>
+      </div>
+
       <!-- Mesh列表 -->
       <div class="mb-5" v-if="meshList.length > 0">
         <label class="block mb-2 font-semibold text-gray-700">Mesh列表 (共{{ meshList.length }}个):</label>
@@ -233,6 +244,25 @@ const lightingIntensity = ref({
 
 // 添加Mesh列表
 const meshList = ref<Array<{name: string, index: number, mesh: THREE.Mesh}>>([])
+
+// 添加自动材质切换功能
+const autoMaterialChange = ref(false)
+let materialChangeTimer: number | null = null
+let currentTextureIndex = 0
+
+// 在线贴图URL数组 - 随机找一些不同类型的材质
+const textureUrls = [
+  'https://threejs.org/examples/textures/brick_diffuse.jpg',
+  'https://threejs.org/examples/textures/brick_roughness.jpg', 
+  'https://threejs.org/examples/textures/hardwood2_diffuse.jpg',
+  'https://threejs.org/examples/textures/waternormals.jpg',
+  'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=512&h=512&fit=crop',
+  'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=512&h=512&fit=crop',
+  'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=512&h=512&fit=crop',
+  'https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=512&h=512&fit=crop',
+  'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=512&h=512&fit=crop',
+  'https://images.unsplash.com/photo-1579952363873-27d3bfad9c0d?w=512&h=512&fit=crop'
+]
 
 // Three.js 相关变量
 let scene: THREE.Scene
@@ -312,14 +342,88 @@ const updateMeshMaterial = (meshIndex: number, textureUrl?: string) => {
   if (textureUrl) {
     const textureLoader = new THREE.TextureLoader()
     textureLoader.load(textureUrl, (texture) => {
+      // 设置贴图包装和过滤模式以获得更好的效果
+      texture.wrapS = THREE.RepeatWrapping
+      texture.wrapT = THREE.RepeatWrapping
+      texture.repeat.set(1, 1)
+      texture.minFilter = THREE.LinearMipmapLinearFilter
+      texture.magFilter = THREE.LinearFilter
+      
       if (mesh.material instanceof THREE.MeshStandardMaterial) {
         mesh.material.map = texture
         mesh.material.needsUpdate = true
         console.log(`成功更新Mesh ${meshIndex} 的贴图`)
+      } else if (Array.isArray(mesh.material)) {
+        // 如果是材质数组，更新第一个材质
+        mesh.material.forEach((mat) => {
+          if (mat instanceof THREE.MeshStandardMaterial) {
+            mat.map = texture
+            mat.needsUpdate = true
+          }
+        })
+        console.log(`成功更新Mesh ${meshIndex} 的多材质贴图`)
       }
     }, undefined, (error) => {
       console.error('贴图加载失败:', error)
     })
+  }
+}
+
+// 更新所有Mesh材质的函数
+const updateAllMeshMaterials = (textureUrl: string) => {
+  console.log(`正在为所有Mesh更新材质: ${textureUrl}`)
+  meshList.value.forEach((item) => {
+    updateMeshMaterial(item.index, textureUrl)
+  })
+}
+
+// 自动切换材质的函数
+const autoChangeMaterials = () => {
+  if (textureUrls.length === 0) return
+  
+  const currentTexture = textureUrls[currentTextureIndex]
+  console.log(`自动切换到贴图 ${currentTextureIndex + 1}/${textureUrls.length}: ${currentTexture}`)
+  
+  updateAllMeshMaterials(currentTexture)
+  
+  // 移动到下一个贴图
+  currentTextureIndex = (currentTextureIndex + 1) % textureUrls.length
+}
+
+// 开始自动材质切换
+const startAutoMaterialChange = () => {
+  if (materialChangeTimer) {
+    clearInterval(materialChangeTimer)
+  }
+  
+  autoMaterialChange.value = true
+  console.log('开始自动材质切换，每5秒切换一次')
+  
+  // 立即执行一次
+  autoChangeMaterials()
+  
+  // 设置定时器，每5秒切换一次
+  materialChangeTimer = setInterval(() => {
+    autoChangeMaterials()
+  }, 5000)
+}
+
+// 停止自动材质切换
+const stopAutoMaterialChange = () => {
+  if (materialChangeTimer) {
+    clearInterval(materialChangeTimer)
+    materialChangeTimer = null
+  }
+  autoMaterialChange.value = false
+  console.log('停止自动材质切换')
+}
+
+// 切换自动材质变换
+const toggleAutoMaterialChange = () => {
+  if (autoMaterialChange.value) {
+    stopAutoMaterialChange()
+  } else {
+    startAutoMaterialChange()
   }
 }
 
@@ -774,6 +878,10 @@ onMounted(async () => {
   ;(window as any).updateMeshMaterial = updateMeshMaterial
   ;(window as any).selectMesh = selectMesh
   ;(window as any).meshList = meshList
+  ;(window as any).updateAllMeshMaterials = updateAllMeshMaterials
+  ;(window as any).startAutoMaterialChange = startAutoMaterialChange
+  ;(window as any).stopAutoMaterialChange = stopAutoMaterialChange
+  ;(window as any).toggleAutoMaterialChange = toggleAutoMaterialChange
   
   console.log('🔧 已添加全局Mesh操作函数:')
   console.log('- window.getMeshByIndex(index)')
@@ -781,6 +889,10 @@ onMounted(async () => {
   console.log('- window.updateMeshMaterial(index, textureUrl)')
   console.log('- window.selectMesh(index)')
   console.log('- window.meshList (响应式Mesh列表)')
+  console.log('- window.updateAllMeshMaterials(textureUrl) (更新所有Mesh材质)')
+  console.log('- window.startAutoMaterialChange() (开始自动材质切换)')
+  console.log('- window.stopAutoMaterialChange() (停止自动材质切换)')
+  console.log('- window.toggleAutoMaterialChange() (切换自动材质切换状态)')
 })
 
 onUnmounted(() => {
@@ -792,6 +904,9 @@ onUnmounted(() => {
   }
   if (controls) {
     controls.dispose()
+  }
+  if (materialChangeTimer) {
+    clearInterval(materialChangeTimer)
   }
 })
 </script>
