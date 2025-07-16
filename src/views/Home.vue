@@ -79,6 +79,65 @@
         </div>
       </div>
 
+      <!-- 灯光强度控制 -->
+      <div class="mb-5">
+        <label class="block mb-2 font-semibold text-gray-700">灯光强度:</label>
+        <div class="space-y-3">
+          <!-- 环境光控制 -->
+          <div>
+            <label class="block text-sm text-gray-600 mb-1">环境光: {{ lightingIntensity.ambient.toFixed(1) }}</label>
+            <input 
+              type="range" 
+              v-model.number="lightingIntensity.ambient" 
+              min="0" 
+              max="3" 
+              step="0.1"
+              @input="updateLightingIntensity"
+              class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
+            >
+          </div>
+          <!-- 主光源控制 -->
+          <div>
+            <label class="block text-sm text-gray-600 mb-1">主光源: {{ lightingIntensity.directional.toFixed(1) }}</label>
+            <input 
+              type="range" 
+              v-model.number="lightingIntensity.directional" 
+              min="0" 
+              max="3" 
+              step="0.1"
+              @input="updateLightingIntensity"
+              class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
+            >
+          </div>
+          <!-- 补充光源控制 -->
+          <div>
+            <label class="block text-sm text-gray-600 mb-1">补充光: {{ lightingIntensity.fill.toFixed(1) }}</label>
+            <input 
+              type="range" 
+              v-model.number="lightingIntensity.fill" 
+              min="0" 
+              max="2" 
+              step="0.1"
+              @input="updateLightingIntensity"
+              class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
+            >
+          </div>
+          <!-- 辅助光源控制 -->
+          <div>
+            <label class="block text-sm text-gray-600 mb-1">辅助光: {{ lightingIntensity.additional.toFixed(1) }}</label>
+            <input 
+              type="range" 
+              v-model.number="lightingIntensity.additional" 
+              min="0" 
+              max="1.5" 
+              step="0.1"
+              @input="updateLightingIntensity"
+              class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
+            >
+          </div>
+        </div>
+      </div>
+
       <!-- 颜色控制 -->
       <div class="mb-5">
         <label class="block mb-2 font-semibold text-gray-700">鞋子颜色:</label>
@@ -145,6 +204,14 @@ const showGestureHint = ref(true)
 const showControlPanel = ref(false)
 const cameraPosition = ref({ x: 0, y: 0, z: 5 })
 
+// 添加灯光强度控制
+const lightingIntensity = ref({
+  ambient: 1.0,
+  directional: 1.2,
+  fill: 0.8,
+  additional: 0.5
+})
+
 // Three.js 相关变量
 let scene: THREE.Scene
 let camera: THREE.PerspectiveCamera
@@ -153,6 +220,16 @@ let controls: OrbitControls
 let shoeModel: THREE.Group
 let mixer: THREE.AnimationMixer
 let animationId: number
+
+// 添加灯光对象引用
+let ambientLight: THREE.AmbientLight
+let directionalLight: THREE.DirectionalLight
+let fillLight: THREE.DirectionalLight
+let topLight: THREE.DirectionalLight
+let bottomLight: THREE.DirectionalLight
+let leftLight: THREE.DirectionalLight
+let rightLight: THREE.DirectionalLight
+let spotLight: THREE.SpotLight
 
 // 颜色选项
 const colors = [
@@ -175,6 +252,18 @@ const updateCameraPosition = () => {
     camera.position.set(cameraPosition.value.x, cameraPosition.value.y, cameraPosition.value.z)
     camera.updateProjectionMatrix()
   }
+}
+
+// 更新灯光强度
+const updateLightingIntensity = () => {
+  if (ambientLight) ambientLight.intensity = lightingIntensity.value.ambient
+  if (directionalLight) directionalLight.intensity = lightingIntensity.value.directional
+  if (fillLight) fillLight.intensity = lightingIntensity.value.fill
+  if (topLight) topLight.intensity = lightingIntensity.value.additional
+  if (bottomLight) bottomLight.intensity = lightingIntensity.value.additional * 0.8
+  if (leftLight) leftLight.intensity = lightingIntensity.value.additional
+  if (rightLight) rightLight.intensity = lightingIntensity.value.additional
+  if (spotLight) spotLight.intensity = lightingIntensity.value.directional * 0.8
 }
 
 // 初始化Three.js
@@ -252,11 +341,11 @@ const initThree = async () => {
 // 设置光照
 const setupLighting = () => {
   // 环境光 - 增强亮度
-  const ambientLight = new THREE.AmbientLight(0xffffff, 1.0)
+  ambientLight = new THREE.AmbientLight(0xffffff, lightingIntensity.value.ambient)
   scene.add(ambientLight)
 
   // 主光源 - 增强亮度
-  const directionalLight = new THREE.DirectionalLight(0xffffff, 1.2)
+  directionalLight = new THREE.DirectionalLight(0xffffff, lightingIntensity.value.directional)
   directionalLight.position.set(5, 5, 5)
   directionalLight.castShadow = true
   directionalLight.shadow.mapSize.width = 2048
@@ -264,32 +353,32 @@ const setupLighting = () => {
   scene.add(directionalLight)
 
   // 补充光源 - 增强亮度
-  const fillLight = new THREE.DirectionalLight(0xffffff, 0.8)
+  fillLight = new THREE.DirectionalLight(0xffffff, lightingIntensity.value.fill)
   fillLight.position.set(-5, 0, -5)
   scene.add(fillLight)
   
   // 添加顶部光源
-  const topLight = new THREE.DirectionalLight(0xffffff, 0.6)
+  topLight = new THREE.DirectionalLight(0xffffff, lightingIntensity.value.additional)
   topLight.position.set(0, 10, 0)
   scene.add(topLight)
   
   // 添加底部光源
-  const bottomLight = new THREE.DirectionalLight(0xffffff, 0.4)
+  bottomLight = new THREE.DirectionalLight(0xffffff, lightingIntensity.value.additional * 0.8)
   bottomLight.position.set(0, -10, 0)
   scene.add(bottomLight)
   
   // 添加左侧光源
-  const leftLight = new THREE.DirectionalLight(0xffffff, 0.5)
+  leftLight = new THREE.DirectionalLight(0xffffff, lightingIntensity.value.additional)
   leftLight.position.set(-10, 0, 0)
   scene.add(leftLight)
   
   // 添加右侧光源
-  const rightLight = new THREE.DirectionalLight(0xffffff, 0.5)
+  rightLight = new THREE.DirectionalLight(0xffffff, lightingIntensity.value.additional)
   rightLight.position.set(10, 0, 0)
   scene.add(rightLight)
   
   // 添加前方聚光灯
-  const spotLight = new THREE.SpotLight(0xffffff, 1.0, 100, Math.PI / 6, 0.5)
+  spotLight = new THREE.SpotLight(0xffffff, lightingIntensity.value.directional * 0.8, 100, Math.PI / 6, 0.5)
   spotLight.position.set(0, 0, 15)
   spotLight.target.position.set(0, 0, 0)
   spotLight.castShadow = true
@@ -414,6 +503,15 @@ const resetView = () => {
   if (shoeModel) {
     shoeModel.rotation.set(0, 0, 0)
   }
+  
+  // 重置灯光强度
+  lightingIntensity.value = {
+    ambient: 1.0,
+    directional: 1.2,
+    fill: 0.8,
+    additional: 0.5
+  }
+  updateLightingIntensity()
 }
 
 // 截图
@@ -529,6 +627,44 @@ onUnmounted(() => {
 </script>
 
 <style>
+/* 滑块样式 */
+.slider::-webkit-slider-thumb {
+  appearance: none;
+  height: 16px;
+  width: 16px;
+  border-radius: 50%;
+  background: #3498db;
+  cursor: pointer;
+  box-shadow: 0 0 2px rgba(0,0,0,0.3);
+}
+
+.slider::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #3498db;
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 0 2px rgba(0,0,0,0.3);
+}
+
+.slider::-webkit-slider-track {
+  width: 100%;
+  height: 8px;
+  cursor: pointer;
+  background: #ddd;
+  border-radius: 4px;
+}
+
+.slider::-moz-range-track {
+  width: 100%;
+  height: 8px;
+  cursor: pointer;
+  background: #ddd;
+  border-radius: 4px;
+  border: none;
+}
+
 /* 移动端适配 */
 @media (max-width: 768px) {
   .shoe-viewer {
