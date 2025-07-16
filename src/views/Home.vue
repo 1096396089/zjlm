@@ -31,7 +31,7 @@
     <!-- 控制面板 -->
     <div 
       v-show="showControlPanel"
-      class="absolute top-20 right-5 bg-white bg-opacity-95 backdrop-blur-sm rounded-lg p-5 shadow-lg max-w-xs z-10 md:max-w-sm lg:max-w-md transition-all duration-300"
+      class="control-panel absolute top-20 right-5 bg-white bg-opacity-95 backdrop-blur-sm rounded-lg p-5 shadow-lg max-w-xs z-10 md:max-w-sm lg:max-w-md transition-all duration-300 max-h-[80vh] overflow-y-auto"
     >
       <!-- 相机位置控制 -->
       <div class="mb-5">
@@ -171,6 +171,25 @@
         <button @click="resetView" class="px-4 py-2 mr-2.5 mb-2.5 border border-gray-300 rounded bg-white cursor-pointer text-sm transition-all duration-200 hover:bg-gray-100">重置视角</button>
       </div>
 
+      <!-- Mesh列表 -->
+      <div class="mb-5" v-if="meshList.length > 0">
+        <label class="block mb-2 font-semibold text-gray-700">Mesh列表 (共{{ meshList.length }}个):</label>
+        <div class="max-h-40 overflow-y-auto bg-gray-50 rounded p-2">
+          <div 
+            v-for="(item, index) in meshList" 
+            :key="index"
+            class="text-xs p-2 mb-1 bg-white rounded border hover:bg-blue-50 cursor-pointer transition-colors"
+            @click="selectMesh(item.index)"
+          >
+            <div class="font-medium text-gray-800">{{ item.name }}</div>
+            <div class="text-gray-500">索引: {{ item.index }}</div>
+          </div>
+        </div>
+        <div class="mt-2 text-xs text-gray-600">
+          点击Mesh查看控制台详细信息
+        </div>
+      </div>
+
       <!-- 截图功能 -->
       <div class="mb-0">
         <button @click="takeScreenshot" class="px-4 py-2 mr-2.5 mb-2.5 border border-gray-300 rounded bg-white cursor-pointer text-sm transition-all duration-200 hover:bg-gray-100">截图</button>
@@ -211,6 +230,9 @@ const lightingIntensity = ref({
   fill: 0.8,
   additional: 0.5
 })
+
+// 添加Mesh列表
+const meshList = ref<Array<{name: string, index: number, mesh: THREE.Mesh}>>([])
 
 // Three.js 相关变量
 let scene: THREE.Scene
@@ -264,6 +286,89 @@ const updateLightingIntensity = () => {
   if (leftLight) leftLight.intensity = lightingIntensity.value.additional
   if (rightLight) rightLight.intensity = lightingIntensity.value.additional
   if (spotLight) spotLight.intensity = lightingIntensity.value.directional * 0.8
+}
+
+// 获取指定Mesh的函数
+const getMeshByName = (name: string): THREE.Mesh | null => {
+  const found = meshList.value.find(item => item.name === name)
+  return found ? found.mesh : null
+}
+
+const getMeshByIndex = (index: number): THREE.Mesh | null => {
+  const found = meshList.value.find(item => item.index === index)
+  return found ? found.mesh : null
+}
+
+// 更新材质UV的函数
+const updateMeshMaterial = (meshIndex: number, textureUrl?: string) => {
+  const mesh = getMeshByIndex(meshIndex)
+  if (!mesh) {
+    console.warn(`找不到索引为 ${meshIndex} 的Mesh`)
+    return
+  }
+  
+  console.log(`正在更新Mesh ${meshIndex} (${mesh.name || '未命名'}) 的材质`)
+  
+  if (textureUrl) {
+    const textureLoader = new THREE.TextureLoader()
+    textureLoader.load(textureUrl, (texture) => {
+      if (mesh.material instanceof THREE.MeshStandardMaterial) {
+        mesh.material.map = texture
+        mesh.material.needsUpdate = true
+        console.log(`成功更新Mesh ${meshIndex} 的贴图`)
+      }
+    }, undefined, (error) => {
+      console.error('贴图加载失败:', error)
+    })
+  }
+}
+
+// 选择Mesh并输出详细信息
+const selectMesh = (index: number) => {
+  const mesh = getMeshByIndex(index)
+  if (!mesh) {
+    console.warn(`找不到索引为 ${index} 的Mesh`)
+    return
+  }
+  
+  console.log('=== 选中的Mesh详细信息 ===')
+  console.log('Mesh对象:', mesh)
+  console.log('名称:', mesh.name || '未命名')
+  console.log('索引:', index)
+  console.log('材质:', mesh.material)
+  console.log('几何体:', mesh.geometry)
+  console.log('UV坐标数据:', mesh.geometry.attributes.uv)
+  console.log('位置:', mesh.position)
+  console.log('旋转:', mesh.rotation)
+  console.log('缩放:', mesh.scale)
+  
+  // 如果有材质，输出材质详细信息
+  if (mesh.material) {
+    if (Array.isArray(mesh.material)) {
+      console.log('多材质数组:')
+      mesh.material.forEach((mat, matIndex) => {
+        console.log(`材质 ${matIndex}:`, mat)
+      })
+    } else {
+      console.log('材质类型:', mesh.material.type)
+      console.log('材质UUID:', mesh.material.uuid)
+      if (mesh.material instanceof THREE.MeshStandardMaterial) {
+        console.log('当前贴图:', mesh.material.map)
+        console.log('法线贴图:', mesh.material.normalMap)
+        console.log('粗糙度贴图:', mesh.material.roughnessMap)
+        console.log('金属度贴图:', mesh.material.metalnessMap)
+        console.log('颜色:', mesh.material.color)
+      }
+    }
+  }
+  
+  console.log('=== Mesh信息输出完成 ===')
+  
+  // 提供一些实用的全局函数
+  console.log('💡 可用的全局函数:')
+  console.log('- updateMeshMaterial(index, textureUrl): 更新指定Mesh的贴图')
+  console.log('- getMeshByIndex(index): 获取指定索引的Mesh')
+  console.log('- getMeshByName(name): 获取指定名称的Mesh')
 }
 
 // 初始化Three.js
@@ -405,9 +510,53 @@ const loadShoeModel = async () => {
         // shoeModel.rotation.y = 0
         // shoeModel.rotation.z = 0
         
-        // 遍历模型，设置材质和阴影
+        // 输出所有Mesh信息
+        console.log('=== 鞋子模型Mesh信息 ===')
+        let meshIndex = 0
+        
+        // 遍历模型，设置材质和阴影，并输出详细信息
         shoeModel.traverse((child) => {
           if (child instanceof THREE.Mesh) {
+            console.log(`--- Mesh ${meshIndex} ---`)
+            console.log('名称:', child.name || '未命名')
+            console.log('类型:', child.type)
+            console.log('Mesh对象:', child)
+            console.log('几何体:', child.geometry)
+            console.log('材质:', child.material)
+            
+            if (child.material) {
+              if (Array.isArray(child.material)) {
+                console.log('材质数组:')
+                child.material.forEach((mat, index) => {
+                  console.log(`  材质 ${index}:`, mat)
+                  console.log(`  材质名称:`, mat.name || '未命名')
+                  console.log(`  材质类型:`, mat.type)
+                  if (mat.map) console.log(`  贴图:`, mat.map)
+                  if (mat.normalMap) console.log(`  法线贴图:`, mat.normalMap)
+                  if (mat.roughnessMap) console.log(`  粗糙度贴图:`, mat.roughnessMap)
+                  if (mat.metalnessMap) console.log(`  金属度贴图:`, mat.metalnessMap)
+                })
+              } else {
+                console.log('材质名称:', child.material.name || '未命名')
+                console.log('材质类型:', child.material.type)
+                if (child.material.map) console.log('贴图:', child.material.map)
+                if (child.material.normalMap) console.log('法线贴图:', child.material.normalMap)
+                if (child.material.roughnessMap) console.log('粗糙度贴图:', child.material.roughnessMap)
+                if (child.material.metalnessMap) console.log('金属度贴图:', child.material.metalnessMap)
+              }
+            }
+            
+            console.log('位置:', child.position)
+            console.log('旋转:', child.rotation)
+            console.log('缩放:', child.scale)
+            console.log('包围盒:', child.geometry.boundingBox)
+            console.log('顶点数:', child.geometry.attributes.position?.count || 0)
+            console.log('UV坐标:', child.geometry.attributes.uv ? '有' : '无')
+            if (child.geometry.attributes.uv) {
+              console.log('UV数据:', child.geometry.attributes.uv)
+            }
+            console.log('---')
+            
             child.castShadow = true
             child.receiveShadow = true
             
@@ -415,8 +564,15 @@ const loadShoeModel = async () => {
             if (child.material) {
               child.material.needsUpdate = true
             }
+            
+            meshList.value.push({ name: child.name || `Mesh ${meshIndex}`, index: meshIndex, mesh: child })
+            meshIndex++
           }
         })
+        
+        console.log(`总共找到 ${meshIndex} 个Mesh`)
+        console.log('完整模型结构:', gltf.scene)
+        console.log('=== Mesh信息输出完成 ===')
         
         scene.add(shoeModel)
         
@@ -611,6 +767,20 @@ const setupDeviceOrientation = () => {
 onMounted(async () => {
   await nextTick()
   initThree()
+  
+  // 将Mesh操作函数添加到全局，方便控制台调用
+  ;(window as any).getMeshByIndex = getMeshByIndex
+  ;(window as any).getMeshByName = getMeshByName
+  ;(window as any).updateMeshMaterial = updateMeshMaterial
+  ;(window as any).selectMesh = selectMesh
+  ;(window as any).meshList = meshList
+  
+  console.log('🔧 已添加全局Mesh操作函数:')
+  console.log('- window.getMeshByIndex(index)')
+  console.log('- window.getMeshByName(name)')
+  console.log('- window.updateMeshMaterial(index, textureUrl)')
+  console.log('- window.selectMesh(index)')
+  console.log('- window.meshList (响应式Mesh列表)')
 })
 
 onUnmounted(() => {
@@ -627,6 +797,26 @@ onUnmounted(() => {
 </script>
 
 <style>
+/* 控制面板滚动条样式 */
+.control-panel::-webkit-scrollbar {
+  width: 6px;
+}
+
+.control-panel::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.control-panel::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+  transition: background 0.2s;
+}
+
+.control-panel::-webkit-scrollbar-thumb:hover {
+  background: #a1a1a1;
+}
+
 /* 滑块样式 */
 .slider::-webkit-slider-thumb {
   appearance: none;
@@ -678,10 +868,11 @@ onUnmounted(() => {
     left: 10px !important;
     right: 10px !important;
     top: auto !important;
-    max-height: 40vh !important;
+    max-height: 50vh !important;
     overflow-y: auto !important;
     padding: 15px !important;
     max-width: none !important;
+    z-index: 20 !important;
   }
   
   .control-panel .color-option {
@@ -714,6 +905,25 @@ onUnmounted(() => {
   .canvas-container {
     height: calc(100vh - 180px) !important;
     height: calc(100dvh - 180px) !important;
+  }
+
+  /* 确保控制面板在移动端可以滚动 */
+  .control-panel::-webkit-scrollbar {
+    width: 4px;
+  }
+  
+  .control-panel::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 2px;
+  }
+  
+  .control-panel::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 2px;
+  }
+  
+  .control-panel::-webkit-scrollbar-thumb:hover {
+    background: #555;
   }
 }
 
