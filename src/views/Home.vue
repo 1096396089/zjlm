@@ -214,8 +214,12 @@
             </div>
           </div>
           <!-- 贴图信息按钮 -->
-          <button @click="getTextureInfo" class="w-full px-3 py-2 border border-gray-300 rounded bg-white cursor-pointer text-sm transition-all duration-200 hover:bg-gray-100">
+          <button @click="getTextureInfo" class="w-full px-3 py-2 border border-gray-300 rounded bg-white cursor-pointer text-sm transition-all duration-200 hover:bg-gray-100 mb-2">
             获取贴图信息
+          </button>
+          <!-- UV检查按钮 -->
+          <button @click="checkUVMapping" class="w-full px-3 py-2 border border-gray-300 rounded bg-white cursor-pointer text-sm transition-all duration-200 hover:bg-gray-100">
+            检查UV映射
           </button>
         </div>
       </div>
@@ -305,8 +309,8 @@ const showControlPanel = ref(false)
 const cameraPosition = ref({ x: 0, y: 0, z: 5 })
 
 // A和B贴图文件名数组
-const aTextureNames = ['A6C.png', 'A5C.png', 'A4C.png', 'A3C.png', 'A2C.png', 'AC.png', 'AN.png']
-const bTextureNames = ['B6C.png', 'B5C.png', 'B4C.png', 'B3C.png', 'B2C.png', 'BC.png', 'BN.png']
+const aTextureNames = ['A6C.png', 'A5C.png', 'A4C.png', 'A3C.png', 'A2C.png', 'AC.png',]
+const bTextureNames = ['B6C.png', 'B5C.png', 'B4C.png', 'B3C.png', 'B2C.png', 'BC.png',]
 
 // 当前选中的贴图
 const selectedATexture = ref('AC.png')
@@ -481,11 +485,14 @@ const applyTextureToMeshA = (texturePath: string) => {
   
   const textureLoader = new THREE.TextureLoader()
   textureLoader.load(texturePath, (texture) => {
-    texture.wrapS = THREE.RepeatWrapping
-    texture.wrapT = THREE.RepeatWrapping
+    // UV贴图设置 - 不重复，按UV坐标映射
+    texture.wrapS = THREE.ClampToEdgeWrapping
+    texture.wrapT = THREE.ClampToEdgeWrapping
     texture.repeat.set(1, 1)
+    texture.offset.set(0, 0)
     texture.minFilter = THREE.LinearMipmapLinearFilter
     texture.magFilter = THREE.LinearFilter
+    texture.flipY = false // 根据需要调整Y轴翻转
     
     let appliedCount = 0
     
@@ -495,18 +502,27 @@ const applyTextureToMeshA = (texturePath: string) => {
         const meshName = child.name.trim()
         // 精确匹配名称为"A"的Mesh
         if (meshName === 'A') {
+          console.log(`找到A Mesh: ${child.name}`)
+          console.log('UV属性:', child.geometry.attributes.uv ? '存在' : '不存在')
+          
           if (child.material instanceof THREE.MeshStandardMaterial) {
-            child.material.map = texture
-            child.material.needsUpdate = true
+            // 克隆材质避免影响其他使用相同材质的对象
+            const newMaterial = child.material.clone()
+            newMaterial.map = texture
+            newMaterial.needsUpdate = true
+            child.material = newMaterial
             console.log(`成功应用A贴图到Mesh: ${child.name}`)
             appliedCount++
           } else if (Array.isArray(child.material)) {
             // 如果是材质数组，更新所有材质
-            child.material.forEach((mat) => {
+            child.material = child.material.map((mat) => {
               if (mat instanceof THREE.MeshStandardMaterial) {
-                mat.map = texture
-                mat.needsUpdate = true
+                const newMat = mat.clone()
+                newMat.map = texture
+                newMat.needsUpdate = true
+                return newMat
               }
+              return mat
             })
             console.log(`成功应用A贴图到多材质Mesh: ${child.name}`)
             appliedCount++
@@ -517,6 +533,13 @@ const applyTextureToMeshA = (texturePath: string) => {
     
     if (appliedCount === 0) {
       console.warn('未找到名称为"A"的Mesh')
+      // 输出所有可用的Mesh名称供参考
+      console.log('可用的Mesh名称:')
+      shoeModel.traverse((child) => {
+        if (child instanceof THREE.Mesh) {
+          console.log(`- "${child.name}"`)
+        }
+      })
     } else {
       console.log(`A贴图应用完成，共更新了 ${appliedCount} 个Mesh`)
     }
@@ -531,11 +554,14 @@ const applyTextureToMeshB = (texturePath: string) => {
   
   const textureLoader = new THREE.TextureLoader()
   textureLoader.load(texturePath, (texture) => {
-    texture.wrapS = THREE.RepeatWrapping
-    texture.wrapT = THREE.RepeatWrapping
+    // UV贴图设置 - 不重复，按UV坐标映射
+    texture.wrapS = THREE.ClampToEdgeWrapping
+    texture.wrapT = THREE.ClampToEdgeWrapping
     texture.repeat.set(1, 1)
+    texture.offset.set(0, 0)
     texture.minFilter = THREE.LinearMipmapLinearFilter
     texture.magFilter = THREE.LinearFilter
+    texture.flipY = false // 根据需要调整Y轴翻转
     
     let appliedCount = 0
     
@@ -545,18 +571,27 @@ const applyTextureToMeshB = (texturePath: string) => {
         const meshName = child.name.trim()
         // 精确匹配名称为"B"的Mesh
         if (meshName === 'B') {
+          console.log(`找到B Mesh: ${child.name}`)
+          console.log('UV属性:', child.geometry.attributes.uv ? '存在' : '不存在')
+          
           if (child.material instanceof THREE.MeshStandardMaterial) {
-            child.material.map = texture
-            child.material.needsUpdate = true
+            // 克隆材质避免影响其他使用相同材质的对象
+            const newMaterial = child.material.clone()
+            newMaterial.map = texture
+            newMaterial.needsUpdate = true
+            child.material = newMaterial
             console.log(`成功应用B贴图到Mesh: ${child.name}`)
             appliedCount++
           } else if (Array.isArray(child.material)) {
             // 如果是材质数组，更新所有材质
-            child.material.forEach((mat) => {
+            child.material = child.material.map((mat) => {
               if (mat instanceof THREE.MeshStandardMaterial) {
-                mat.map = texture
-                mat.needsUpdate = true
+                const newMat = mat.clone()
+                newMat.map = texture
+                newMat.needsUpdate = true
+                return newMat
               }
+              return mat
             })
             console.log(`成功应用B贴图到多材质Mesh: ${child.name}`)
             appliedCount++
@@ -567,6 +602,13 @@ const applyTextureToMeshB = (texturePath: string) => {
     
     if (appliedCount === 0) {
       console.warn('未找到名称为"B"的Mesh')
+      // 输出所有可用的Mesh名称供参考
+      console.log('可用的Mesh名称:')
+      shoeModel.traverse((child) => {
+        if (child instanceof THREE.Mesh) {
+          console.log(`- "${child.name}"`)
+        }
+      })
     } else {
       console.log(`B贴图应用完成，共更新了 ${appliedCount} 个Mesh`)
     }
@@ -711,6 +753,93 @@ const getTextureInfo = () => {
   }
   
   console.log('=== 贴图信息输出完成 ===')
+}
+
+// 检查UV映射
+const checkUVMapping = () => {
+  console.log('=== UV映射检查 ===')
+  
+  if (!shoeModel) {
+    console.warn('模型未加载')
+    return
+  }
+  
+  let totalMeshes = 0
+  let meshesWithUV = 0
+  
+  shoeModel.traverse((child) => {
+    if (child instanceof THREE.Mesh) {
+      totalMeshes++
+      const meshName = child.name || `Mesh_${totalMeshes}`
+      
+      console.log(`\n--- ${meshName} ---`)
+      console.log('材质类型:', child.material?.type || '无材质')
+      
+      // 检查UV坐标
+      const uvAttribute = child.geometry.attributes.uv
+      if (uvAttribute) {
+        meshesWithUV++
+        console.log('✅ UV坐标: 存在')
+        console.log('UV数据量:', uvAttribute.count, '个顶点')
+        console.log('UV数组长度:', uvAttribute.array.length)
+        
+        // 显示前几个UV坐标作为示例
+        if (uvAttribute.array.length >= 6) {
+          console.log('UV示例 (前3个顶点):')
+          for (let i = 0; i < 6; i += 2) {
+            console.log(`  顶点${i/2 + 1}: u=${uvAttribute.array[i].toFixed(3)}, v=${uvAttribute.array[i+1].toFixed(3)}`)
+          }
+        }
+        
+        // 检查UV范围
+        let minU = Infinity, maxU = -Infinity
+        let minV = Infinity, maxV = -Infinity
+        
+        for (let i = 0; i < uvAttribute.array.length; i += 2) {
+          const u = uvAttribute.array[i]
+          const v = uvAttribute.array[i + 1]
+          minU = Math.min(minU, u)
+          maxU = Math.max(maxU, u)
+          minV = Math.min(minV, v)
+          maxV = Math.max(maxV, v)
+        }
+        
+        console.log(`UV范围: U(${minU.toFixed(3)} ~ ${maxU.toFixed(3)}), V(${minV.toFixed(3)} ~ ${maxV.toFixed(3)})`)
+        
+        // 检查是否在0-1范围内
+        if (minU >= 0 && maxU <= 1 && minV >= 0 && maxV <= 1) {
+          console.log('✅ UV坐标在标准范围内 (0-1)')
+        } else {
+          console.log('⚠️ UV坐标超出标准范围 (0-1)')
+        }
+      } else {
+        console.log('❌ UV坐标: 不存在')
+      }
+      
+      // 检查当前贴图
+      if (child.material instanceof THREE.MeshStandardMaterial) {
+        if (child.material.map) {
+          console.log('当前贴图:', child.material.map.image?.src || '贴图对象存在但无源信息')
+          console.log('贴图包装模式:', {
+            wrapS: child.material.map.wrapS === THREE.ClampToEdgeWrapping ? 'ClampToEdge' : 
+                   child.material.map.wrapS === THREE.RepeatWrapping ? 'Repeat' : 'Other',
+            wrapT: child.material.map.wrapT === THREE.ClampToEdgeWrapping ? 'ClampToEdge' : 
+                   child.material.map.wrapT === THREE.RepeatWrapping ? 'Repeat' : 'Other'
+          })
+          console.log('贴图重复:', `${child.material.map.repeat.x} x ${child.material.map.repeat.y}`)
+          console.log('贴图偏移:', `${child.material.map.offset.x}, ${child.material.map.offset.y}`)
+        } else {
+          console.log('当前贴图: 无')
+        }
+      }
+    }
+  })
+  
+  console.log(`\n=== 总结 ===`)
+  console.log(`总Mesh数量: ${totalMeshes}`)
+  console.log(`有UV的Mesh: ${meshesWithUV}`)
+  console.log(`UV覆盖率: ${totalMeshes > 0 ? ((meshesWithUV / totalMeshes) * 100).toFixed(1) + '%' : '0%'}`)
+  console.log('=== UV映射检查完成 ===')
 }
 
 // 选择Mesh并输出详细信息
@@ -1168,6 +1297,7 @@ onMounted(async () => {
   ;(window as any).getTextureInfo = getTextureInfo
   ;(window as any).toggleAutoATextureChange = toggleAutoATextureChange
   ;(window as any).toggleAutoBTextureChange = toggleAutoBTextureChange
+  ;(window as any).checkUVMapping = checkUVMapping
   
   console.log('🔧 已添加全局Mesh和贴图操作函数:')
   console.log('- window.getMeshByIndex(index)')
@@ -1181,6 +1311,7 @@ onMounted(async () => {
   console.log('- window.getTextureInfo() (获取贴图信息)')
   console.log('- window.toggleAutoATextureChange() (切换A贴图自动切换)')
   console.log('- window.toggleAutoBTextureChange() (切换B贴图自动切换)')
+  console.log('- window.checkUVMapping() (检查UV映射)')
 })
 
 onUnmounted(() => {
