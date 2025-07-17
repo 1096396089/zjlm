@@ -138,19 +138,7 @@
         </div>
       </div>
 
-      <!-- 颜色控制 -->
-      <div class="mb-5">
-        <label class="block mb-2 font-semibold text-gray-700">鞋子颜色:</label>
-        <div class="flex gap-2.5 flex-wrap">
-          <div
-            v-for="color in colors"
-            :key="color.name"
-            :class="['w-10 h-10 rounded-full cursor-pointer border-3 border-transparent transition-all duration-200 hover:scale-110', selectedColor === color.value ? 'border-blue-500 scale-120' : '']"
-            :style="{ backgroundColor: color.value }"
-            @click="changeColor(color.value)"
-          ></div>
-        </div>
-      </div>
+
 
       <!-- 材质球切换控制 -->
       <div class="mb-5">
@@ -333,15 +321,6 @@ let leftLight: THREE.DirectionalLight
 let rightLight: THREE.DirectionalLight
 let spotLight: THREE.SpotLight
 
-// 颜色选项
-const colors = [
-  { name: '棕色', value: '#8B4513' },
-  { name: '黑色', value: '#000000' },
-  { name: '白色', value: '#FFFFFF' },
-  { name: '红色', value: '#FF0000' },
-  { name: '蓝色', value: '#0000FF' },
-  { name: '绿色', value: '#00FF00' },
-]
 
 // 切换控制面板显示
 const toggleControlPanel = () => {
