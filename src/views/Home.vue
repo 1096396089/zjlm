@@ -138,47 +138,84 @@
         </div>
       </div>
 
-
-
-      <!-- 材质球切换控制 -->
+      <!-- A贴图切换控制 -->
       <div class="mb-5">
-        <label class="block mb-2 font-semibold text-gray-700">材质球切换:</label>
+        <label class="block mb-2 font-semibold text-gray-700">A Mesh 贴图切换:</label>
         <div class="space-y-2">
-          <!-- 材质球选择器 -->
+          <!-- A贴图选择器 -->
           <div>
-            <label class="block text-sm text-gray-600 mb-1">当前材质: {{ selectedMaterial }}</label>
-            <select v-model="selectedMaterial" @change="changeMaterial" class="w-full p-2 border border-gray-300 rounded bg-white text-sm">
-              <option v-for="material in materialNames" :key="material" :value="material">{{ material }}</option>
+            <label class="block text-sm text-gray-600 mb-1">当前A贴图: {{ selectedATexture }}</label>
+            <select v-model="selectedATexture" @change="changeATexture" class="w-full p-2 border border-gray-300 rounded bg-white text-sm">
+              <option v-for="texture in aTextureNames" :key="texture" :value="texture">{{ texture }}</option>
             </select>
           </div>
-          <!-- 材质球切换按钮 -->
+          <!-- A贴图切换按钮 -->
           <div class="flex gap-2 flex-wrap">
             <button 
-              v-for="material in materialNames" 
-              :key="material"
-              @click="switchToMaterial(material)" 
-              :class="['px-3 py-1.5 border border-gray-300 rounded bg-white cursor-pointer text-xs transition-all duration-200 hover:bg-gray-100', selectedMaterial === material ? 'bg-blue-500 text-white border-blue-500' : '']"
+              v-for="texture in aTextureNames" 
+              :key="texture"
+              @click="switchToATexture(texture)" 
+              :class="['px-3 py-1.5 border border-gray-300 rounded bg-white cursor-pointer text-xs transition-all duration-200 hover:bg-gray-100', selectedATexture === texture ? 'bg-blue-500 text-white border-blue-500' : '']"
             >
-              {{ material }}
+              {{ texture }}
             </button>
           </div>
-          <!-- 材质球信息显示 -->
+          <!-- A贴图信息显示 -->
           <div class="text-xs text-gray-600 bg-gray-50 p-2 rounded">
-            <div>当前材质: <span class="font-medium">{{ selectedMaterial }}</span></div>
-            <div>材质总数: <span class="font-medium">{{ materialNames.length }}</span></div>
-            <div>可用材质: <span class="font-medium">{{ materialNames.join(', ') }}</span></div>
-            <!-- 材质颜色预览 -->
+            <div>当前A贴图: <span class="font-medium">{{ selectedATexture }}</span></div>
+            <div>A贴图总数: <span class="font-medium">{{ aTextureNames.length }}</span></div>
+            <!-- A贴图预览 -->
             <div class="mt-2 flex items-center gap-2">
-              <span>材质颜色:</span>
+              <span>贴图预览:</span>
               <div 
-                class="w-6 h-6 rounded border border-gray-300"
-                :style="{ backgroundColor: getMaterialColor(selectedMaterial) }"
-              ></div>
+                class="w-8 h-8 border border-gray-300 bg-blue-100 rounded flex items-center justify-center text-xs font-medium"
+              >
+                A
+              </div>
             </div>
           </div>
-          <!-- 材质信息按钮 -->
-          <button @click="getMaterialInfo" class="w-full px-3 py-2 border border-gray-300 rounded bg-white cursor-pointer text-sm transition-all duration-200 hover:bg-gray-100">
-            获取材质信息
+        </div>
+      </div>
+
+      <!-- B贴图切换控制 -->
+      <div class="mb-5">
+        <label class="block mb-2 font-semibold text-gray-700">B Mesh 贴图切换:</label>
+        <div class="space-y-2">
+          <!-- B贴图选择器 -->
+          <div>
+            <label class="block text-sm text-gray-600 mb-1">当前B贴图: {{ selectedBTexture }}</label>
+            <select v-model="selectedBTexture" @change="changeBTexture" class="w-full p-2 border border-gray-300 rounded bg-white text-sm">
+              <option v-for="texture in bTextureNames" :key="texture" :value="texture">{{ texture }}</option>
+            </select>
+          </div>
+          <!-- B贴图切换按钮 -->
+          <div class="flex gap-2 flex-wrap">
+            <button 
+              v-for="texture in bTextureNames" 
+              :key="texture"
+              @click="switchToBTexture(texture)" 
+              :class="['px-3 py-1.5 border border-gray-300 rounded bg-white cursor-pointer text-xs transition-all duration-200 hover:bg-gray-100', selectedBTexture === texture ? 'bg-green-500 text-white border-green-500' : '']"
+            >
+              {{ texture }}
+            </button>
+          </div>
+          <!-- B贴图信息显示 -->
+          <div class="text-xs text-gray-600 bg-gray-50 p-2 rounded">
+            <div>当前B贴图: <span class="font-medium">{{ selectedBTexture }}</span></div>
+            <div>B贴图总数: <span class="font-medium">{{ bTextureNames.length }}</span></div>
+            <!-- B贴图预览 -->
+            <div class="mt-2 flex items-center gap-2">
+              <span>贴图预览:</span>
+              <div 
+                class="w-8 h-8 border border-gray-300 bg-green-100 rounded flex items-center justify-center text-xs font-medium"
+              >
+                B
+              </div>
+            </div>
+          </div>
+          <!-- 贴图信息按钮 -->
+          <button @click="getTextureInfo" class="w-full px-3 py-2 border border-gray-300 rounded bg-white cursor-pointer text-sm transition-all duration-200 hover:bg-gray-100">
+            获取贴图信息
           </button>
         </div>
       </div>
@@ -202,14 +239,21 @@
         <button @click="resetView" class="px-4 py-2 mr-2.5 mb-2.5 border border-gray-300 rounded bg-white cursor-pointer text-sm transition-all duration-200 hover:bg-gray-100">重置视角</button>
       </div>
 
-      <!-- 自动材质切换控制 -->
+      <!-- 自动贴图切换控制 -->
       <div class="mb-5">
-        <label class="block mb-2 font-semibold text-gray-700">自动材质切换:</label>
-        <button @click="toggleAutoMaterialChange" :class="['px-4 py-2 mr-2.5 mb-2.5 border border-gray-300 rounded bg-white cursor-pointer text-sm transition-all duration-200 hover:bg-gray-100', autoMaterialChange ? 'bg-green-500 text-white border-green-500' : '']">
-          {{ autoMaterialChange ? '停止切换' : '开始切换' }}
-        </button>
-        <div class="text-xs text-gray-600 mt-2">
-          {{ autoMaterialChange ? `正在自动切换材质 (${currentTextureIndex + 1}/${textureUrls.length})` : '每5秒自动切换所有Mesh的材质' }}
+        <label class="block mb-2 font-semibold text-gray-700">自动贴图切换:</label>
+        <div class="space-y-2">
+          <button @click="toggleAutoATextureChange" :class="['px-4 py-2 mr-2.5 mb-2.5 border border-gray-300 rounded bg-white cursor-pointer text-sm transition-all duration-200 hover:bg-gray-100', autoATextureChange ? 'bg-blue-500 text-white border-blue-500' : '']">
+            {{ autoATextureChange ? '停止A贴图切换' : '开始A贴图切换' }}
+          </button>
+          <button @click="toggleAutoBTextureChange" :class="['px-4 py-2 mr-2.5 mb-2.5 border border-gray-300 rounded bg-white cursor-pointer text-sm transition-all duration-200 hover:bg-gray-100', autoBTextureChange ? 'bg-green-500 text-white border-green-500' : '']">
+            {{ autoBTextureChange ? '停止B贴图切换' : '开始B贴图切换' }}
+          </button>
+          <div class="text-xs text-gray-600 mt-2">
+            <div v-if="autoATextureChange">A贴图自动切换中 ({{ currentATextureIndex + 1 }}/{{ aTextureNames.length }})</div>
+            <div v-if="autoBTextureChange">B贴图自动切换中 ({{ currentBTextureIndex + 1 }}/{{ bTextureNames.length }})</div>
+            <div v-if="!autoATextureChange && !autoBTextureChange">每3秒自动切换对应Mesh的贴图</div>
+          </div>
         </div>
       </div>
 
@@ -238,11 +282,6 @@
         <button @click="toggleFullscreen" class="px-4 py-2 mr-2.5 mb-2.5 border border-gray-300 rounded bg-white cursor-pointer text-sm transition-all duration-200 hover:bg-gray-100">全屏</button>
       </div>
     </div>
-
-    <!-- 手势提示 -->
-    <!-- <div v-if="showGestureHint" class="absolute bottom-5 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-80 text-white px-5 py-2.5 rounded-full text-sm z-10 animate-pulse">
-      <p>👆 拖拽旋转 | 🤏 双指缩放 | 📱 倾斜设备查看</p>
-    </div> -->
   </div>
 </template>
 
@@ -265,42 +304,35 @@ const showGestureHint = ref(true)
 const showControlPanel = ref(false)
 const cameraPosition = ref({ x: 0, y: 0, z: 5 })
 
-const materialNames = ['A6', 'B6', 'xian', 'xiedai', 'xiedi', 'bai']
-const originalMaterials: Record<string, THREE.Material> = {}
+// A和B贴图文件名数组
+const aTextureNames = ['A6C.png', 'A5C.png', 'A4C.png', 'A3C.png', 'A2C.png', 'AC.png', 'AN.png']
+const bTextureNames = ['B6C.png', 'B5C.png', 'B4C.png', 'B3C.png', 'B2C.png', 'BC.png', 'BN.png']
 
-// 添加材质球切换相关变量
-const selectedMaterial = ref('A6')
-const materialCache: Record<string, THREE.Material> = {}
+// 当前选中的贴图
+const selectedATexture = ref('AC.png')
+const selectedBTexture = ref('BC.png')
+
+// 贴图缓存
+const textureCache: Record<string, THREE.Texture> = {}
 
 // 添加灯光强度控制
 const lightingIntensity = ref({
-  ambient: 1.0,
-  directional: 1.2,
-  fill: 0.8,
-  additional: 0.5
+  ambient: 3.0,
+  directional: 3.0,
+  fill: 2.0,
+  additional:1.5
 })
 
 // 添加Mesh列表
 const meshList = ref<Array<{name: string, index: number, mesh: THREE.Mesh}>>([])
 
-// 添加自动材质切换功能
-const autoMaterialChange = ref(false)
-let materialChangeTimer: number | null = null
-let currentTextureIndex = 0
-
-// 在线贴图URL数组 - 随机找一些不同类型的材质
-const textureUrls = [
-  'https://threejs.org/examples/textures/brick_diffuse.jpg',
-  'https://threejs.org/examples/textures/brick_roughness.jpg', 
-  'https://threejs.org/examples/textures/hardwood2_diffuse.jpg',
-  'https://threejs.org/examples/textures/waternormals.jpg',
-  'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=512&h=512&fit=crop',
-  'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=512&h=512&fit=crop',
-  'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=512&h=512&fit=crop',
-  'https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=512&h=512&fit=crop',
-  'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=512&h=512&fit=crop',
-  'https://images.unsplash.com/photo-1579952363873-27d3bfad9c0d?w=512&h=512&fit=crop'
-]
+// 添加自动贴图切换功能
+const autoATextureChange = ref(false)
+const autoBTextureChange = ref(false)
+let aTextureChangeTimer: number | null = null
+let bTextureChangeTimer: number | null = null
+let currentATextureIndex = 0
+let currentBTextureIndex = 0
 
 // Three.js 相关变量
 let scene: THREE.Scene
@@ -320,7 +352,6 @@ let bottomLight: THREE.DirectionalLight
 let leftLight: THREE.DirectionalLight
 let rightLight: THREE.DirectionalLight
 let spotLight: THREE.SpotLight
-
 
 // 切换控制面板显示
 const toggleControlPanel = () => {
@@ -406,54 +437,280 @@ const updateAllMeshMaterials = (textureUrl: string) => {
   })
 }
 
-// 自动切换材质的函数
-const autoChangeMaterials = () => {
-  if (textureUrls.length === 0) return
+// A贴图切换函数
+const changeATexture = () => {
+  console.log(`切换到A贴图: ${selectedATexture.value}`)
+  switchToATexture(selectedATexture.value)
+}
+
+const switchToATexture = (textureName: string) => {
+  if (!aTextureNames.includes(textureName)) {
+    console.warn(`A贴图 ${textureName} 不存在`)
+    return
+  }
   
-  const currentTexture = textureUrls[currentTextureIndex]
-  console.log(`自动切换到贴图 ${currentTextureIndex + 1}/${textureUrls.length}: ${currentTexture}`)
+  selectedATexture.value = textureName
+  console.log(`正在切换到A贴图: ${textureName}`)
   
-  updateAllMeshMaterials(currentTexture)
+  const texturePath = `/src/assets/tietu/A/${textureName}`
+  applyTextureToMeshA(texturePath)
+}
+
+// B贴图切换函数
+const changeBTexture = () => {
+  console.log(`切换到B贴图: ${selectedBTexture.value}`)
+  switchToBTexture(selectedBTexture.value)
+}
+
+const switchToBTexture = (textureName: string) => {
+  if (!bTextureNames.includes(textureName)) {
+    console.warn(`B贴图 ${textureName} 不存在`)
+    return
+  }
+  
+  selectedBTexture.value = textureName
+  console.log(`正在切换到B贴图: ${textureName}`)
+  
+  const texturePath = `/src/assets/tietu/B/${textureName}`
+  applyTextureToMeshB(texturePath)
+}
+
+// 应用贴图到A mesh
+const applyTextureToMeshA = (texturePath: string) => {
+  if (!shoeModel) return
+  
+  const textureLoader = new THREE.TextureLoader()
+  textureLoader.load(texturePath, (texture) => {
+    texture.wrapS = THREE.RepeatWrapping
+    texture.wrapT = THREE.RepeatWrapping
+    texture.repeat.set(1, 1)
+    texture.minFilter = THREE.LinearMipmapLinearFilter
+    texture.magFilter = THREE.LinearFilter
+    
+    let appliedCount = 0
+    
+    // 查找名称为'A'的mesh（精确匹配）
+    shoeModel.traverse((child) => {
+      if (child instanceof THREE.Mesh) {
+        const meshName = child.name.trim()
+        // 精确匹配名称为"A"的Mesh
+        if (meshName === 'A') {
+          if (child.material instanceof THREE.MeshStandardMaterial) {
+            child.material.map = texture
+            child.material.needsUpdate = true
+            console.log(`成功应用A贴图到Mesh: ${child.name}`)
+            appliedCount++
+          } else if (Array.isArray(child.material)) {
+            // 如果是材质数组，更新所有材质
+            child.material.forEach((mat) => {
+              if (mat instanceof THREE.MeshStandardMaterial) {
+                mat.map = texture
+                mat.needsUpdate = true
+              }
+            })
+            console.log(`成功应用A贴图到多材质Mesh: ${child.name}`)
+            appliedCount++
+          }
+        }
+      }
+    })
+    
+    if (appliedCount === 0) {
+      console.warn('未找到名称为"A"的Mesh')
+    } else {
+      console.log(`A贴图应用完成，共更新了 ${appliedCount} 个Mesh`)
+    }
+  }, undefined, (error) => {
+    console.error('A贴图加载失败:', error)
+  })
+}
+
+// 应用贴图到B mesh
+const applyTextureToMeshB = (texturePath: string) => {
+  if (!shoeModel) return
+  
+  const textureLoader = new THREE.TextureLoader()
+  textureLoader.load(texturePath, (texture) => {
+    texture.wrapS = THREE.RepeatWrapping
+    texture.wrapT = THREE.RepeatWrapping
+    texture.repeat.set(1, 1)
+    texture.minFilter = THREE.LinearMipmapLinearFilter
+    texture.magFilter = THREE.LinearFilter
+    
+    let appliedCount = 0
+    
+    // 查找名称为'B'的mesh（精确匹配）
+    shoeModel.traverse((child) => {
+      if (child instanceof THREE.Mesh) {
+        const meshName = child.name.trim()
+        // 精确匹配名称为"B"的Mesh
+        if (meshName === 'B') {
+          if (child.material instanceof THREE.MeshStandardMaterial) {
+            child.material.map = texture
+            child.material.needsUpdate = true
+            console.log(`成功应用B贴图到Mesh: ${child.name}`)
+            appliedCount++
+          } else if (Array.isArray(child.material)) {
+            // 如果是材质数组，更新所有材质
+            child.material.forEach((mat) => {
+              if (mat instanceof THREE.MeshStandardMaterial) {
+                mat.map = texture
+                mat.needsUpdate = true
+              }
+            })
+            console.log(`成功应用B贴图到多材质Mesh: ${child.name}`)
+            appliedCount++
+          }
+        }
+      }
+    })
+    
+    if (appliedCount === 0) {
+      console.warn('未找到名称为"B"的Mesh')
+    } else {
+      console.log(`B贴图应用完成，共更新了 ${appliedCount} 个Mesh`)
+    }
+  }, undefined, (error) => {
+    console.error('B贴图加载失败:', error)
+  })
+}
+
+// 自动A贴图切换
+const autoChangeATextures = () => {
+  if (aTextureNames.length === 0) return
+  
+  const currentTexture = aTextureNames[currentATextureIndex]
+  console.log(`自动切换到A贴图 ${currentATextureIndex + 1}/${aTextureNames.length}: ${currentTexture}`)
+  
+  switchToATexture(currentTexture)
   
   // 移动到下一个贴图
-  currentTextureIndex = (currentTextureIndex + 1) % textureUrls.length
+  currentATextureIndex = (currentATextureIndex + 1) % aTextureNames.length
 }
 
-// 开始自动材质切换
-const startAutoMaterialChange = () => {
-  if (materialChangeTimer) {
-    clearInterval(materialChangeTimer)
+// 自动B贴图切换
+const autoChangeBTextures = () => {
+  if (bTextureNames.length === 0) return
+  
+  const currentTexture = bTextureNames[currentBTextureIndex]
+  console.log(`自动切换到B贴图 ${currentBTextureIndex + 1}/${bTextureNames.length}: ${currentTexture}`)
+  
+  switchToBTexture(currentTexture)
+  
+  // 移动到下一个贴图
+  currentBTextureIndex = (currentBTextureIndex + 1) % bTextureNames.length
+}
+
+// 开始自动A贴图切换
+const startAutoATextureChange = () => {
+  if (aTextureChangeTimer) {
+    clearInterval(aTextureChangeTimer)
   }
   
-  autoMaterialChange.value = true
-  console.log('开始自动材质切换，每5秒切换一次')
+  autoATextureChange.value = true
+  console.log('开始自动A贴图切换，每3秒切换一次')
   
   // 立即执行一次
-  autoChangeMaterials()
+  autoChangeATextures()
   
-  // 设置定时器，每5秒切换一次
-  materialChangeTimer = setInterval(() => {
-    autoChangeMaterials()
-  }, 5000)
+  // 设置定时器，每3秒切换一次
+  aTextureChangeTimer = setInterval(() => {
+    autoChangeATextures()
+  }, 3000)
 }
 
-// 停止自动材质切换
-const stopAutoMaterialChange = () => {
-  if (materialChangeTimer) {
-    clearInterval(materialChangeTimer)
-    materialChangeTimer = null
+// 停止自动A贴图切换
+const stopAutoATextureChange = () => {
+  if (aTextureChangeTimer) {
+    clearInterval(aTextureChangeTimer)
+    aTextureChangeTimer = null
   }
-  autoMaterialChange.value = false
-  console.log('停止自动材质切换')
+  autoATextureChange.value = false
+  console.log('停止自动A贴图切换')
 }
 
-// 切换自动材质变换
-const toggleAutoMaterialChange = () => {
-  if (autoMaterialChange.value) {
-    stopAutoMaterialChange()
+// 切换自动A贴图变换
+const toggleAutoATextureChange = () => {
+  if (autoATextureChange.value) {
+    stopAutoATextureChange()
   } else {
-    startAutoMaterialChange()
+    startAutoATextureChange()
   }
+}
+
+// 开始自动B贴图切换
+const startAutoBTextureChange = () => {
+  if (bTextureChangeTimer) {
+    clearInterval(bTextureChangeTimer)
+  }
+  
+  autoBTextureChange.value = true
+  console.log('开始自动B贴图切换，每3秒切换一次')
+  
+  // 立即执行一次
+  autoChangeBTextures()
+  
+  // 设置定时器，每3秒切换一次
+  bTextureChangeTimer = setInterval(() => {
+    autoChangeBTextures()
+  }, 3000)
+}
+
+// 停止自动B贴图切换
+const stopAutoBTextureChange = () => {
+  if (bTextureChangeTimer) {
+    clearInterval(bTextureChangeTimer)
+    bTextureChangeTimer = null
+  }
+  autoBTextureChange.value = false
+  console.log('停止自动B贴图切换')
+}
+
+// 切换自动B贴图变换
+const toggleAutoBTextureChange = () => {
+  if (autoBTextureChange.value) {
+    stopAutoBTextureChange()
+  } else {
+    startAutoBTextureChange()
+  }
+}
+
+// 获取贴图信息
+const getTextureInfo = () => {
+  console.log('=== 贴图信息 ===')
+  console.log('当前选中A贴图:', selectedATexture.value)
+  console.log('当前选中B贴图:', selectedBTexture.value)
+  console.log('可用A贴图:', aTextureNames)
+  console.log('可用B贴图:', bTextureNames)
+  console.log('A贴图总数:', aTextureNames.length)
+  console.log('B贴图总数:', bTextureNames.length)
+  
+  if (shoeModel) {
+    console.log('\n模型中的Mesh分布:')
+    let aMeshes = 0
+    let bMeshes = 0
+    let otherMeshes = 0
+    
+    shoeModel.traverse((child) => {
+      if (child instanceof THREE.Mesh) {
+        const meshName = child.name.trim()
+        if (meshName === 'A') {
+          aMeshes++
+          console.log(`- A Mesh: ${child.name}`)
+        } else if (meshName === 'B') {
+          bMeshes++
+          console.log(`- B Mesh: ${child.name}`)
+        } else {
+          otherMeshes++
+          console.log(`- 其他 Mesh: ${child.name}`)
+        }
+      }
+    })
+    
+    console.log(`\nMesh统计: A类型(${aMeshes}个), B类型(${bMeshes}个), 其他(${otherMeshes}个)`)
+  }
+  
+  console.log('=== 贴图信息输出完成 ===')
 }
 
 // 选择Mesh并输出详细信息
@@ -502,131 +759,6 @@ const selectMesh = (index: number) => {
   console.log('- updateMeshMaterial(index, textureUrl): 更新指定Mesh的贴图')
   console.log('- getMeshByIndex(index): 获取指定索引的Mesh')
   console.log('- getMeshByName(name): 获取指定名称的Mesh')
-}
-
-// 材质球切换相关函数
-const changeMaterial = () => {
-  console.log(`切换到材质: ${selectedMaterial.value}`)
-  switchToMaterial(selectedMaterial.value)
-}
-
-const switchToMaterial = (materialName: string) => {
-  if (!materialNames.includes(materialName)) {
-    console.warn(`材质 ${materialName} 不存在`)
-    return
-  }
-  
-  selectedMaterial.value = materialName
-  console.log(`正在切换到材质: ${materialName}`)
-  
-  // 遍历所有Mesh，根据材质名称匹配来切换材质
-  if (shoeModel) {
-    let appliedCount = 0
-    
-    shoeModel.traverse((child) => {
-      if (child instanceof THREE.Mesh) {
-        // 检查Mesh的名称是否包含材质名称
-        const meshName = child.name.toLowerCase()
-        const targetMaterial = materialName.toLowerCase()
-        
-        // 更精确的匹配逻辑
-        let shouldApply = false
-        
-        // 直接匹配
-        if (meshName === targetMaterial) {
-          shouldApply = true
-        }
-        // 包含匹配
-        else if (meshName.includes(targetMaterial) || targetMaterial.includes(meshName)) {
-          shouldApply = true
-        }
-        // 特殊匹配规则
-        else if (materialName === 'A6' && meshName.includes('a6')) {
-          shouldApply = true
-        }
-        else if (materialName === 'B6' && meshName.includes('b6')) {
-          shouldApply = true
-        }
-        else if (materialName === 'xian' && meshName.includes('xian')) {
-          shouldApply = true
-        }
-        else if (materialName === 'xiedai' && meshName.includes('xiedai')) {
-          shouldApply = true
-        }
-        else if (materialName === 'xiedi' && meshName.includes('xiedi')) {
-          shouldApply = true
-        }
-        else if (materialName === 'bai' && meshName.includes('bai')) {
-          shouldApply = true
-        }
-        
-        if (shouldApply) {
-          console.log(`找到匹配的Mesh: ${child.name} -> ${materialName}`)
-          
-          // 如果缓存中没有该材质，创建一个新的材质
-          if (!materialCache[materialName]) {
-            // 材质属性配置
-            const materialConfigs: Record<string, any> = {
-              'A6': { color: 0x8B4513, roughness: 0.7, metalness: 0.1, name: 'A6' }, // 棕色皮革
-              'B6': { color: 0x000000, roughness: 0.8, metalness: 0.05, name: 'B6' }, // 黑色皮革
-              'xian': { color: 0xFFFFFF, roughness: 0.3, metalness: 0.9, name: 'xian' }, // 白色金属线
-              'xiedai': { color: 0x8B4513, roughness: 0.6, metalness: 0.2, name: 'xiedai' }, // 棕色鞋带
-              'xiedi': { color: 0x2F4F4F, roughness: 0.9, metalness: 0.0, name: 'xiedi' }, // 深灰色鞋底
-              'bai': { color: 0xFFFFFF, roughness: 0.4, metalness: 0.1, name: 'bai' } // 白色材质
-            }
-            
-            const config = materialConfigs[materialName] || { color: 0xffffff, roughness: 0.5, metalness: 0.1, name: materialName }
-            const newMaterial = new THREE.MeshStandardMaterial(config)
-            materialCache[materialName] = newMaterial
-          }
-          
-          // 应用材质
-          child.material = materialCache[materialName]
-          child.material.needsUpdate = true
-          appliedCount++
-          
-          console.log(`成功应用材质 ${materialName} 到Mesh ${child.name}`)
-        }
-      }
-    })
-    
-    console.log(`材质切换完成，共应用了 ${appliedCount} 个Mesh`)
-  }
-  
-  // 输出当前材质状态
-  console.log(`当前选中材质: ${selectedMaterial.value}`)
-  console.log(`可用材质: ${materialNames.join(', ')}`)
-}
-
-// 获取材质球信息
-const getMaterialInfo = () => {
-  console.log('=== 材质球信息 ===')
-  console.log('当前选中:', selectedMaterial.value)
-  console.log('可用材质:', materialNames)
-  console.log('材质缓存:', Object.keys(materialCache))
-  
-  if (shoeModel) {
-    console.log('模型中的Mesh材质:')
-    shoeModel.traverse((child) => {
-      if (child instanceof THREE.Mesh) {
-        console.log(`- ${child.name}: ${child.material?.name || '未命名材质'}`)
-      }
-    })
-  }
-}
-
-// 获取材质颜色
-const getMaterialColor = (materialName: string): string => {
-  const materialConfigs: Record<string, string> = {
-    'A6': '#8B4513', // 棕色皮革
-    'B6': '#000000', // 黑色皮革
-    'xian': '#FFFFFF', // 白色金属线
-    'xiedai': '#8B4513', // 棕色鞋带
-    'xiedi': '#2F4F4F', // 深灰色鞋底
-    'bai': '#FFFFFF' // 白色材质
-  }
-  
-  return materialConfigs[materialName] || '#FFFFFF'
 }
 
 // 初始化Three.js
@@ -749,7 +881,7 @@ const setupLighting = () => {
   scene.add(spotLight.target)
 }
 
-// 加载鞋子模型
+// 修改加载鞋子模型函数
 const loadShoeModel = async () => {
   const loader = new GLTFLoader()
   
@@ -762,11 +894,6 @@ const loadShoeModel = async () => {
         // 设置模型属性 - 进一步增大缩放比例
         shoeModel.scale.set(10, 10, 10)
         shoeModel.position.set(0, -1, 0)
-        
-        // 调整鞋子方向 - 让它横向显示
-        // shoeModel.rotation.x = -Math.PI / 2  // 绕X轴旋转-90度
-        // shoeModel.rotation.y = 0
-        // shoeModel.rotation.z = 0
         
         // 输出所有Mesh信息
         console.log('=== 鞋子模型Mesh信息 ===')
@@ -782,7 +909,10 @@ const loadShoeModel = async () => {
             console.log('几何体:', child.geometry)
             console.log('材质:', child.material)
             
+            // 保存原始材质到userData
             if (child.material) {
+              child.userData.originalMaterial = child.material.clone()
+              
               if (Array.isArray(child.material)) {
                 console.log('材质数组:')
                 child.material.forEach((mat, index) => {
@@ -1033,34 +1163,24 @@ onMounted(async () => {
   ;(window as any).selectMesh = selectMesh
   ;(window as any).meshList = meshList
   ;(window as any).updateAllMeshMaterials = updateAllMeshMaterials
-  ;(window as any).startAutoMaterialChange = startAutoMaterialChange
-  ;(window as any).stopAutoMaterialChange = stopAutoMaterialChange
-  ;(window as any).toggleAutoMaterialChange = toggleAutoMaterialChange
+  ;(window as any).switchToATexture = switchToATexture
+  ;(window as any).switchToBTexture = switchToBTexture
+  ;(window as any).getTextureInfo = getTextureInfo
+  ;(window as any).toggleAutoATextureChange = toggleAutoATextureChange
+  ;(window as any).toggleAutoBTextureChange = toggleAutoBTextureChange
   
-  // 添加材质球相关的全局函数
-  ;(window as any).changeMaterial = changeMaterial
-  ;(window as any).switchToMaterial = switchToMaterial
-  ;(window as any).getMaterialInfo = getMaterialInfo
-  ;(window as any).selectedMaterial = selectedMaterial
-  ;(window as any).materialNames = materialNames
-  
-  console.log('🔧 已添加全局Mesh操作函数:')
+  console.log('🔧 已添加全局Mesh和贴图操作函数:')
   console.log('- window.getMeshByIndex(index)')
   console.log('- window.getMeshByName(name)')
   console.log('- window.updateMeshMaterial(index, textureUrl)')
   console.log('- window.selectMesh(index)')
   console.log('- window.meshList (响应式Mesh列表)')
   console.log('- window.updateAllMeshMaterials(textureUrl) (更新所有Mesh材质)')
-  console.log('- window.startAutoMaterialChange() (开始自动材质切换)')
-  console.log('- window.stopAutoMaterialChange() (停止自动材质切换)')
-  console.log('- window.toggleAutoMaterialChange() (切换自动材质切换状态)')
-  
-  console.log('🎨 已添加全局材质球操作函数:')
-  console.log('- window.changeMaterial() (切换到当前选中的材质)')
-  console.log('- window.switchToMaterial(materialName) (切换到指定材质)')
-  console.log('- window.getMaterialInfo() (获取材质球信息)')
-  console.log('- window.selectedMaterial (当前选中的材质)')
-  console.log('- window.materialNames (可用材质列表)')
+  console.log('- window.switchToATexture(textureName) (切换A贴图)')
+  console.log('- window.switchToBTexture(textureName) (切换B贴图)')
+  console.log('- window.getTextureInfo() (获取贴图信息)')
+  console.log('- window.toggleAutoATextureChange() (切换A贴图自动切换)')
+  console.log('- window.toggleAutoBTextureChange() (切换B贴图自动切换)')
 })
 
 onUnmounted(() => {
@@ -1073,8 +1193,11 @@ onUnmounted(() => {
   if (controls) {
     controls.dispose()
   }
-  if (materialChangeTimer) {
-    clearInterval(materialChangeTimer)
+  if (aTextureChangeTimer) {
+    clearInterval(aTextureChangeTimer)
+  }
+  if (bTextureChangeTimer) {
+    clearInterval(bTextureChangeTimer)
   }
 })
 </script>
@@ -1304,4 +1427,4 @@ onUnmounted(() => {
     transition: none !important;
   }
 }
-</style>
+</style> 
