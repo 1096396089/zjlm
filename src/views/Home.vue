@@ -152,6 +152,49 @@
         </div>
       </div>
 
+      <!-- 材质球切换控制 -->
+      <div class="mb-5">
+        <label class="block mb-2 font-semibold text-gray-700">材质球切换:</label>
+        <div class="space-y-2">
+          <!-- 材质球选择器 -->
+          <div>
+            <label class="block text-sm text-gray-600 mb-1">当前材质: {{ selectedMaterial }}</label>
+            <select v-model="selectedMaterial" @change="changeMaterial" class="w-full p-2 border border-gray-300 rounded bg-white text-sm">
+              <option v-for="material in materialNames" :key="material" :value="material">{{ material }}</option>
+            </select>
+          </div>
+          <!-- 材质球切换按钮 -->
+          <div class="flex gap-2 flex-wrap">
+            <button 
+              v-for="material in materialNames" 
+              :key="material"
+              @click="switchToMaterial(material)" 
+              :class="['px-3 py-1.5 border border-gray-300 rounded bg-white cursor-pointer text-xs transition-all duration-200 hover:bg-gray-100', selectedMaterial === material ? 'bg-blue-500 text-white border-blue-500' : '']"
+            >
+              {{ material }}
+            </button>
+          </div>
+          <!-- 材质球信息显示 -->
+          <div class="text-xs text-gray-600 bg-gray-50 p-2 rounded">
+            <div>当前材质: <span class="font-medium">{{ selectedMaterial }}</span></div>
+            <div>材质总数: <span class="font-medium">{{ materialNames.length }}</span></div>
+            <div>可用材质: <span class="font-medium">{{ materialNames.join(', ') }}</span></div>
+            <!-- 材质颜色预览 -->
+            <div class="mt-2 flex items-center gap-2">
+              <span>材质颜色:</span>
+              <div 
+                class="w-6 h-6 rounded border border-gray-300"
+                :style="{ backgroundColor: getMaterialColor(selectedMaterial) }"
+              ></div>
+            </div>
+          </div>
+          <!-- 材质信息按钮 -->
+          <button @click="getMaterialInfo" class="w-full px-3 py-2 border border-gray-300 rounded bg-white cursor-pointer text-sm transition-all duration-200 hover:bg-gray-100">
+            获取材质信息
+          </button>
+        </div>
+      </div>
+
       <!-- 环境控制 -->
       <div class="mb-5">
         <label class="block mb-2 font-semibold text-gray-700">环境:</label>
@@ -233,6 +276,13 @@ const isAnimating = ref(true)
 const showGestureHint = ref(true)
 const showControlPanel = ref(false)
 const cameraPosition = ref({ x: 0, y: 0, z: 5 })
+
+const materialNames = ['A6', 'B6', 'xian', 'xiedai', 'xiedi', 'bai']
+const originalMaterials: Record<string, THREE.Material> = {}
+
+// 添加材质球切换相关变量
+const selectedMaterial = ref('A6')
+const materialCache: Record<string, THREE.Material> = {}
 
 // 添加灯光强度控制
 const lightingIntensity = ref({
@@ -473,6 +523,131 @@ const selectMesh = (index: number) => {
   console.log('- updateMeshMaterial(index, textureUrl): 更新指定Mesh的贴图')
   console.log('- getMeshByIndex(index): 获取指定索引的Mesh')
   console.log('- getMeshByName(name): 获取指定名称的Mesh')
+}
+
+// 材质球切换相关函数
+const changeMaterial = () => {
+  console.log(`切换到材质: ${selectedMaterial.value}`)
+  switchToMaterial(selectedMaterial.value)
+}
+
+const switchToMaterial = (materialName: string) => {
+  if (!materialNames.includes(materialName)) {
+    console.warn(`材质 ${materialName} 不存在`)
+    return
+  }
+  
+  selectedMaterial.value = materialName
+  console.log(`正在切换到材质: ${materialName}`)
+  
+  // 遍历所有Mesh，根据材质名称匹配来切换材质
+  if (shoeModel) {
+    let appliedCount = 0
+    
+    shoeModel.traverse((child) => {
+      if (child instanceof THREE.Mesh) {
+        // 检查Mesh的名称是否包含材质名称
+        const meshName = child.name.toLowerCase()
+        const targetMaterial = materialName.toLowerCase()
+        
+        // 更精确的匹配逻辑
+        let shouldApply = false
+        
+        // 直接匹配
+        if (meshName === targetMaterial) {
+          shouldApply = true
+        }
+        // 包含匹配
+        else if (meshName.includes(targetMaterial) || targetMaterial.includes(meshName)) {
+          shouldApply = true
+        }
+        // 特殊匹配规则
+        else if (materialName === 'A6' && meshName.includes('a6')) {
+          shouldApply = true
+        }
+        else if (materialName === 'B6' && meshName.includes('b6')) {
+          shouldApply = true
+        }
+        else if (materialName === 'xian' && meshName.includes('xian')) {
+          shouldApply = true
+        }
+        else if (materialName === 'xiedai' && meshName.includes('xiedai')) {
+          shouldApply = true
+        }
+        else if (materialName === 'xiedi' && meshName.includes('xiedi')) {
+          shouldApply = true
+        }
+        else if (materialName === 'bai' && meshName.includes('bai')) {
+          shouldApply = true
+        }
+        
+        if (shouldApply) {
+          console.log(`找到匹配的Mesh: ${child.name} -> ${materialName}`)
+          
+          // 如果缓存中没有该材质，创建一个新的材质
+          if (!materialCache[materialName]) {
+            // 材质属性配置
+            const materialConfigs: Record<string, any> = {
+              'A6': { color: 0x8B4513, roughness: 0.7, metalness: 0.1, name: 'A6' }, // 棕色皮革
+              'B6': { color: 0x000000, roughness: 0.8, metalness: 0.05, name: 'B6' }, // 黑色皮革
+              'xian': { color: 0xFFFFFF, roughness: 0.3, metalness: 0.9, name: 'xian' }, // 白色金属线
+              'xiedai': { color: 0x8B4513, roughness: 0.6, metalness: 0.2, name: 'xiedai' }, // 棕色鞋带
+              'xiedi': { color: 0x2F4F4F, roughness: 0.9, metalness: 0.0, name: 'xiedi' }, // 深灰色鞋底
+              'bai': { color: 0xFFFFFF, roughness: 0.4, metalness: 0.1, name: 'bai' } // 白色材质
+            }
+            
+            const config = materialConfigs[materialName] || { color: 0xffffff, roughness: 0.5, metalness: 0.1, name: materialName }
+            const newMaterial = new THREE.MeshStandardMaterial(config)
+            materialCache[materialName] = newMaterial
+          }
+          
+          // 应用材质
+          child.material = materialCache[materialName]
+          child.material.needsUpdate = true
+          appliedCount++
+          
+          console.log(`成功应用材质 ${materialName} 到Mesh ${child.name}`)
+        }
+      }
+    })
+    
+    console.log(`材质切换完成，共应用了 ${appliedCount} 个Mesh`)
+  }
+  
+  // 输出当前材质状态
+  console.log(`当前选中材质: ${selectedMaterial.value}`)
+  console.log(`可用材质: ${materialNames.join(', ')}`)
+}
+
+// 获取材质球信息
+const getMaterialInfo = () => {
+  console.log('=== 材质球信息 ===')
+  console.log('当前选中:', selectedMaterial.value)
+  console.log('可用材质:', materialNames)
+  console.log('材质缓存:', Object.keys(materialCache))
+  
+  if (shoeModel) {
+    console.log('模型中的Mesh材质:')
+    shoeModel.traverse((child) => {
+      if (child instanceof THREE.Mesh) {
+        console.log(`- ${child.name}: ${child.material?.name || '未命名材质'}`)
+      }
+    })
+  }
+}
+
+// 获取材质颜色
+const getMaterialColor = (materialName: string): string => {
+  const materialConfigs: Record<string, string> = {
+    'A6': '#8B4513', // 棕色皮革
+    'B6': '#000000', // 黑色皮革
+    'xian': '#FFFFFF', // 白色金属线
+    'xiedai': '#8B4513', // 棕色鞋带
+    'xiedi': '#2F4F4F', // 深灰色鞋底
+    'bai': '#FFFFFF' // 白色材质
+  }
+  
+  return materialConfigs[materialName] || '#FFFFFF'
 }
 
 // 初始化Three.js
@@ -883,6 +1058,13 @@ onMounted(async () => {
   ;(window as any).stopAutoMaterialChange = stopAutoMaterialChange
   ;(window as any).toggleAutoMaterialChange = toggleAutoMaterialChange
   
+  // 添加材质球相关的全局函数
+  ;(window as any).changeMaterial = changeMaterial
+  ;(window as any).switchToMaterial = switchToMaterial
+  ;(window as any).getMaterialInfo = getMaterialInfo
+  ;(window as any).selectedMaterial = selectedMaterial
+  ;(window as any).materialNames = materialNames
+  
   console.log('🔧 已添加全局Mesh操作函数:')
   console.log('- window.getMeshByIndex(index)')
   console.log('- window.getMeshByName(name)')
@@ -893,6 +1075,13 @@ onMounted(async () => {
   console.log('- window.startAutoMaterialChange() (开始自动材质切换)')
   console.log('- window.stopAutoMaterialChange() (停止自动材质切换)')
   console.log('- window.toggleAutoMaterialChange() (切换自动材质切换状态)')
+  
+  console.log('🎨 已添加全局材质球操作函数:')
+  console.log('- window.changeMaterial() (切换到当前选中的材质)')
+  console.log('- window.switchToMaterial(materialName) (切换到指定材质)')
+  console.log('- window.getMaterialInfo() (获取材质球信息)')
+  console.log('- window.selectedMaterial (当前选中的材质)')
+  console.log('- window.materialNames (可用材质列表)')
 })
 
 onUnmounted(() => {
