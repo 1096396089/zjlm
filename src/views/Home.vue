@@ -262,7 +262,7 @@
       </div>
 
       <!-- Mesh列表 -->
-      <div class="mb-5" v-if="meshList.length > 0">
+      <!-- <div class="mb-5" v-if="meshList.length > 0">
         <label class="block mb-2 font-semibold text-gray-700">Mesh列表 (共{{ meshList.length }}个):</label>
         <div class="max-h-40 overflow-y-auto bg-gray-50 rounded p-2">
           <div 
@@ -278,7 +278,7 @@
         <div class="mt-2 text-xs text-gray-600">
           点击Mesh查看控制台详细信息
         </div>
-      </div>
+      </div> -->
 
       <!-- 截图功能 -->
       <div class="mb-0">
