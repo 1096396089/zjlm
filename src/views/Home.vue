@@ -1226,21 +1226,6 @@ const animate = () => {
   renderer.render(scene, camera)
 }
 
-// 改变颜色
-const changeColor = (color: string) => {
-  selectedColor.value = color
-  
-  if (shoeModel) {
-    shoeModel.traverse((child) => {
-      if (child instanceof THREE.Mesh && child.material) {
-        // 这里可以根据实际模型结构调整
-        if (child.material instanceof THREE.MeshStandardMaterial) {
-          child.material.color.setHex(parseInt(color.replace('#', '0x')))
-        }
-      }
-    })
-  }
-}
 
 // 改变环境
 const changeEnvironment = () => {
@@ -1389,19 +1374,19 @@ onMounted(async () => {
   ;(window as any).toggleAutoBTextureChange = toggleAutoBTextureChange
   ;(window as any).checkUVMapping = checkUVMapping
   
-  console.log('🔧 已添加全局Mesh和贴图操作函数:')
-  console.log('- window.getMeshByIndex(index)')
-  console.log('- window.getMeshByName(name)')
-  console.log('- window.updateMeshMaterial(index, textureUrl)')
-  console.log('- window.selectMesh(index)')
-  console.log('- window.meshList (响应式Mesh列表)')
-  console.log('- window.updateAllMeshMaterials(textureUrl) (更新所有Mesh材质)')
-  console.log('- window.switchToATexture(textureName) (切换A贴图)')
-  console.log('- window.switchToBTexture(textureName) (切换B贴图)')
-  console.log('- window.getTextureInfo() (获取贴图信息)')
-  console.log('- window.toggleAutoATextureChange() (切换A贴图自动切换)')
-  console.log('- window.toggleAutoBTextureChange() (切换B贴图自动切换)')
-  console.log('- window.checkUVMapping() (检查UV映射)')
+  // console.log('🔧 已添加全局Mesh和贴图操作函数:')
+  // console.log('- window.getMeshByIndex(index)')
+  // console.log('- window.getMeshByName(name)')
+  // console.log('- window.updateMeshMaterial(index, textureUrl)')
+  // console.log('- window.selectMesh(index)')
+  // console.log('- window.meshList (响应式Mesh列表)')
+  // console.log('- window.updateAllMeshMaterials(textureUrl) (更新所有Mesh材质)')
+  // console.log('- window.switchToATexture(textureName) (切换A贴图)')
+  // console.log('- window.switchToBTexture(textureName) (切换B贴图)')
+  // console.log('- window.getTextureInfo() (获取贴图信息)')
+  // console.log('- window.toggleAutoATextureChange() (切换A贴图自动切换)')
+  // console.log('- window.toggleAutoBTextureChange() (切换B贴图自动切换)')
+  // console.log('- window.checkUVMapping() (检查UV映射)')
 })
 
 onUnmounted(() => {
