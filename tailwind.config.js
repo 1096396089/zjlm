@@ -1,20 +1,16 @@
-/** @type {import('tailwindcss').Config} */
+// tailwind.config.js
 export default {
-  content: ['./index.html', './src/**/*.{vue,js,ts,jsx,tsx}'],
+  content: ['./index.html', './src/**/*.{vue,js,ts}'],
   theme: {
     extend: {
-      borderWidth: {
-        '3': '3px',
+      keyframes: {
+        'card-in': {
+          '0%': { opacity: '0', transform: 'translateY(-80px) scale(1.1)' },
+          '100%': { opacity: '1', transform: 'translateY(0) scale(1)' },
+        },
       },
-      zIndex: {
-        '100': '100',
-        '1000': '1000',
-      },
-      scale: {
-        '120': '1.2',
-      },
-      spacing: {
-        '2.5': '0.625rem',
+      animation: {
+        'card-in': 'card-in 0.8s ease-out forwards',
       },
     },
   },
