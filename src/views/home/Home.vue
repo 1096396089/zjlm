@@ -36,6 +36,10 @@
         @click="nextCard"
       />
     </div>
+
+    <div v-if="removedCount ==4">
+      <jindu />
+    </div>
   </div>
 </template>
 
@@ -48,7 +52,7 @@ import tow from './card/tow.vue'
 import three from './card/three.vue'
 import four from './card/four.vue'
 import Title from './title.vue'
-
+import jindu from './jindu.vue'
 // 定义卡片名称类型
 type CardName = 'one' | 'tow' | 'three' | 'four'
 
