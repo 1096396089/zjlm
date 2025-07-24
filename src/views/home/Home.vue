@@ -101,10 +101,10 @@ const calculateCenterOffset = () => {
 const getCardPositions = () => {
   const centerOffset = calculateCenterOffset()
   return [
-    { scale: 1.1, x: centerOffset, y: -40, z: 40 },  // 第一张卡片 - 动态居中
-    { scale: 1, x: centerOffset, y: 24, z: 30 },     // 第二张卡片
-    { scale: 0.9, x: centerOffset, y: 80, z: 20 },   // 第三张卡片
-    { scale: 0.8, x: centerOffset, y: 128, z: 10 }   // 第四张卡片
+    { scale: 1.1, x: -2, y: -40, z: 40 },  // 第一张卡片 - 动态居中
+    { scale: 1, x:-2 , y: 24, z: 30 },     // 第二张卡片
+    { scale: 0.9, x:-2 , y: 80, z: 20 },   // 第三张卡片
+    { scale: 0.8, x: -2, y: 128, z: 10 }   // 第四张卡片
   ]
 }
 
