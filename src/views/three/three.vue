@@ -1,5 +1,5 @@
 <template>
-    <div class="relative w-screen h-screen overflow-hidden bg-gray-100">
+    <div class="relative w-screen h-screen overflow-hidden bg-gradient-to-b from-orange-100 to-orange-200">
       <!-- 加载提示 -->
       <div v-if="loading" class="absolute inset-0 bg-black bg-opacity-80 flex flex-col justify-center items-center text-white z-[100]">
         <div class="w-12 h-12 border-3 border-gray-300 border-t-blue-500 rounded-full animate-spin mb-5"></div>
@@ -13,33 +13,29 @@
       </div>
   
       <!-- Three.js 渲染容器 -->
-      <div ref="containerRef" class="w-full h-full relative"></div>
-  
-      <!-- 控制面板切换按钮 -->
+      <div ref="containerRef" class="w-full h-[60%] relative"></div>
+
+      <!-- 设置按钮 -->
       <button 
         @click="toggleControlPanel" 
-        class="fixed top-5 right-5 z-20 w-12 h-12 bg-white bg-opacity-90 backdrop-blur-sm rounded-full shadow-lg flex items-center justify-center text-gray-700 hover:bg-gray-100 transition-all duration-200"
+        class="fixed top-5 right-5 z-20 w-10 h-10 bg-white bg-opacity-90 backdrop-blur-sm rounded-full shadow-lg flex items-center justify-center text-gray-700 hover:bg-gray-100 transition-all duration-200"
       >
-        <svg v-if="showControlPanel" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-        </svg>
-        <svg v-else class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4" />
         </svg>
       </button>
-  
-      <!-- 控制面板 -->
+
+      <!-- 高级设置面板 -->
       <div 
         v-show="showControlPanel"
-        class="control-panel absolute top-20 right-5 bg-white bg-opacity-95 backdrop-blur-sm rounded-lg p-5 shadow-lg max-w-xs z-10 md:max-w-sm lg:max-w-md transition-all duration-300 max-h-[80vh] overflow-y-auto"
+        class="fixed top-16 right-5 bg-white bg-opacity-95 backdrop-blur-sm rounded-lg p-4 shadow-lg max-w-xs z-10 transition-all duration-300 max-h-[70vh] overflow-y-auto"
       >
         <!-- 相机位置控制 -->
-        <div class="mb-5">
-          <label class="block mb-2 font-semibold text-gray-700">相机位置:</label>
-          <div class="space-y-3">
-            <!-- X轴控制 -->
+        <div class="mb-4">
+          <label class="block mb-2 font-semibold text-gray-700 text-sm">相机位置:</label>
+          <div class="space-y-2">
             <div>
-              <label class="block text-sm text-gray-600 mb-1">X轴: {{ cameraPosition.x.toFixed(1) }}</label>
+              <label class="block text-xs text-gray-600 mb-1">X轴: {{ cameraPosition.x.toFixed(1) }}</label>
               <input 
                 type="range" 
                 v-model.number="cameraPosition.x" 
@@ -47,12 +43,11 @@
                 max="20" 
                 step="0.1"
                 @input="updateCameraPosition"
-                class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
+                class="w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
               >
             </div>
-            <!-- Y轴控制 -->
             <div>
-              <label class="block text-sm text-gray-600 mb-1">Y轴: {{ cameraPosition.y.toFixed(1) }}</label>
+              <label class="block text-xs text-gray-600 mb-1">Y轴: {{ cameraPosition.y.toFixed(1) }}</label>
               <input 
                 type="range" 
                 v-model.number="cameraPosition.y" 
@@ -60,12 +55,11 @@
                 max="20" 
                 step="0.1"
                 @input="updateCameraPosition"
-                class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
+                class="w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
               >
             </div>
-            <!-- Z轴控制 -->
             <div>
-              <label class="block text-sm text-gray-600 mb-1">Z轴: {{ cameraPosition.z.toFixed(1) }}</label>
+              <label class="block text-xs text-gray-600 mb-1">Z轴: {{ cameraPosition.z.toFixed(1) }}</label>
               <input 
                 type="range" 
                 v-model.number="cameraPosition.z" 
@@ -73,19 +67,18 @@
                 max="30" 
                 step="0.1"
                 @input="updateCameraPosition"
-                class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
+                class="w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
               >
             </div>
           </div>
         </div>
-  
-        <!-- 灯光强度控制 -->
-        <div class="mb-5">
-          <label class="block mb-2 font-semibold text-gray-700">灯光强度:</label>
-          <div class="space-y-3">
-            <!-- 环境光控制 -->
+
+        <!-- 灯光控制 -->
+        <div class="mb-4">
+          <label class="block mb-2 font-semibold text-gray-700 text-sm">灯光强度:</label>
+          <div class="space-y-2">
             <div>
-              <label class="block text-sm text-gray-600 mb-1">环境光: {{ lightingIntensity.ambient.toFixed(1) }}</label>
+              <label class="block text-xs text-gray-600 mb-1">环境光: {{ lightingIntensity.ambient.toFixed(1) }}</label>
               <input 
                 type="range" 
                 v-model.number="lightingIntensity.ambient" 
@@ -93,12 +86,11 @@
                 max="3" 
                 step="0.1"
                 @input="updateLightingIntensity"
-                class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
+                class="w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
               >
             </div>
-            <!-- 主光源控制 -->
             <div>
-              <label class="block text-sm text-gray-600 mb-1">主光源: {{ lightingIntensity.directional.toFixed(1) }}</label>
+              <label class="block text-xs text-gray-600 mb-1">主光源: {{ lightingIntensity.directional.toFixed(1) }}</label>
               <input 
                 type="range" 
                 v-model.number="lightingIntensity.directional" 
@@ -106,184 +98,108 @@
                 max="3" 
                 step="0.1"
                 @input="updateLightingIntensity"
-                class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
-              >
-            </div>
-            <!-- 补充光源控制 -->
-            <div>
-              <label class="block text-sm text-gray-600 mb-1">补充光: {{ lightingIntensity.fill.toFixed(1) }}</label>
-              <input 
-                type="range" 
-                v-model.number="lightingIntensity.fill" 
-                min="0" 
-                max="2" 
-                step="0.1"
-                @input="updateLightingIntensity"
-                class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
-              >
-            </div>
-            <!-- 辅助光源控制 -->
-            <div>
-              <label class="block text-sm text-gray-600 mb-1">辅助光: {{ lightingIntensity.additional.toFixed(1) }}</label>
-              <input 
-                type="range" 
-                v-model.number="lightingIntensity.additional" 
-                min="0" 
-                max="1.5" 
-                step="0.1"
-                @input="updateLightingIntensity"
-                class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
+                class="w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
               >
             </div>
           </div>
         </div>
-  
-        <!-- A贴图切换控制 -->
-        <div class="mb-5">
-          <label class="block mb-2 font-semibold text-gray-700">A Mesh 贴图切换:</label>
-          <div class="space-y-2">
-            <!-- A贴图选择器 -->
-            <div>
-              <label class="block text-sm text-gray-600 mb-1">当前A贴图: {{ selectedATexture }}</label>
-              <select v-model="selectedATexture" @change="changeATexture" class="w-full p-2 border border-gray-300 rounded bg-white text-sm">
-                <option v-for="texture in aTextureNames" :key="texture" :value="texture">{{ texture }}</option>
-              </select>
-            </div>
-            <!-- A贴图切换按钮 -->
-            <div class="flex gap-2 flex-wrap">
-              <button 
-                v-for="texture in aTextureNames" 
-                :key="texture"
-                @click="switchToATexture(texture)" 
-                :class="['px-3 py-1.5 border border-gray-300 rounded bg-white cursor-pointer text-xs transition-all duration-200 hover:bg-gray-100', selectedATexture === texture ? 'bg-blue-500 text-white border-blue-500' : '']"
-              >
-                {{ texture }}
-              </button>
-            </div>
-            <!-- A贴图信息显示 -->
-            <div class="text-xs text-gray-600 bg-gray-50 p-2 rounded">
-              <div>当前A贴图: <span class="font-medium">{{ selectedATexture }}</span></div>
-              <div>A贴图总数: <span class="font-medium">{{ aTextureNames.length }}</span></div>
-              <!-- A贴图预览 -->
-              <div class="mt-2 flex items-center gap-2">
-                <span>贴图预览:</span>
-                <div 
-                  class="w-8 h-8 border border-gray-300 bg-blue-100 rounded flex items-center justify-center text-xs font-medium"
-                >
-                  A
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-  
-        <!-- B贴图切换控制 -->
-        <div class="mb-5">
-          <label class="block mb-2 font-semibold text-gray-700">B Mesh 贴图切换:</label>
-          <div class="space-y-2">
-            <!-- B贴图选择器 -->
-            <div>
-              <label class="block text-sm text-gray-600 mb-1">当前B贴图: {{ selectedBTexture }}</label>
-              <select v-model="selectedBTexture" @change="changeBTexture" class="w-full p-2 border border-gray-300 rounded bg-white text-sm">
-                <option v-for="texture in bTextureNames" :key="texture" :value="texture">{{ texture }}</option>
-              </select>
-            </div>
-            <!-- B贴图切换按钮 -->
-            <div class="flex gap-2 flex-wrap">
-              <button 
-                v-for="texture in bTextureNames" 
-                :key="texture"
-                @click="switchToBTexture(texture)" 
-                :class="['px-3 py-1.5 border border-gray-300 rounded bg-white cursor-pointer text-xs transition-all duration-200 hover:bg-gray-100', selectedBTexture === texture ? 'bg-green-500 text-white border-green-500' : '']"
-              >
-                {{ texture }}
-              </button>
-            </div>
-            <!-- B贴图信息显示 -->
-            <div class="text-xs text-gray-600 bg-gray-50 p-2 rounded">
-              <div>当前B贴图: <span class="font-medium">{{ selectedBTexture }}</span></div>
-              <div>B贴图总数: <span class="font-medium">{{ bTextureNames.length }}</span></div>
-              <!-- B贴图预览 -->
-              <div class="mt-2 flex items-center gap-2">
-                <span>贴图预览:</span>
-                <div 
-                  class="w-8 h-8 border border-gray-300 bg-green-100 rounded flex items-center justify-center text-xs font-medium"
-                >
-                  B
-                </div>
-              </div>
-            </div>
-            <!-- 贴图信息按钮 -->
-            <button @click="getTextureInfo" class="w-full px-3 py-2 border border-gray-300 rounded bg-white cursor-pointer text-sm transition-all duration-200 hover:bg-gray-100 mb-2">
-              获取贴图信息
-            </button>
-            <!-- UV检查按钮 -->
-            <button @click="checkUVMapping" class="w-full px-3 py-2 border border-gray-300 rounded bg-white cursor-pointer text-sm transition-all duration-200 hover:bg-gray-100">
-              检查UV映射
-            </button>
-          </div>
-        </div>
-  
-        <!-- 环境控制 -->
-        <div class="mb-5">
-          <label class="block mb-2 font-semibold text-gray-700">环境:</label>
-          <select v-model="selectedEnvironment" @change="changeEnvironment" class="w-full p-2 border border-gray-300 rounded bg-white text-sm">
-            <option value="studio">工作室</option>
-            <option value="outdoor">户外</option>
-            <option value="dark">暗色</option>
-          </select>
-        </div>
-  
-        <!-- 动画控制 -->
-        <div class="mb-5">
-          <label class="block mb-2 font-semibold text-gray-700">动画:</label>
-          <button @click="toggleAnimation" :class="['px-4 py-2 mr-2.5 mb-2.5 border border-gray-300 rounded bg-white cursor-pointer text-sm transition-all duration-200 hover:bg-gray-100', isAnimating ? 'bg-blue-500 text-white border-blue-500' : '']">
-            {{ isAnimating ? '暂停' : '播放' }}
+
+        <!-- 其他控制 -->
+        <div class="space-y-2">
+          <button @click="toggleAnimation" :class="['w-full px-3 py-2 text-xs rounded border', isAnimating ? 'bg-blue-500 text-white border-blue-500' : 'bg-white text-gray-700 border-gray-300']">
+            {{ isAnimating ? '暂停旋转' : '开始旋转' }}
           </button>
-          <button @click="resetView" class="px-4 py-2 mr-2.5 mb-2.5 border border-gray-300 rounded bg-white cursor-pointer text-sm transition-all duration-200 hover:bg-gray-100">重置视角</button>
+          <button @click="resetView" class="w-full px-3 py-2 text-xs rounded border bg-white text-gray-700 border-gray-300">重置视角</button>
+          <button @click="takeScreenshot" class="w-full px-3 py-2 text-xs rounded border bg-white text-gray-700 border-gray-300">截图</button>
         </div>
-  
-        <!-- 自动贴图切换控制 -->
-        <div class="mb-5">
-          <label class="block mb-2 font-semibold text-gray-700">自动贴图切换:</label>
-          <div class="space-y-2">
-            <button @click="toggleAutoATextureChange" :class="['px-4 py-2 mr-2.5 mb-2.5 border border-gray-300 rounded bg-white cursor-pointer text-sm transition-all duration-200 hover:bg-gray-100', autoATextureChange ? 'bg-blue-500 text-white border-blue-500' : '']">
-              {{ autoATextureChange ? '停止A贴图切换' : '开始A贴图切换' }}
-            </button>
-            <button @click="toggleAutoBTextureChange" :class="['px-4 py-2 mr-2.5 mb-2.5 border border-gray-300 rounded bg-white cursor-pointer text-sm transition-all duration-200 hover:bg-gray-100', autoBTextureChange ? 'bg-green-500 text-white border-green-500' : '']">
-              {{ autoBTextureChange ? '停止B贴图切换' : '开始B贴图切换' }}
-            </button>
-            <div class="text-xs text-gray-600 mt-2">
-              <div v-if="autoATextureChange">A贴图自动切换中 ({{ currentATextureIndex + 1 }}/{{ aTextureNames.length }})</div>
-              <div v-if="autoBTextureChange">B贴图自动切换中 ({{ currentBTextureIndex + 1 }}/{{ bTextureNames.length }})</div>
-              <div v-if="!autoATextureChange && !autoBTextureChange">每3秒自动切换对应Mesh的贴图</div>
-            </div>
+      </div>
+
+      <!-- 主要控制面板 -->
+      <div class="absolute bottom-0 left-0 right-0 bg-white rounded-t-3xl shadow-2xl">
+        <!-- 操作提示 -->
+        <div class="text-center py-4 border-b border-gray-100">
+          <p class="text-gray-600 text-sm">拖动旋转鞋子，双指放大</p>
+          <div class="flex justify-center mt-2">
+            <div class="w-8 h-1 bg-gray-300 rounded-full"></div>
           </div>
         </div>
-  
-        <!-- Mesh列表 -->
-        <!-- <div class="mb-5" v-if="meshList.length > 0">
-          <label class="block mb-2 font-semibold text-gray-700">Mesh列表 (共{{ meshList.length }}个):</label>
-          <div class="max-h-40 overflow-y-auto bg-gray-50 rounded p-2">
-            <div 
-              v-for="(item, index) in meshList" 
-              :key="index"
-              class="text-xs p-2 mb-1 bg-white rounded border hover:bg-blue-50 cursor-pointer transition-colors"
-              @click="selectMesh(item.index)"
+
+        <!-- 颜色选择区域 -->
+        <div class="p-6 space-y-6">
+          <!-- 区域1 颜色选择 -->
+          <div>
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-lg font-semibold text-gray-800">区域1</h3>
+              <span class="text-sm text-gray-500">当前: {{ selectedATexture.replace('.png', '') }}</span>
+            </div>
+            <div class="flex justify-center space-x-4">
+              <div 
+                v-for="(texture, index) in aTextureNames" 
+                :key="texture"
+                @click="switchToATexture(texture)"
+                :class="[
+                  'w-12 h-12 rounded-full border-4 transition-all duration-200 cursor-pointer flex items-center justify-center relative overflow-hidden',
+                  selectedATexture === texture ? 'border-blue-500 shadow-lg transform scale-110' : 'border-gray-300 hover:border-gray-400'
+                ]"
+                :style="{ backgroundColor: getColorForTexture('A', texture) }"
+              >
+                <!-- 选中指示器 -->
+                <div v-if="selectedATexture === texture" class="absolute inset-0 bg-black bg-opacity-20 rounded-full flex items-center justify-center">
+                  <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                  </svg>
+                </div>
+                <!-- 颜色名称标签 -->
+                <div class="absolute -bottom-8 left-1/2 transform -translate-x-1/2 text-xs text-gray-600 whitespace-nowrap">
+                  {{ getColorName('A', texture) }}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 分隔线 -->
+          <div class="border-t border-gray-200"></div>
+
+          <!-- 区域2 颜色选择 -->
+          <div>
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-lg font-semibold text-gray-800">区域2</h3>
+              <span class="text-sm text-gray-500">当前: {{ selectedBTexture.replace('.png', '') }}</span>
+            </div>
+            <div class="flex justify-center space-x-4">
+              <div 
+                v-for="(texture, index) in bTextureNames" 
+                :key="texture"
+                @click="switchToBTexture(texture)"
+                :class="[
+                  'w-12 h-12 rounded-full border-4 transition-all duration-200 cursor-pointer flex items-center justify-center relative overflow-hidden',
+                  selectedBTexture === texture ? 'border-green-500 shadow-lg transform scale-110' : 'border-gray-300 hover:border-gray-400'
+                ]"
+                :style="{ backgroundColor: getColorForTexture('B', texture) }"
+              >
+                <!-- 选中指示器 -->
+                <div v-if="selectedBTexture === texture" class="absolute inset-0 bg-black bg-opacity-20 rounded-full flex items-center justify-center">
+                  <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                  </svg>
+                </div>
+                <!-- 颜色名称标签 -->
+                <div class="absolute -bottom-8 left-1/2 transform -translate-x-1/2 text-xs text-gray-600 whitespace-nowrap">
+                  {{ getColorName('B', texture) }}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 定制完成按钮 -->
+          <div class="pt-4">
+            <button 
+              @click="completeCustomization"
+              class="w-full bg-gradient-to-r from-orange-400 to-orange-500 text-white py-4 px-6 rounded-2xl font-semibold text-lg shadow-lg hover:from-orange-500 hover:to-orange-600 transition-all duration-200 transform hover:scale-105"
             >
-              <div class="font-medium text-gray-800">{{ item.name }}</div>
-              <div class="text-gray-500">索引: {{ item.index }}</div>
-            </div>
+              定制完成
+            </button>
           </div>
-          <div class="mt-2 text-xs text-gray-600">
-            点击Mesh查看控制台详细信息
-          </div>
-        </div> -->
-  
-        <!-- 截图功能 -->
-        <div class="mb-0">
-          <button @click="takeScreenshot" class="px-4 py-2 mr-2.5 mb-2.5 border border-gray-300 rounded bg-white cursor-pointer text-sm transition-all duration-200 hover:bg-gray-100">截图</button>
-          <button @click="toggleFullscreen" class="px-4 py-2 mr-2.5 mb-2.5 border border-gray-300 rounded bg-white cursor-pointer text-sm transition-all duration-200 hover:bg-gray-100">全屏</button>
         </div>
       </div>
     </div>
@@ -1304,6 +1220,11 @@
     // 监听容器大小变化
     const resizeObserver = new ResizeObserver(handleResize)
     resizeObserver.observe(containerRef.value!)
+    
+    // 监听屏幕方向变化
+    window.addEventListener('orientationchange', () => {
+      setTimeout(handleResize, 100) // 延迟处理，确保新尺寸生效
+    })
   }
   
   // 设备方向控制（移动端）
@@ -1354,6 +1275,51 @@
       }
     }
   }
+
+  // 颜色映射表
+  const colorMapping: Record<string, { name: string, color: string }> = {
+    // A区域颜色
+    'A6C.png': { name: '深棕', color: '#8B4513' },
+    'A5C.png': { name: '玫瑰红', color: '#DC143C' },
+    'A4C.png': { name: '薄荷绿', color: '#98FB98' },
+    'A3C.png': { name: '纯白', color: '#FFFFFF' },
+    'A2C.png': { name: '帝王棕', color: '#8B7355' },
+    'AC.png': { name: '琥珀棕', color: '#D2691E' },
+    
+    // B区域颜色
+    'B6C.png': { name: '百里茶', color: '#8B7D6B' },
+    'B5C.png': { name: '栗紫', color: '#722F37' },
+    'B4C.png': { name: '红褐', color: '#A0522D' },
+    'B3C.png': { name: '柳绿', color: '#9ACD32' },
+    'B2C.png': { name: '奶白', color: '#FDF5E6' },
+    'BC.png': { name: '常春', color: '#D2B48C' }
+  }
+
+  // 获取颜色名称
+  const getColorName = (folder: 'A' | 'B', textureName: string) => {
+    const mapping = colorMapping[textureName]
+    return mapping ? mapping.name : textureName.replace('.png', '')
+  }
+
+  // 获取颜色
+  const getColorForTexture = (folder: 'A' | 'B', textureName: string) => {
+    const mapping = colorMapping[textureName]
+    return mapping ? mapping.color : '#CCCCCC'
+  }
+
+  // 定制完成
+  const completeCustomization = () => {
+    alert('定制完成！')
+    // 可以选择保存当前的鞋子模型或贴图设置
+    // 例如，将当前的贴图应用到实际的鞋子模型
+    // 或者将当前的贴图保存为新的模型
+    console.log('当前选中的A贴图:', selectedATexture.value)
+    console.log('当前选中的B贴图:', selectedBTexture.value)
+    console.log('当前相机位置:', cameraPosition.value)
+    console.log('当前灯光强度:', lightingIntensity.value)
+    console.log('当前动画状态:', isAnimating.value)
+    console.log('当前自动切换状态:', { autoATextureChange: autoATextureChange.value, autoBTextureChange: autoBTextureChange.value })
+  }
   
   // 生命周期
   onMounted(async () => {
@@ -1373,6 +1339,9 @@
     ;(window as any).toggleAutoATextureChange = toggleAutoATextureChange
     ;(window as any).toggleAutoBTextureChange = toggleAutoBTextureChange
     ;(window as any).checkUVMapping = checkUVMapping
+    ;(window as any).getColorName = getColorName
+    ;(window as any).getColorForTexture = getColorForTexture
+    ;(window as any).completeCustomization = completeCustomization
     
     // console.log('🔧 已添加全局Mesh和贴图操作函数:')
     // console.log('- window.getMeshByIndex(index)')
@@ -1467,170 +1436,165 @@
     border: none;
   }
   
-  /* 移动端适配 */
+    /* 移动端适配 */
   @media (max-width: 768px) {
-    .shoe-viewer {
-      height: 100vh;
-      height: 100dvh;
+    /* 确保3D视窗在移动端有合适的高度 */
+    .relative > div[ref="containerRef"] {
+      height: calc(100vh - 300px) !important;
+      min-height: 300px !important;
     }
-    
-    .control-panel {
-      position: fixed !important;
-      bottom: 20px !important;
-      left: 10px !important;
-      right: 10px !important;
-      top: auto !important;
-      max-height: 50vh !important;
+
+    /* 底部面板在移动端的样式调整 */
+    .absolute.bottom-0 {
+      max-height: 60vh !important;
       overflow-y: auto !important;
-      padding: 15px !important;
-      max-width: none !important;
-      z-index: 20 !important;
     }
-    
-    .control-panel .color-option {
-      width: 35px !important;
-      height: 35px !important;
-      margin: 2px !important;
+
+    /* 颜色选择器在移动端稍小一些 */
+    .w-12.h-12 {
+      width: 2.5rem !important;
+      height: 2.5rem !important;
     }
-    
-    .control-panel button {
-      padding: 8px 12px !important;
-      font-size: 12px !important;
-      min-height: 36px !important;
+
+    /* 调整颜色选择器间距 */
+    .space-x-4 > * + * {
+      margin-left: 0.75rem !important;
     }
-    
-    .control-panel select {
-      font-size: 14px !important;
-      min-height: 36px !important;
-    }
-    
-    .gesture-hint {
-      bottom: 200px !important;
-      left: 10px !important;
-      right: 10px !important;
-      transform: none !important;
-      text-align: center !important;
-      font-size: 12px !important;
-      padding: 8px 15px !important;
-    }
-    
-    .canvas-container {
-      height: calc(100vh - 180px) !important;
-      height: calc(100dvh - 180px) !important;
-    }
-  
-    /* 确保控制面板在移动端可以滚动 */
-    .control-panel::-webkit-scrollbar {
-      width: 4px;
-    }
-    
-    .control-panel::-webkit-scrollbar-track {
-      background: #f1f1f1;
-      border-radius: 2px;
-    }
-    
-    .control-panel::-webkit-scrollbar-thumb {
-      background: #888;
-      border-radius: 2px;
-    }
-    
-    .control-panel::-webkit-scrollbar-thumb:hover {
-      background: #555;
+
+    /* 调整按钮高度 */
+    .py-4 {
+      padding-top: 0.75rem !important;
+      padding-bottom: 0.75rem !important;
     }
   }
-  
+
   /* 小屏幕适配 */
   @media (max-width: 480px) {
-    .control-panel {
-      padding: 10px !important;
+    /* 进一步减小3D视窗高度 */
+    .relative > div[ref="containerRef"] {
+      height: calc(100vh - 350px) !important;
+      min-height: 250px !important;
     }
-    
-    .control-panel .color-option {
-      width: 30px !important;
-      height: 30px !important;
+
+    /* 颜色选择器更小 */
+    .w-12.h-12 {
+      width: 2rem !important;
+      height: 2rem !important;
     }
-    
-    .control-panel button {
-      padding: 6px 10px !important;
-      font-size: 11px !important;
-      margin-right: 5px !important;
-      margin-bottom: 8px !important;
+
+    /* 减小间距 */
+    .space-x-4 > * + * {
+      margin-left: 0.5rem !important;
     }
-    
-    .gesture-hint {
-      font-size: 11px !important;
-      padding: 6px 12px !important;
+
+    .space-y-6 > * + * {
+      margin-top: 1rem !important;
+    }
+
+    /* 调整内边距 */
+    .p-6 {
+      padding: 1rem !important;
+    }
+
+    /* 调整字体大小 */
+    .text-lg {
+      font-size: 1rem !important;
+    }
+
+    /* 调整按钮文字大小 */
+    .text-lg.font-semibold {
+      font-size: 1rem !important;
     }
   }
-  
+
   /* 横屏适配 */
   @media (orientation: landscape) and (max-height: 600px) {
-    .control-panel {
-      position: fixed !important;
-      right: 10px !important;
-      top: 10px !important;
-      bottom: 10px !important;
-      left: auto !important;
-      width: 280px !important;
-      max-height: none !important;
-      overflow-y: auto !important;
+    .relative > div[ref="containerRef"] {
+      height: 50vh !important;
+      min-height: 200px !important;
     }
-    
-    .canvas-container {
-      height: 100vh !important;
-      height: 100dvh !important;
-      padding-right: 300px !important;
-    }
-    
-    .gesture-hint {
-      bottom: 20px !important;
-      left: 20px !important;
-      right: 320px !important;
-      transform: none !important;
+
+    .absolute.bottom-0 {
+      max-height: 45vh !important;
     }
   }
-  
-  /* 全屏模式 */
-  :fullscreen .control-panel {
-    position: fixed !important;
-    top: 20px !important;
-    right: 20px !important;
-    z-index: 1000 !important;
-  }
-  
+
   /* 触摸设备优化 */
   @media (hover: none) and (pointer: coarse) {
-    .control-panel button:hover {
-      background: white !important;
-    }
-    
-    .control-panel button:active {
-      background: #e0e0e0 !important;
+    /* 触摸设备上的按钮反馈 */
+    .cursor-pointer:active {
       transform: scale(0.95) !important;
+      transition: transform 0.1s !important;
     }
-    
-    .color-option:hover {
-      transform: none !important;
-    }
-    
-    .color-option:active {
+
+    /* 颜色选择器的触摸反馈 */
+    .w-12.h-12:active {
       transform: scale(0.9) !important;
     }
+
+    /* 移除hover效果 */
+    .hover\:border-gray-400:hover {
+      border-color: inherit !important;
+    }
+
+    .hover\:from-orange-500:hover {
+      background-image: inherit !important;
+    }
+  }
+
+  /* 确保滚动条样式 */
+  .overflow-y-auto::-webkit-scrollbar {
+    width: 4px;
   }
   
+  .overflow-y-auto::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 2px;
+  }
+  
+  .overflow-y-auto::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 2px;
+  }
+  
+  .overflow-y-auto::-webkit-scrollbar-thumb:hover {
+    background: #a1a1a1;
+  }
+
+  /* 确保白色颜色有边框可见性 */
+  .w-12.h-12[style*="background-color: rgb(255, 255, 255)"],
+  .w-12.h-12[style*="background-color: #FFFFFF"],
+  .w-12.h-12[style*="background-color: #FDF5E6"] {
+    border: 4px solid #e5e5e5 !important;
+  }
+
   /* 无障碍适配 */
   @media (prefers-reduced-motion: reduce) {
     .animate-spin {
       animation: none !important;
     }
     
-    .animate-pulse {
-      animation: none !important;
-      opacity: 1 !important;
-    }
-    
     .transition-all {
       transition: none !important;
+    }
+
+    .transform {
+      transform: none !important;
+    }
+  }
+
+  /* 高对比度模式支持 */
+  @media (prefers-contrast: high) {
+    .bg-gradient-to-b {
+      background: #f5f5f5 !important;
+    }
+
+    .text-gray-600 {
+      color: #000000 !important;
+    }
+
+    .border-gray-300 {
+      border-color: #000000 !important;
     }
   }
   </style> 

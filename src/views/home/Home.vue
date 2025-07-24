@@ -46,6 +46,7 @@
 <script setup lang="ts">
 import { ref, onMounted, nextTick } from 'vue'
 import { gsap } from 'gsap'
+import { useRouter } from 'vue-router'
 
 import one from './card/one.vue'
 import tow from './card/tow.vue'
@@ -53,6 +54,9 @@ import three from './card/three.vue'
 import four from './card/four.vue'
 import Title from './title.vue'
 import jindu from './jindu.vue'
+
+const router = useRouter()
+
 // 定义卡片名称类型
 type CardName = 'one' | 'tow' | 'three' | 'four'
 
@@ -133,6 +137,13 @@ const nextCard = async () => {
       nextTick(() => {
         initCardPositions()
         isAnimating.value = false
+        
+        // 如果是第4次点击，2秒后跳转到model页面
+        if (removedCount.value === 4) {
+          setTimeout(() => {
+            router.push('/model')
+          }, 2000)
+        }
       })
     }
   })
