@@ -1,6 +1,6 @@
 <template>
 
-<svg width="390" height="733" viewBox="0 0 390 733" fill="none" xmlns="http://www.w3.org/2000/svg">
+<svg width="390" height="733" viewBox="3 0 390 733" fill="none" xmlns="http://www.w3.org/2000/svg">
       <rect x="14.29" y="84.6328" width="361.42" height="564.055" rx="20" fill="#FFEBF0" fill-opacity="0.8" />
       <g filter="url(#filter0_f_441_1046)">
         <rect x="33.2188" y="103.867" width="323.562" height="525.575" rx="20" fill="#DFB2BD" fill-opacity="0.8" />

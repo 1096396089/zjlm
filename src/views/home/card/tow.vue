@@ -1,5 +1,5 @@
 <template>
-    <svg width="391" height="733" viewBox="0 0 391 733" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg width="391" height="733" viewBox="3 0 391 733" fill="none" xmlns="http://www.w3.org/2000/svg">
 <rect x="14.9883" y="84.6328" width="361.42" height="564.055" rx="20" fill="#FFEBF0" fill-opacity="0.8"/>
 <g filter="url(#filter0_f_441_1280)">
 <rect x="33.917" y="103.867" width="323.562" height="525.575" rx="20" fill="#DFB2DB" fill-opacity="0.8"/>

@@ -44,7 +44,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, nextTick } from 'vue'
+import { ref, onMounted, nextTick, onUnmounted } from 'vue'
 import { gsap } from 'gsap'
 import { useRouter } from 'vue-router'
 
@@ -81,13 +81,32 @@ const card1 = ref()
 const card2 = ref()
 const card3 = ref()
 
-// 卡片位置配置 - 恢复原始配置，只添加移动端检测
-const cardPositions = [
-  { scale: 1.1,x:-2, y: -40, z: 40 },  // 第一张卡片
-  { scale: 1, y: 24, z: 30 },     // 第二张卡片
-  { scale: 0.9, y: 80, z: 20 },   // 第三张卡片
-  { scale: 0.8, y: 128, z: 10 }   // 第四张卡片
-]
+// 计算卡片居中的X轴偏移量
+const calculateCenterOffset = () => {
+  if (card0.value?.$el) {
+    const container = card0.value.$el.parentElement
+    const cardElement = card0.value.$el
+    
+    if (container && cardElement) {
+      const containerWidth = container.offsetWidth
+      const cardWidth = cardElement.offsetWidth
+      const offset = (containerWidth - cardWidth) / 2
+      return offset
+    }
+  }
+  return 0
+}
+
+// 卡片位置配置 - 动态计算X轴偏移
+const getCardPositions = () => {
+  const centerOffset = calculateCenterOffset()
+  return [
+    { scale: 1.1, x: centerOffset, y: -40, z: 40 },  // 第一张卡片 - 动态居中
+    { scale: 1, x: centerOffset, y: 24, z: 30 },     // 第二张卡片
+    { scale: 0.9, x: centerOffset, y: 80, z: 20 },   // 第三张卡片
+    { scale: 0.8, x: centerOffset, y: 128, z: 10 }   // 第四张卡片
+  ]
+}
 
 // 移动端检测
 const isMobile = () => {
@@ -95,9 +114,27 @@ const isMobile = () => {
 }
 
 onMounted(() => {
-  // 初始化卡片位置
-  initCardPositions()
+  // 等待DOM渲染完成后初始化卡片位置
+  nextTick(() => {
+    setTimeout(() => {
+      initCardPositions()
+    }, 100) // 延迟确保SVG完全加载
+  })
+  
+  // 监听窗口大小变化，重新计算居中
+  window.addEventListener('resize', handleResize)
 })
+
+onUnmounted(() => {
+  window.removeEventListener('resize', handleResize)
+})
+
+// 处理窗口大小变化
+const handleResize = () => {
+  setTimeout(() => {
+    initCardPositions()
+  }, 100)
+}
 
 // 初始化卡片位置
 const initCardPositions = () => {
@@ -105,7 +142,7 @@ const initCardPositions = () => {
   
   cards.forEach((card, index) => {
     if (card?.$el && index < cardOrder.value.length) {
-      const pos = cardPositions[index]
+      const pos = getCardPositions()[index] // 使用动态计算的卡片位置
       gsap.set(card.$el, {
         scale: pos.scale,
         x: pos.x,
@@ -169,9 +206,10 @@ const nextCard = async () => {
   // 其他卡片：向前移动一个位置
   for (let i = 1; i < remainingCards; i++) {
     if (cards[i]?.$el) {
-      const targetPos = cardPositions[i - 1] // 移动到前一个位置
+      const targetPos = getCardPositions()[i - 1] // 移动到前一个位置
       tl.to(cards[i].$el, {
         scale: targetPos.scale,
+        x: targetPos.x,
         y: targetPos.y,
         zIndex: targetPos.z,
         duration: 0.8,
@@ -183,27 +221,5 @@ const nextCard = async () => {
 </script>
 
 <style scoped>
-/* 确保卡片容器有足够的空间 */
-.card-container {
-  min-height: 300px;
-}
 
-/* 移动端适配 - 只做最小调整 */
-@media (max-width: 768px) {
-  .card-item {
-    /* 让SVG自适应 */
-    max-width: 90vw;
-  }
-  
-  .card-item :deep(svg) {
-    width: 100%;
-    height: auto;
-    max-width: 320px;
-  }
-}
-
-/* 鼠标悬停效果 */
-.cursor-pointer:hover {
-  filter: brightness(1.05);
-}
 </style>
