@@ -581,6 +581,12 @@
       // 确保canvas元素也是透明的
       renderer.domElement.style.background = 'transparent'
       renderer.domElement.style.opacity = '1'
+      
+      // 确保canvas能接收鼠标事件
+      renderer.domElement.style.pointerEvents = 'auto'
+      renderer.domElement.style.touchAction = 'none'
+      renderer.domElement.style.userSelect = 'none'
+      
       container.appendChild(renderer.domElement)
   
       // 创建控制器
@@ -589,8 +595,41 @@
       controls.dampingFactor = 0.05
       controls.enableZoom = true
       controls.enablePan = false
+      controls.enableRotate = true
+      
+      // 设置旋转中心点
+      controls.target.set(0, 0, 0)
+      
+      // 设置距离限制
       controls.maxDistance = 10
       controls.minDistance = 2
+      
+      // 设置垂直旋转角度范围（重要！）
+      // controls.minPolarAngle = 0 // 允许从顶部看
+      // controls.maxPolarAngle = Math.PI // 允许从底部看
+
+      const fixedPolarAngle = Math.PI / 2 // 固定为水平角度（90°）
+
+controls.minPolarAngle = fixedPolarAngle
+controls.maxPolarAngle = fixedPolarAngle
+
+      
+      // 设置水平旋转范围（无限制）
+      controls.minAzimuthAngle = -Infinity
+      controls.maxAzimuthAngle = Infinity
+      
+      // 确保鼠标/触摸事件正确处理
+      controls.mouseButtons = {
+        LEFT: THREE.MOUSE.ROTATE,
+        MIDDLE: THREE.MOUSE.DOLLY,
+        RIGHT: THREE.MOUSE.PAN
+      }
+      
+      // 触摸事件设置
+      controls.touches = {
+        ONE: THREE.TOUCH.ROTATE,
+        TWO: THREE.TOUCH.DOLLY_PAN
+      }
   
       // 添加光照
       setupLighting()
