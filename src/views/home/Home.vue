@@ -65,6 +65,7 @@ const cardOrder = ref<CardName[]>(['one', 'tow', 'three', 'four'])
 
 // 动画状态
 const isAnimating = ref(false)
+const removedCount = ref(0) // 记录已移除的卡片数量
 
 // 卡片元素引用
 const card0 = ref()
@@ -90,7 +91,7 @@ const initCardPositions = () => {
   const cards = [card0.value, card1.value, card2.value, card3.value]
   
   cards.forEach((card, index) => {
-    if (card?.$el) {
+    if (card?.$el && index < cardOrder.value.length) {
       const pos = cardPositions[index]
       gsap.set(card.$el, {
         scale: pos.scale,
@@ -98,26 +99,31 @@ const initCardPositions = () => {
         zIndex: pos.z,
         opacity: 1
       })
+    } else if (card?.$el) {
+      // 隐藏已移除的卡片
+      gsap.set(card.$el, {
+        opacity: 0,
+        scale: 0
+      })
     }
   })
 }
 
 // 切换到下一张卡片
 const nextCard = async () => {
-  if (isAnimating.value) return // 防止动画期间重复点击
+  if (isAnimating.value || removedCount.value >= 4) return // 防止动画期间重复点击或已执行完4次
   
   isAnimating.value = true
   
   const cards = [card0.value, card1.value, card2.value, card3.value]
+  const remainingCards = cardOrder.value.length
   
   // 创建时间线
   const tl = gsap.timeline({
     onComplete: () => {
-      // 动画完成后更新卡片顺序
-      const firstCard = cardOrder.value.shift()
-      if (firstCard) {
-        cardOrder.value.push(firstCard)
-      }
+      // 动画完成后移除第一张卡片
+      cardOrder.value.shift()
+      removedCount.value++
       
       // 等待Vue更新DOM后重新初始化位置
       nextTick(() => {
@@ -127,47 +133,30 @@ const nextCard = async () => {
     }
   })
   
-  // 第一张卡片：淡出并缩小
+  // 第一张卡片：淡出并向上消失
   if (cards[0]?.$el) {
     tl.to(cards[0].$el, {
       opacity: 0,
       scale: 0.6,
-      y: -60,
-      duration: 0.6,
+      y: -100,
+      rotation: 15,
+      duration: 0.8,
       ease: "power2.inOut"
     }, 0)
   }
   
-  // 其他卡片：移动到前一个位置
-  cards.slice(1).forEach((card, index) => {
-    if (card?.$el) {
-      const targetPos = cardPositions[index]
-      tl.to(card.$el, {
+  // 其他卡片：向前移动一个位置
+  for (let i = 1; i < remainingCards; i++) {
+    if (cards[i]?.$el) {
+      const targetPos = cardPositions[i - 1] // 移动到前一个位置
+      tl.to(cards[i].$el, {
         scale: targetPos.scale,
         y: targetPos.y,
         zIndex: targetPos.z,
         duration: 0.8,
         ease: "power2.inOut"
-      }, 0.1) // 稍微延迟开始，让淡出效果先进行
+      }, 0.2) // 稍微延迟，让消失动画先开始
     }
-  })
-  
-  // 新卡片从底部出现（这里是第四张卡片移动到最后位置）
-  if (cards[3]?.$el) {
-    const lastPos = cardPositions[3]
-    tl.fromTo(cards[3].$el, 
-      {
-        opacity: 0.5,
-        scale: 0.6,
-        y: 200
-      },
-      {
-        opacity: 1,
-        scale: lastPos.scale,
-        y: lastPos.y,
-        duration: 0.8,
-        ease: "power2.out"
-      }, 0.3)
   }
 }
 </script>
