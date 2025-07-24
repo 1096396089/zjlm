@@ -1,5 +1,5 @@
 <template>
-    <div class="relative w-screen h-screen overflow-hidden bg-gradient-to-b from-orange-100 to-orange-200">
+    <div class="relative w-screen h-screen overflow-hidden ">
       <!-- 加载提示 -->
       <div v-if="loading" class="absolute inset-0 bg-black bg-opacity-80 flex flex-col justify-center items-center text-white z-[100]">
         <div class="w-12 h-12 border-3 border-gray-300 border-t-blue-500 rounded-full animate-spin mb-5"></div>
@@ -13,7 +13,7 @@
       </div>
   
       <!-- Three.js 渲染容器 -->
-      <div ref="containerRef" class="w-full h-[60%] relative"></div>
+      <div ref="containerRef" class="w-full h-[45%] relative" style="background: transparent;"></div>
 
       <!-- 设置按钮 -->
       <button 
@@ -63,8 +63,8 @@
               <input 
                 type="range" 
                 v-model.number="cameraPosition.z" 
-                min="1" 
-                max="30" 
+                min="2" 
+                max="10" 
                 step="0.1"
                 @input="updateCameraPosition"
                 class="w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
@@ -223,9 +223,7 @@
     
     // 开发环境路径
     const devPath = `/tietu/${folder}/${filename}`
-    
-    console.log(`环境检测: 开发=${isDev}, 本地=${isLocal}`)
-    console.log(`贴图路径: ${isDev ? devPath : prodPath}`)
+
     
     return isDev ? devPath : prodPath
   }
@@ -235,7 +233,6 @@
   const loading = ref(true)
   const loadingProgress = ref(0)
   const error = ref('')
-  const selectedColor = ref('#8B4513')
   const selectedEnvironment = ref('studio')
   const isAnimating = ref(true)
   const showGestureHint = ref(true)
@@ -264,13 +261,7 @@
   // 添加Mesh列表
   const meshList = ref<Array<{name: string, index: number, mesh: THREE.Mesh}>>([])
   
-  // 添加自动贴图切换功能
-  const autoATextureChange = ref(false)
-  const autoBTextureChange = ref(false)
-  let aTextureChangeTimer: number | null = null
-  let bTextureChangeTimer: number | null = null
-  let currentATextureIndex = 0
-  let currentBTextureIndex = 0
+
   
   // Three.js 相关变量
   let scene: THREE.Scene
@@ -327,88 +318,29 @@
     return found ? found.mesh : null
   }
   
-  // 更新材质UV的函数
-  const updateMeshMaterial = (meshIndex: number, textureUrl?: string) => {
-    const mesh = getMeshByIndex(meshIndex)
-    if (!mesh) {
-      console.warn(`找不到索引为 ${meshIndex} 的Mesh`)
-      return
-    }
-    
-    console.log(`正在更新Mesh ${meshIndex} (${mesh.name || '未命名'}) 的材质`)
-    
-    if (textureUrl) {
-      const textureLoader = new THREE.TextureLoader()
-      textureLoader.load(textureUrl, (texture) => {
-        // 设置贴图包装和过滤模式以获得更好的效果
-        texture.wrapS = THREE.RepeatWrapping
-        texture.wrapT = THREE.RepeatWrapping
-        texture.repeat.set(1, 1)
-        texture.minFilter = THREE.LinearMipmapLinearFilter
-        texture.magFilter = THREE.LinearFilter
-        
-        if (mesh.material instanceof THREE.MeshStandardMaterial) {
-          mesh.material.map = texture
-          mesh.material.needsUpdate = true
-          console.log(`成功更新Mesh ${meshIndex} 的贴图`)
-        } else if (Array.isArray(mesh.material)) {
-          // 如果是材质数组，更新第一个材质
-          mesh.material.forEach((mat) => {
-            if (mat instanceof THREE.MeshStandardMaterial) {
-              mat.map = texture
-              mat.needsUpdate = true
-            }
-          })
-          console.log(`成功更新Mesh ${meshIndex} 的多材质贴图`)
-        }
-      }, undefined, (error) => {
-        console.error('贴图加载失败:', error)
-      })
-    }
-  }
-  
-  // 更新所有Mesh材质的函数
-  const updateAllMeshMaterials = (textureUrl: string) => {
-    console.log(`正在为所有Mesh更新材质: ${textureUrl}`)
-    meshList.value.forEach((item) => {
-      updateMeshMaterial(item.index, textureUrl)
-    })
-  }
-  
-  // A贴图切换函数
-  const changeATexture = () => {
-    console.log(`切换到A贴图: ${selectedATexture.value}`)
-    switchToATexture(selectedATexture.value)
-  }
+
   
   const switchToATexture = (textureName: string) => {
     if (!aTextureNames.includes(textureName)) {
-      console.warn(`A贴图 ${textureName} 不存在`)
       return
     }
     
     selectedATexture.value = textureName
-    console.log(`正在切换到A贴图: ${textureName}`)
     
     // 使用环境适配的路径
     const texturePath = getTexturePath('A', textureName)
     applyTextureToMeshA(texturePath)
   }
   
-  // B贴图切换函数
-  const changeBTexture = () => {
-    console.log(`切换到B贴图: ${selectedBTexture.value}`)
-    switchToBTexture(selectedBTexture.value)
-  }
+
   
   const switchToBTexture = (textureName: string) => {
     if (!bTextureNames.includes(textureName)) {
-      console.warn(`B贴图 ${textureName} 不存在`)
       return
     }
     
     selectedBTexture.value = textureName
-    console.log(`正在切换到B贴图: ${textureName}`)
+
     
     // 使用环境适配的路径
     const texturePath = getTexturePath('B', textureName)
@@ -427,8 +359,6 @@
         path,
         (texture) => {
           // 成功加载贴图
-          console.log(`成功加载A贴图: ${path}`)
-          
           // UV贴图设置 - 不重复，按UV坐标映射
           texture.wrapS = THREE.ClampToEdgeWrapping
           texture.wrapT = THREE.ClampToEdgeWrapping
@@ -446,8 +376,6 @@
               const meshName = child.name.trim()
               // 精确匹配名称为"A"的Mesh
               if (meshName === 'A') {
-                console.log(`找到A Mesh: ${child.name}`)
-                console.log('UV属性:', child.geometry.attributes.uv ? '存在' : '不存在')
                 
                 if (child.material instanceof THREE.MeshStandardMaterial) {
                   // 克隆材质避免影响其他使用相同材质的对象
@@ -455,7 +383,6 @@
                   newMaterial.map = texture
                   newMaterial.needsUpdate = true
                   child.material = newMaterial
-                  console.log(`成功应用A贴图到Mesh: ${child.name}`)
                   appliedCount++
                 } else if (Array.isArray(child.material)) {
                   // 如果是材质数组，更新所有材质
@@ -468,7 +395,6 @@
                     }
                     return mat
                   })
-                  console.log(`成功应用A贴图到多材质Mesh: ${child.name}`)
                   appliedCount++
                 }
               }
@@ -476,16 +402,11 @@
           })
           
           if (appliedCount === 0) {
-            console.warn('未找到名称为"A"的Mesh')
-            // 输出所有可用的Mesh名称供参考
-            console.log('可用的Mesh名称:')
             shoeModel.traverse((child) => {
               if (child instanceof THREE.Mesh) {
-                console.log(`- "${child.name}"`)
               }
             })
           } else {
-            console.log(`A贴图应用完成，共更新了 ${appliedCount} 个Mesh`)
           }
         },
         (progress) => {
@@ -497,10 +418,8 @@
           // 尝试备用路径
           if (fallbackPaths.length > 0) {
             const nextPath = fallbackPaths.shift()!
-            console.log(`尝试备用路径: ${nextPath}`)
             tryLoadTexture(nextPath, fallbackPaths)
           } else {
-            console.error('所有A贴图路径都加载失败')
           }
         }
       )
@@ -531,7 +450,6 @@
         path,
         (texture) => {
           // 成功加载贴图
-          console.log(`成功加载B贴图: ${path}`)
           
           // UV贴图设置 - 不重复，按UV坐标映射
           texture.wrapS = THREE.ClampToEdgeWrapping
@@ -550,16 +468,13 @@
               const meshName = child.name.trim()
               // 精确匹配名称为"B"的Mesh
               if (meshName === 'B') {
-                console.log(`找到B Mesh: ${child.name}`)
-                console.log('UV属性:', child.geometry.attributes.uv ? '存在' : '不存在')
-                
+
                 if (child.material instanceof THREE.MeshStandardMaterial) {
                   // 克隆材质避免影响其他使用相同材质的对象
                   const newMaterial = child.material.clone()
                   newMaterial.map = texture
                   newMaterial.needsUpdate = true
                   child.material = newMaterial
-                  console.log(`成功应用B贴图到Mesh: ${child.name}`)
                   appliedCount++
                 } else if (Array.isArray(child.material)) {
                   // 如果是材质数组，更新所有材质
@@ -572,7 +487,6 @@
                     }
                     return mat
                   })
-                  console.log(`成功应用B贴图到多材质Mesh: ${child.name}`)
                   appliedCount++
                 }
               }
@@ -580,31 +494,23 @@
           })
           
           if (appliedCount === 0) {
-            console.warn('未找到名称为"B"的Mesh')
             // 输出所有可用的Mesh名称供参考
-            console.log('可用的Mesh名称:')
             shoeModel.traverse((child) => {
               if (child instanceof THREE.Mesh) {
-                console.log(`- "${child.name}"`)
               }
             })
           } else {
-            console.log(`B贴图应用完成，共更新了 ${appliedCount} 个Mesh`)
           }
         },
         (progress) => {
-          console.log(`B贴图加载进度: ${path}`, progress)
         },
         (error) => {
-          console.error(`B贴图加载失败: ${path}`, error)
           
           // 尝试备用路径
           if (fallbackPaths.length > 0) {
             const nextPath = fallbackPaths.shift()!
-            console.log(`尝试备用路径: ${nextPath}`)
             tryLoadTexture(nextPath, fallbackPaths)
           } else {
-            console.error('所有B贴图路径都加载失败')
           }
         }
       )
@@ -623,311 +529,58 @@
     tryLoadTexture(mainPath, possiblePaths)
   }
   
-  // 自动A贴图切换
-  const autoChangeATextures = () => {
-    if (aTextureNames.length === 0) return
-    
-    const currentTexture = aTextureNames[currentATextureIndex]
-    console.log(`自动切换到A贴图 ${currentATextureIndex + 1}/${aTextureNames.length}: ${currentTexture}`)
-    
-    switchToATexture(currentTexture)
-    
-    // 移动到下一个贴图
-    currentATextureIndex = (currentATextureIndex + 1) % aTextureNames.length
-  }
+
+
   
-  // 自动B贴图切换
-  const autoChangeBTextures = () => {
-    if (bTextureNames.length === 0) return
-    
-    const currentTexture = bTextureNames[currentBTextureIndex]
-    console.log(`自动切换到B贴图 ${currentBTextureIndex + 1}/${bTextureNames.length}: ${currentTexture}`)
-    
-    switchToBTexture(currentTexture)
-    
-    // 移动到下一个贴图
-    currentBTextureIndex = (currentBTextureIndex + 1) % bTextureNames.length
-  }
-  
-  // 开始自动A贴图切换
-  const startAutoATextureChange = () => {
-    if (aTextureChangeTimer) {
-      clearInterval(aTextureChangeTimer)
-    }
-    
-    autoATextureChange.value = true
-    console.log('开始自动A贴图切换，每3秒切换一次')
-    
-    // 立即执行一次
-    autoChangeATextures()
-    
-    // 设置定时器，每3秒切换一次
-    aTextureChangeTimer = setInterval(() => {
-      autoChangeATextures()
-    }, 3000)
-  }
-  
-  // 停止自动A贴图切换
-  const stopAutoATextureChange = () => {
-    if (aTextureChangeTimer) {
-      clearInterval(aTextureChangeTimer)
-      aTextureChangeTimer = null
-    }
-    autoATextureChange.value = false
-    console.log('停止自动A贴图切换')
-  }
-  
-  // 切换自动A贴图变换
-  const toggleAutoATextureChange = () => {
-    if (autoATextureChange.value) {
-      stopAutoATextureChange()
-    } else {
-      startAutoATextureChange()
-    }
-  }
-  
-  // 开始自动B贴图切换
-  const startAutoBTextureChange = () => {
-    if (bTextureChangeTimer) {
-      clearInterval(bTextureChangeTimer)
-    }
-    
-    autoBTextureChange.value = true
-    console.log('开始自动B贴图切换，每3秒切换一次')
-    
-    // 立即执行一次
-    autoChangeBTextures()
-    
-    // 设置定时器，每3秒切换一次
-    bTextureChangeTimer = setInterval(() => {
-      autoChangeBTextures()
-    }, 3000)
-  }
-  
-  // 停止自动B贴图切换
-  const stopAutoBTextureChange = () => {
-    if (bTextureChangeTimer) {
-      clearInterval(bTextureChangeTimer)
-      bTextureChangeTimer = null
-    }
-    autoBTextureChange.value = false
-    console.log('停止自动B贴图切换')
-  }
-  
-  // 切换自动B贴图变换
-  const toggleAutoBTextureChange = () => {
-    if (autoBTextureChange.value) {
-      stopAutoBTextureChange()
-    } else {
-      startAutoBTextureChange()
-    }
-  }
-  
-  // 获取贴图信息
-  const getTextureInfo = () => {
-    console.log('=== 贴图信息 ===')
-    console.log('当前选中A贴图:', selectedATexture.value)
-    console.log('当前选中B贴图:', selectedBTexture.value)
-    console.log('可用A贴图:', aTextureNames)
-    console.log('可用B贴图:', bTextureNames)
-    console.log('A贴图总数:', aTextureNames.length)
-    console.log('B贴图总数:', bTextureNames.length)
-    
-    if (shoeModel) {
-      console.log('\n模型中的Mesh分布:')
-      let aMeshes = 0
-      let bMeshes = 0
-      let otherMeshes = 0
-      
-      shoeModel.traverse((child) => {
-        if (child instanceof THREE.Mesh) {
-          const meshName = child.name.trim()
-          if (meshName === 'A') {
-            aMeshes++
-            console.log(`- A Mesh: ${child.name}`)
-          } else if (meshName === 'B') {
-            bMeshes++
-            console.log(`- B Mesh: ${child.name}`)
-          } else {
-            otherMeshes++
-            console.log(`- 其他 Mesh: ${child.name}`)
-          }
-        }
-      })
-      
-      console.log(`\nMesh统计: A类型(${aMeshes}个), B类型(${bMeshes}个), 其他(${otherMeshes}个)`)
-    }
-    
-    console.log('=== 贴图信息输出完成 ===')
-  }
-  
-  // 检查UV映射
-  const checkUVMapping = () => {
-    console.log('=== UV映射检查 ===')
-    
-    if (!shoeModel) {
-      console.warn('模型未加载')
-      return
-    }
-    
-    let totalMeshes = 0
-    let meshesWithUV = 0
-    
-    shoeModel.traverse((child) => {
-      if (child instanceof THREE.Mesh) {
-        totalMeshes++
-        const meshName = child.name || `Mesh_${totalMeshes}`
-        
-        console.log(`\n--- ${meshName} ---`)
-        console.log('材质类型:', child.material?.type || '无材质')
-        
-        // 检查UV坐标
-        const uvAttribute = child.geometry.attributes.uv
-        if (uvAttribute) {
-          meshesWithUV++
-          console.log('✅ UV坐标: 存在')
-          console.log('UV数据量:', uvAttribute.count, '个顶点')
-          console.log('UV数组长度:', uvAttribute.array.length)
-          
-          // 显示前几个UV坐标作为示例
-          if (uvAttribute.array.length >= 6) {
-            console.log('UV示例 (前3个顶点):')
-            for (let i = 0; i < 6; i += 2) {
-              console.log(`  顶点${i/2 + 1}: u=${uvAttribute.array[i].toFixed(3)}, v=${uvAttribute.array[i+1].toFixed(3)}`)
-            }
-          }
-          
-          // 检查UV范围
-          let minU = Infinity, maxU = -Infinity
-          let minV = Infinity, maxV = -Infinity
-          
-          for (let i = 0; i < uvAttribute.array.length; i += 2) {
-            const u = uvAttribute.array[i]
-            const v = uvAttribute.array[i + 1]
-            minU = Math.min(minU, u)
-            maxU = Math.max(maxU, u)
-            minV = Math.min(minV, v)
-            maxV = Math.max(maxV, v)
-          }
-          
-          console.log(`UV范围: U(${minU.toFixed(3)} ~ ${maxU.toFixed(3)}), V(${minV.toFixed(3)} ~ ${maxV.toFixed(3)})`)
-          
-          // 检查是否在0-1范围内
-          if (minU >= 0 && maxU <= 1 && minV >= 0 && maxV <= 1) {
-            console.log('✅ UV坐标在标准范围内 (0-1)')
-          } else {
-            console.log('⚠️ UV坐标超出标准范围 (0-1)')
-          }
-        } else {
-          console.log('❌ UV坐标: 不存在')
-        }
-        
-        // 检查当前贴图
-        if (child.material instanceof THREE.MeshStandardMaterial) {
-          if (child.material.map) {
-            console.log('当前贴图:', child.material.map.image?.src || '贴图对象存在但无源信息')
-            console.log('贴图包装模式:', {
-              wrapS: child.material.map.wrapS === THREE.ClampToEdgeWrapping ? 'ClampToEdge' : 
-                     child.material.map.wrapS === THREE.RepeatWrapping ? 'Repeat' : 'Other',
-              wrapT: child.material.map.wrapT === THREE.ClampToEdgeWrapping ? 'ClampToEdge' : 
-                     child.material.map.wrapT === THREE.RepeatWrapping ? 'Repeat' : 'Other'
-            })
-            console.log('贴图重复:', `${child.material.map.repeat.x} x ${child.material.map.repeat.y}`)
-            console.log('贴图偏移:', `${child.material.map.offset.x}, ${child.material.map.offset.y}`)
-          } else {
-            console.log('当前贴图: 无')
-          }
-        }
-      }
-    })
-    
-    console.log(`\n=== 总结 ===`)
-    console.log(`总Mesh数量: ${totalMeshes}`)
-    console.log(`有UV的Mesh: ${meshesWithUV}`)
-    console.log(`UV覆盖率: ${totalMeshes > 0 ? ((meshesWithUV / totalMeshes) * 100).toFixed(1) + '%' : '0%'}`)
-    console.log('=== UV映射检查完成 ===')
-  }
-  
-  // 选择Mesh并输出详细信息
-  const selectMesh = (index: number) => {
-    const mesh = getMeshByIndex(index)
-    if (!mesh) {
-      console.warn(`找不到索引为 ${index} 的Mesh`)
-      return
-    }
-    
-    console.log('=== 选中的Mesh详细信息 ===')
-    console.log('Mesh对象:', mesh)
-    console.log('名称:', mesh.name || '未命名')
-    console.log('索引:', index)
-    console.log('材质:', mesh.material)
-    console.log('几何体:', mesh.geometry)
-    console.log('UV坐标数据:', mesh.geometry.attributes.uv)
-    console.log('位置:', mesh.position)
-    console.log('旋转:', mesh.rotation)
-    console.log('缩放:', mesh.scale)
-    
-    // 如果有材质，输出材质详细信息
-    if (mesh.material) {
-      if (Array.isArray(mesh.material)) {
-        console.log('多材质数组:')
-        mesh.material.forEach((mat, matIndex) => {
-          console.log(`材质 ${matIndex}:`, mat)
-        })
-      } else {
-        console.log('材质类型:', mesh.material.type)
-        console.log('材质UUID:', mesh.material.uuid)
-        if (mesh.material instanceof THREE.MeshStandardMaterial) {
-          console.log('当前贴图:', mesh.material.map)
-          console.log('法线贴图:', mesh.material.normalMap)
-          console.log('粗糙度贴图:', mesh.material.roughnessMap)
-          console.log('金属度贴图:', mesh.material.metalnessMap)
-          console.log('颜色:', mesh.material.color)
-        }
-      }
-    }
-    
-    console.log('=== Mesh信息输出完成 ===')
-    
-    // 提供一些实用的全局函数
-    console.log('💡 可用的全局函数:')
-    console.log('- updateMeshMaterial(index, textureUrl): 更新指定Mesh的贴图')
-    console.log('- getMeshByIndex(index): 获取指定索引的Mesh')
-    console.log('- getMeshByName(name): 获取指定名称的Mesh')
-  }
-  
-  // 初始化Three.js
+    // 初始化Three.js
   const initThree = async () => {
     if (!containerRef.value) return
-  
+
     try {
       // 创建场景
       scene = new THREE.Scene()
-      scene.background = new THREE.Color(0xf0f0f0)
-  
+      // 移除场景背景，保持透明
+      scene.background = null
+      // 确保没有雾效
+      scene.fog = null
+      // 确保没有环境贴图
+      scene.environment = null
+
       // 创建相机
       const container = containerRef.value
       camera = new THREE.PerspectiveCamera(
-        75,
+        50, // 减小视野角度，让模型看起来更合适
         container.clientWidth / container.clientHeight,
         0.1,
         1000
       )
-      camera.position.set(0, 0, 5)
-  
+      camera.position.set(cameraPosition.value.x, cameraPosition.value.y, cameraPosition.value.z) // 使用响应式数据中的相机位置
+
       // 创建渲染器
       renderer = new THREE.WebGLRenderer({ 
         antialias: true,
-        alpha: true,
-        preserveDrawingBuffer: true // 用于截图
+        alpha: true, // 启用透明背景
+        preserveDrawingBuffer: true, // 用于截图
+        premultipliedAlpha: false // 确保透明度正确处理
       })
       renderer.setSize(container.clientWidth, container.clientHeight)
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
       renderer.shadowMap.enabled = true
       renderer.shadowMap.type = THREE.PCFSoftShadowMap
-      renderer.toneMapping = THREE.ACESFilmicToneMapping
-      renderer.toneMappingExposure = 1.5  // 增加曝光度
+      // 禁用色调映射，避免颜色偏移
+      renderer.toneMapping = THREE.NoToneMapping
+      renderer.toneMappingExposure = 1.0  // 标准曝光度
       renderer.outputColorSpace = THREE.SRGBColorSpace
+      // 设置完全透明背景
+      renderer.setClearColor(0x000000, 0) // 完全透明
+      // 禁用任何可能的颜色处理
+      renderer.autoClear = true
+      renderer.autoClearColor = true
+      renderer.autoClearDepth = true
+      renderer.autoClearStencil = true
+      // 确保canvas元素也是透明的
+      renderer.domElement.style.background = 'transparent'
+      renderer.domElement.style.opacity = '1'
       container.appendChild(renderer.domElement)
   
       // 创建控制器
@@ -936,8 +589,8 @@
       controls.dampingFactor = 0.05
       controls.enableZoom = true
       controls.enablePan = false
-      controls.maxDistance = 20
-      controls.minDistance = 4
+      controls.maxDistance = 10
+      controls.minDistance = 2
   
       // 添加光照
       setupLighting()
@@ -950,9 +603,6 @@
   
       // 设置响应式
       setupResponsive()
-  
-      // 添加设备方向控制（移动端）
-      setupDeviceOrientation()
   
       loading.value = false
       
@@ -968,21 +618,21 @@
     }
   }
   
-  // 设置光照
+    // 设置光照
   const setupLighting = () => {
-    // 环境光 - 增强亮度
+    // 环境光 - 使用白光，避免色彩偏移
     ambientLight = new THREE.AmbientLight(0xffffff, lightingIntensity.value.ambient)
     scene.add(ambientLight)
-  
-    // 主光源 - 增强亮度
+
+    // 主光源 - 使用纯白光
     directionalLight = new THREE.DirectionalLight(0xffffff, lightingIntensity.value.directional)
     directionalLight.position.set(5, 5, 5)
     directionalLight.castShadow = true
     directionalLight.shadow.mapSize.width = 2048
     directionalLight.shadow.mapSize.height = 2048
     scene.add(directionalLight)
-  
-    // 补充光源 - 增强亮度
+
+    // 补充光源 - 使用纯白光
     fillLight = new THREE.DirectionalLight(0xffffff, lightingIntensity.value.fill)
     fillLight.position.set(-5, 0, -5)
     scene.add(fillLight)
@@ -1026,65 +676,35 @@
         (gltf) => {
           shoeModel = gltf.scene
           
-          // 设置模型属性 - 进一步增大缩放比例
-          shoeModel.scale.set(10, 10, 10)
-          shoeModel.position.set(0, -1, 0)
+          // 设置模型属性 - 放大3倍
+          shoeModel.scale.set(11, 11, 11)
+          shoeModel.position.set(0, 0, 0)
           
-          // 输出所有Mesh信息
-          console.log('=== 鞋子模型Mesh信息 ===')
+          // 遍历模型，设置材质和阴影
           let meshIndex = 0
-          
-          // 遍历模型，设置材质和阴影，并输出详细信息
           shoeModel.traverse((child) => {
             if (child instanceof THREE.Mesh) {
-              console.log(`--- Mesh ${meshIndex} ---`)
-              console.log('名称:', child.name || '未命名')
-              console.log('类型:', child.type)
-              console.log('Mesh对象:', child)
-              console.log('几何体:', child.geometry)
-              console.log('材质:', child.material)
-              
               // 保存原始材质到userData
               if (child.material) {
                 child.userData.originalMaterial = child.material.clone()
-                
-                if (Array.isArray(child.material)) {
-                  console.log('材质数组:')
-                  child.material.forEach((mat, index) => {
-                    console.log(`  材质 ${index}:`, mat)
-                    console.log(`  材质名称:`, mat.name || '未命名')
-                    console.log(`  材质类型:`, mat.type)
-                    if (mat.map) console.log(`  贴图:`, mat.map)
-                    if (mat.normalMap) console.log(`  法线贴图:`, mat.normalMap)
-                    if (mat.roughnessMap) console.log(`  粗糙度贴图:`, mat.roughnessMap)
-                    if (mat.metalnessMap) console.log(`  金属度贴图:`, mat.metalnessMap)
-                  })
-                } else {
-                  console.log('材质名称:', child.material.name || '未命名')
-                  console.log('材质类型:', child.material.type)
-                  if (child.material.map) console.log('贴图:', child.material.map)
-                  if (child.material.normalMap) console.log('法线贴图:', child.material.normalMap)
-                  if (child.material.roughnessMap) console.log('粗糙度贴图:', child.material.roughnessMap)
-                  if (child.material.metalnessMap) console.log('金属度贴图:', child.material.metalnessMap)
-                }
               }
-              
-              console.log('位置:', child.position)
-              console.log('旋转:', child.rotation)
-              console.log('缩放:', child.scale)
-              console.log('包围盒:', child.geometry.boundingBox)
-              console.log('顶点数:', child.geometry.attributes.position?.count || 0)
-              console.log('UV坐标:', child.geometry.attributes.uv ? '有' : '无')
-              if (child.geometry.attributes.uv) {
-                console.log('UV数据:', child.geometry.attributes.uv)
-              }
-              console.log('---')
               
               child.castShadow = true
               child.receiveShadow = true
               
-              // 如果是鞋子主体，设置可变色材质
+              // 确保材质没有额外的颜色偏移
               if (child.material) {
+                if (Array.isArray(child.material)) {
+                  child.material.forEach((mat) => {
+                    if (mat instanceof THREE.MeshStandardMaterial) {
+                      // 重置可能的颜色偏移
+                      mat.envMapIntensity = 0 // 移除环境反射
+                    }
+                  })
+                } else if (child.material instanceof THREE.MeshStandardMaterial) {
+                  // 重置可能的颜色偏移
+                  child.material.envMapIntensity = 0 // 移除环境反射
+                }
                 child.material.needsUpdate = true
               }
               
@@ -1092,10 +712,6 @@
               meshIndex++
             }
           })
-          
-          console.log(`总共找到 ${meshIndex} 个Mesh`)
-          console.log('完整模型结构:', gltf.scene)
-          console.log('=== Mesh信息输出完成 ===')
           
           scene.add(shoeModel)
           
@@ -1162,7 +778,7 @@
   // 重置视角
   const resetView = () => {
     cameraPosition.value = { x: 0, y: 0, z: 5 }
-    camera.position.set(0, 0, 5)
+    updateCameraPosition()
     controls.reset()
     if (shoeModel) {
       shoeModel.rotation.set(0, 0, 0)
@@ -1170,10 +786,10 @@
     
     // 重置灯光强度
     lightingIntensity.value = {
-      ambient: 1.0,
-      directional: 1.2,
-      fill: 0.8,
-      additional: 0.5
+      ambient: 3.0,
+      directional: 3.0,
+      fill: 2.0,
+      additional: 1.5
     }
     updateLightingIntensity()
   }
@@ -1227,54 +843,7 @@
     })
   }
   
-  // 设备方向控制（移动端）
-  const setupDeviceOrientation = () => {
-    // 检测是否为移动设备
-    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
-    
-    if (isMobile && 'DeviceOrientationEvent' in window) {
-      // 请求设备方向权限（iOS 13+）
-      if (typeof (DeviceOrientationEvent as any).requestPermission === 'function') {
-        (DeviceOrientationEvent as any).requestPermission()
-          .then((response: string) => {
-            if (response === 'granted') {
-              addOrientationListener()
-            }
-          })
-          .catch(console.error)
-      } else {
-        addOrientationListener()
-      }
-    }
-    
-    function addOrientationListener() {
-      const handleOrientation = (event: DeviceOrientationEvent) => {
-        if (shoeModel && event.beta && event.gamma) {
-          const beta = event.beta * Math.PI / 180
-          const gamma = event.gamma * Math.PI / 180
-          
-          shoeModel.rotation.x = beta * 0.1
-          shoeModel.rotation.z = gamma * 0.1
-        }
-      }
-      
-      window.addEventListener('deviceorientation', handleOrientation)
-    }
-    
-    // 添加触摸优化
-    if (containerRef.value) {
-      const canvas = containerRef.value.querySelector('canvas')
-      if (canvas) {
-        // 防止页面滚动
-        canvas.addEventListener('touchstart', (e) => e.preventDefault(), { passive: false })
-        canvas.addEventListener('touchmove', (e) => e.preventDefault(), { passive: false })
-        canvas.addEventListener('touchend', (e) => e.preventDefault(), { passive: false })
-        
-        // 添加触摸反馈
-        canvas.style.touchAction = 'none'
-      }
-    }
-  }
+
 
   // 颜色映射表
   const colorMapping: Record<string, { name: string, color: string }> = {
@@ -1318,7 +887,7 @@
     console.log('当前相机位置:', cameraPosition.value)
     console.log('当前灯光强度:', lightingIntensity.value)
     console.log('当前动画状态:', isAnimating.value)
-    console.log('当前自动切换状态:', { autoATextureChange: autoATextureChange.value, autoBTextureChange: autoBTextureChange.value })
+
   }
   
   // 生命周期
@@ -1329,33 +898,13 @@
     // 将Mesh操作函数添加到全局，方便控制台调用
     ;(window as any).getMeshByIndex = getMeshByIndex
     ;(window as any).getMeshByName = getMeshByName
-    ;(window as any).updateMeshMaterial = updateMeshMaterial
-    ;(window as any).selectMesh = selectMesh
-    ;(window as any).meshList = meshList
-    ;(window as any).updateAllMeshMaterials = updateAllMeshMaterials
+        ;(window as any).meshList = meshList
     ;(window as any).switchToATexture = switchToATexture
     ;(window as any).switchToBTexture = switchToBTexture
-    ;(window as any).getTextureInfo = getTextureInfo
-    ;(window as any).toggleAutoATextureChange = toggleAutoATextureChange
-    ;(window as any).toggleAutoBTextureChange = toggleAutoBTextureChange
-    ;(window as any).checkUVMapping = checkUVMapping
     ;(window as any).getColorName = getColorName
     ;(window as any).getColorForTexture = getColorForTexture
     ;(window as any).completeCustomization = completeCustomization
-    
-    // console.log('🔧 已添加全局Mesh和贴图操作函数:')
-    // console.log('- window.getMeshByIndex(index)')
-    // console.log('- window.getMeshByName(name)')
-    // console.log('- window.updateMeshMaterial(index, textureUrl)')
-    // console.log('- window.selectMesh(index)')
-    // console.log('- window.meshList (响应式Mesh列表)')
-    // console.log('- window.updateAllMeshMaterials(textureUrl) (更新所有Mesh材质)')
-    // console.log('- window.switchToATexture(textureName) (切换A贴图)')
-    // console.log('- window.switchToBTexture(textureName) (切换B贴图)')
-    // console.log('- window.getTextureInfo() (获取贴图信息)')
-    // console.log('- window.toggleAutoATextureChange() (切换A贴图自动切换)')
-    // console.log('- window.toggleAutoBTextureChange() (切换B贴图自动切换)')
-    // console.log('- window.checkUVMapping() (检查UV映射)')
+
   })
   
   onUnmounted(() => {
@@ -1368,12 +917,7 @@
     if (controls) {
       controls.dispose()
     }
-    if (aTextureChangeTimer) {
-      clearInterval(aTextureChangeTimer)
-    }
-    if (bTextureChangeTimer) {
-      clearInterval(bTextureChangeTimer)
-    }
+
   })
   </script>
   

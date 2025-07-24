@@ -63,7 +63,7 @@ import { RouterView } from 'vue-router'
     </svg>
 
     <!-- 内容区域 -->
-    <div class="content-wrapper p-4">
+    <div class="content-wrapper ">
       <RouterView />
     </div>
   </div>

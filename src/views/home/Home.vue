@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="p-4">
     <div class="mt-10 flex justify-center items-center">
       <Title />
     </div>
