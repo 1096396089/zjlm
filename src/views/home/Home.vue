@@ -4,30 +4,30 @@
       <Title />
     </div>
 
-    <div class="relative">
+    <div class="relative card-container">
       <!-- 动态渲染卡片，支持点击轮播 -->
       <component 
         :is="cardComponents[cardOrder[0]]" 
         ref="card0"
-        class="absolute z-40 scale-110 -translate-y-10 cursor-pointer"
+        class="absolute z-40 scale-110 -translate-y-10 cursor-pointer card-item"
         @click="nextCard"
       />
       <component 
         :is="cardComponents[cardOrder[1]]" 
         ref="card1"
-        class="absolute z-30 scale-100 translate-y-6 cursor-pointer"
+        class="absolute z-30 scale-100 translate-y-6 cursor-pointer card-item"
         @click="nextCard"
       />
       <component 
         :is="cardComponents[cardOrder[2]]" 
         ref="card2"
-        class="absolute z-20 scale-90 translate-y-20 cursor-pointer"
+        class="absolute z-20 scale-90 translate-y-20 cursor-pointer card-item"
         @click="nextCard"
       />
       <component 
         :is="cardComponents[cardOrder[3]]" 
         ref="card3"
-        class="absolute z-10 translate-y-32 cursor-pointer"
+        class="absolute z-10 translate-y-32 cursor-pointer card-item"
         style="
           --tw-scale-x: 0.8;
           --tw-scale-y: 0.8;
@@ -37,7 +37,7 @@
       />
     </div>
 
-    <div v-if="removedCount ==4">
+    <div v-if="removedCount == 4">
       <jindu />
     </div>
   </div>
@@ -81,13 +81,18 @@ const card1 = ref()
 const card2 = ref()
 const card3 = ref()
 
-// 卡片位置配置
+// 卡片位置配置 - 恢复原始配置，只添加移动端检测
 const cardPositions = [
   { scale: 1.1, y: -40, z: 40 },  // 第一张卡片
   { scale: 1, y: 24, z: 30 },     // 第二张卡片
   { scale: 0.9, y: 80, z: 20 },   // 第三张卡片
   { scale: 0.8, y: 128, z: 10 }   // 第四张卡片
 ]
+
+// 移动端检测
+const isMobile = () => {
+  return window.innerWidth < 768
+}
 
 onMounted(() => {
   // 初始化卡片位置
@@ -178,8 +183,22 @@ const nextCard = async () => {
 
 <style scoped>
 /* 确保卡片容器有足够的空间 */
-.relative {
+.card-container {
   min-height: 300px;
+}
+
+/* 移动端适配 - 只做最小调整 */
+@media (max-width: 768px) {
+  .card-item {
+    /* 让SVG自适应 */
+    max-width: 90vw;
+  }
+  
+  .card-item :deep(svg) {
+    width: 100%;
+    height: auto;
+    max-width: 320px;
+  }
 }
 
 /* 鼠标悬停效果 */
