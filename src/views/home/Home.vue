@@ -83,7 +83,7 @@ const card3 = ref()
 
 // 卡片位置配置 - 恢复原始配置，只添加移动端检测
 const cardPositions = [
-  { scale: 1.1, y: -40, z: 40 },  // 第一张卡片
+  { scale: 1.1,x:-2, y: -40, z: 40 },  // 第一张卡片
   { scale: 1, y: 24, z: 30 },     // 第二张卡片
   { scale: 0.9, y: 80, z: 20 },   // 第三张卡片
   { scale: 0.8, y: 128, z: 10 }   // 第四张卡片
@@ -108,6 +108,7 @@ const initCardPositions = () => {
       const pos = cardPositions[index]
       gsap.set(card.$el, {
         scale: pos.scale,
+        x: pos.x,
         y: pos.y,
         zIndex: pos.z,
         opacity: 1
