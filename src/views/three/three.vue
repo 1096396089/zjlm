@@ -16,7 +16,7 @@
     </div>
 
     <!-- Three.js 渲染容器 -->
-    <div ref="containerRef" class="w-full h-[45%] relative" style="background: transparent;"></div>
+    <div ref="containerRef"  class="w-full h-[45%] relative" style="background: transparent;"></div>
 
     <!-- 设置按钮 -->
     <!-- <button @click="toggleControlPanel"
@@ -244,8 +244,8 @@ const textureCache: Record<string, THREE.Texture> = {}
 
 // 添加灯光强度控制
 const lightingIntensity = ref({
-  ambient: 3.0,
-  directional: 3.0,
+  ambient: 5.0,
+  directional: 5.0,
   fill: 2.0,
   additional: 1.5
 })
@@ -555,16 +555,20 @@ const initThree = async () => {
       preserveDrawingBuffer: true, // 用于截图
       premultipliedAlpha: false // 确保透明度正确处理
     })
+
+
     renderer.setSize(container.clientWidth, container.clientHeight)
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
     renderer.shadowMap.enabled = true
     renderer.shadowMap.type = THREE.PCFSoftShadowMap
     // 禁用色调映射，避免颜色偏移
-    renderer.toneMapping = THREE.NoToneMapping
-    renderer.toneMappingExposure = 1.0  // 标准曝光度
+    renderer.toneMapping = THREE.ACESFilmicToneMapping
+    renderer.toneMappingExposure = 2.0  // 标准曝光度
     renderer.outputColorSpace = THREE.SRGBColorSpace
     // 设置完全透明背景
     renderer.setClearColor(0x000000, 0) // 完全透明
+
+
     // 禁用任何可能的颜色处理
     renderer.autoClear = true
     renderer.autoClearColor = true
@@ -578,6 +582,7 @@ const initThree = async () => {
     renderer.domElement.style.pointerEvents = 'auto'
     renderer.domElement.style.touchAction = 'none'
     renderer.domElement.style.userSelect = 'none'
+
 
     container.appendChild(renderer.domElement)
 
@@ -920,6 +925,8 @@ const completeCustomization = () => {
   console.log('当前动画状态:', isAnimating.value)
 
 }
+
+
 
 // 生命周期
 onMounted(async () => {
