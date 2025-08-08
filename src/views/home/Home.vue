@@ -185,6 +185,7 @@ const nextCard = async () => {
 /* 确保卡片容器有足够的空间 */
 .card-container {
   min-height: 300px;
+  text-align: center;
 }
 
 /* 移动端适配 - 只做最小调整 */
