@@ -224,8 +224,8 @@ const textureCache: Record<string, THREE.Texture> = {}
 
 // 添加灯光强度控制
 const lightingIntensity = ref({
-  ambient: 5.0,
-  directional: 5.0,
+  ambient: 3.0,
+  directional: 3.0,
   fill: 2.0,
   additional: 1.5
 })
