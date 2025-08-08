@@ -1,0 +1,226 @@
+<template>
+  <div class="w-screen h-screen flex flex-col">
+    <div ref="containerRef" class="w-full h-[45%]"></div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { onMounted, onUnmounted, ref, watch, nextTick } from 'vue'
+import { useRoute } from 'vue-router'
+import * as THREE from 'three'
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
+
+const containerRef = ref<HTMLElement | null>(null)
+
+let scene: THREE.Scene
+let camera: THREE.PerspectiveCamera
+let renderer: THREE.WebGLRenderer
+let animationId = 0
+let shoeModel: THREE.Group | null = null
+
+// 从路由中获取两个区域参数（优先 params，其次 query）。
+const route = useRoute()
+
+const pickFirst = (v: unknown): string | undefined => {
+  if (typeof v === 'string') return v
+  if (Array.isArray(v) && v.length > 0 && typeof v[0] === 'string') return v[0]
+  return undefined
+}
+
+const resolveAreaParam = (key: 'a' | 'b', fallback: string): string => {
+  const fromParams = pickFirst((route.params as any)[key])
+  const fromQuery = pickFirst(route.query[key])
+  return (fromParams || fromQuery || fallback) as string
+}
+
+const aParam = ref<string>(resolveAreaParam('a', 'AC.png'))
+const bParam = ref<string>(resolveAreaParam('b', 'BC.png'))
+
+const getTexturePath = (area: 'A' | 'B', filename: string): string => {
+  if (!filename) return ''
+  // 若传入的是绝对/相对路径，则原样返回
+  if (filename.startsWith('http') || filename.startsWith('/') || filename.startsWith('./')) {
+    return filename
+  }
+  // 确保带扩展名
+  const finalName = filename.toLowerCase().endsWith('.png') ? filename : `${filename}.png`
+  return `/tietu/${area}/${finalName}`
+}
+
+const applyTextureToArea = (area: 'A' | 'B', filename: string) => {
+  if (!shoeModel || !filename) return
+
+  const loader = new THREE.TextureLoader()
+  const path = getTexturePath(area, filename)
+  loader.load(
+      path,
+      (texture) => {
+        texture.wrapS = THREE.ClampToEdgeWrapping
+        texture.wrapT = THREE.ClampToEdgeWrapping
+      texture.flipY = false
+        texture.minFilter = THREE.LinearMipmapLinearFilter
+        texture.magFilter = THREE.LinearFilter
+
+      let applied = false
+      shoeModel!.traverse((child) => {
+          if (child instanceof THREE.Mesh) {
+          if (child.name.trim() === area) {
+            if (Array.isArray(child.material)) {
+              child.material = child.material.map((m) => {
+                if (m instanceof THREE.MeshStandardMaterial) {
+                  const nm = m.clone()
+                  nm.map = texture
+                  nm.needsUpdate = true
+                  return nm
+                }
+                return m
+              })
+            } else if (child.material instanceof THREE.MeshStandardMaterial) {
+              const nm = child.material.clone()
+              nm.map = texture
+              nm.needsUpdate = true
+              child.material = nm
+            }
+            applied = true
+          }
+        }
+      })
+
+      if (!applied) {
+        // 没找到对应区域，不报错，只忽略
+      }
+    },
+    undefined,
+    () => {
+      // 贴图加载失败时忽略
+    }
+  )
+}
+
+const init = () => {
+  if (!containerRef.value) return
+
+    scene = new THREE.Scene()
+
+    const container = containerRef.value
+  camera = new THREE.PerspectiveCamera(50, container.clientWidth / container.clientHeight, 0.1, 1000)
+  camera.position.set(0, 0, 5)
+
+  renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true })
+  const initialWidth = container.clientWidth || window.innerWidth
+  const initialHeight = container.clientHeight || Math.max(1, Math.round(window.innerHeight * 0.45))
+  renderer.setSize(initialWidth, initialHeight)
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+    renderer.outputColorSpace = THREE.SRGBColorSpace
+  renderer.setClearColor(0x000000, 0)
+    container.appendChild(renderer.domElement)
+
+  // 基础灯光
+  const ambient = new THREE.AmbientLight(0xffffff, 3)
+  scene.add(ambient)
+  const dir = new THREE.DirectionalLight(0xffffff, 3)
+  dir.position.set(5, 5, 5)
+  scene.add(dir)
+
+    // 加载模型
+  const loader = new GLTFLoader()
+    loader.load(
+      '/xie1.gltf',
+      (gltf) => {
+        shoeModel = gltf.scene
+        shoeModel.scale.set(11, 11, 11)
+        scene.add(shoeModel)
+
+      // 自动框选模型，确保可见
+      try {
+        const box = new THREE.Box3().setFromObject(shoeModel)
+        const center = box.getCenter(new THREE.Vector3())
+        const size = box.getSize(new THREE.Vector3())
+        const maxDim = Math.max(size.x, size.y, size.z)
+        const fov = (camera.fov * Math.PI) / 180
+        const dist = (maxDim / 2) / Math.tan(fov / 2)
+        camera.position.set(center.x, center.y, center.z + dist * 1.4)
+        camera.lookAt(center)
+        camera.updateProjectionMatrix()
+      } catch (e) {
+        console.warn('无法自动框选模型:', e)
+      }
+
+      // 应用查询参数贴图
+      applyTextureToArea('A', aParam.value)
+      applyTextureToArea('B', bParam.value)
+      console.log('模型已加载，已应用贴图 A:', aParam.value, 'B:', bParam.value)
+    },
+    undefined,
+      (err) => {
+      console.error('模型加载失败 /xie1.gltf:', err)
+    }
+  )
+
+  const onResize = () => {
+    if (!containerRef.value) return
+    const el = containerRef.value
+    const w = el.clientWidth || window.innerWidth
+    const h = el.clientHeight || Math.max(1, Math.round(window.innerHeight * 0.45))
+    camera.aspect = w / h
+    camera.updateProjectionMatrix()
+    renderer.setSize(w, h)
+  }
+  window.addEventListener('resize', onResize)
+
+  // 当容器尺寸首次计算为 0 时，使用 ResizeObserver 监听，尺寸一旦非 0 就重设
+  let ro: ResizeObserver | null = null
+  if ('ResizeObserver' in window) {
+    ro = new ResizeObserver(() => {
+      onResize()
+    })
+    ro.observe(container)
+  }
+
+  const renderLoop = () => {
+    animationId = requestAnimationFrame(renderLoop)
+  renderer.render(scene, camera)
+}
+  renderLoop()
+
+  // 清理函数
+  cleanup = () => {
+    window.removeEventListener('resize', onResize)
+    if (animationId) cancelAnimationFrame(animationId)
+    if (renderer) renderer.dispose()
+    if (ro) ro.disconnect()
+  }
+}
+
+let cleanup: () => void = () => {}
+
+onMounted(async () => {
+  // 等待一帧，确保 Tailwind 类已应用并参与布局
+  await nextTick()
+  init()
+})
+
+// 监听路由变化，支持在同页内切换不同参数
+watch(
+  () => route.fullPath,
+  () => {
+    const nextA = resolveAreaParam('a', aParam.value)
+    const nextB = resolveAreaParam('b', bParam.value)
+    aParam.value = nextA
+    bParam.value = nextB
+    if (shoeModel) {
+      applyTextureToArea('A', aParam.value)
+      applyTextureToArea('B', bParam.value)
+    }
+  }
+)
+
+onUnmounted(() => {
+  cleanup()
+})
+</script>
+
+<style scoped>
+</style>
+
+

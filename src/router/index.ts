@@ -11,9 +11,15 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/model',
     component: () => import('../views/three/three.vue'),
+  },
+  {
+    path: '/dan_model/:a?/:b?',
+    component: () => import('@/views/three/dan_three.vue'),
+  },
+  {
+    path: '/wait/:a?/:b?',
+    component: () => import('@/views/wait/wait.vue'),
   }
- 
- 
 ]
 
 const router = createRouter({

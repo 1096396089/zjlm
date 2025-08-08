@@ -143,7 +143,7 @@ const nextCard = async () => {
         // 如果是第4次点击，2秒后跳转到model页面
         if (removedCount.value === 4) {
           setTimeout(() => {
-            router.push('/model')
+            router.push('/wait?a=A3C.png&b=B2C.png')
           }, 2000)
         }
       })

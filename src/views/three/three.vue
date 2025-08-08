@@ -18,14 +18,7 @@
     <!-- Three.js 渲染容器 -->
     <div ref="containerRef" class="w-full h-[45%] relative" style="background: transparent;"></div>
 
-    <!-- 设置按钮 -->
-    <!-- <button @click="toggleControlPanel"
-      class="fixed top-5 right-5 z-20 w-10 h-10 bg-white bg-opacity-90 backdrop-blur-sm rounded-full shadow-lg flex items-center justify-center text-gray-700 hover:bg-gray-100 transition-all duration-200">
-      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-          d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4" />
-      </svg>
-    </button> -->
+
 
     <!-- 高级设置面板 -->
     <div v-show="showControlPanel"
