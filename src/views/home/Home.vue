@@ -4,7 +4,7 @@
       <Title />
     </div>
 
-    <div class="relative card-container">
+    <div class="relative card-container" style="will-change: transform, opacity; backface-visibility: hidden; transform: translateZ(0);">
       <!-- 动态渲染卡片，支持点击轮播 -->
       <component 
         :is="cardComponents[cardOrder[0]]" 
@@ -90,9 +90,6 @@ const cardPositions = [
 ]
 
 // 移动端检测
-const isMobile = () => {
-  return window.innerWidth < 768
-}
 
 onMounted(() => {
   // 初始化卡片位置
@@ -188,22 +185,7 @@ const nextCard = async () => {
   text-align: center;
 }
 
-/* 移动端适配 - 只做最小调整 */
-@media (max-width: 768px) {
-  .card-item {
-    /* 让SVG自适应 */
-    max-width: 90vw;
-  }
-  
-  .card-item :deep(svg) {
-    width: 100%;
-    height: auto;
-    max-width: 320px;
-  }
-}
 
-/* 鼠标悬停效果 */
-.cursor-pointer:hover {
-  filter: brightness(1.05);
-}
+
+
 </style>
