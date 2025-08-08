@@ -16,7 +16,7 @@
     </div>
 
     <!-- Three.js 渲染容器 -->
-    <div ref="containerRef"  class="w-full h-[45%] relative" style="background: transparent;"></div>
+    <div ref="containerRef" class="w-full h-[45%] relative" style="background: transparent;"></div>
 
     <!-- 设置按钮 -->
     <!-- <button @click="toggleControlPanel"
@@ -106,31 +106,21 @@
       </div>
 
       <!-- 颜色选择区域 -->
-      <div class="p-6 space-y-6">
+      <div class="px-6 space-y-6">
         <!-- 区域1 颜色选择 -->
         <div>
-          <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center justify-center mb-4">
             <h3 class="text-lg font-semibold text-gray-800">区域1</h3>
-            <span class="text-sm text-gray-500">当前: {{ selectedATexture.replace('.png', '') }}</span>
           </div>
-          <div class="flex justify-center space-x-4">
-            <div v-for="(texture, index) in aTextureNames" :key="texture" @click="switchToATexture(texture)" :class="[
-              'w-12 h-12 rounded-full border-4 transition-all duration-200 cursor-pointer flex items-center justify-center relative overflow-hidden',
-              selectedATexture === texture ? 'border-blue-500 shadow-lg transform scale-110' : 'border-gray-300 hover:border-gray-400'
-            ]" :style="{ backgroundColor: getColorForTexture('A', texture) }">
-              <!-- 选中指示器 -->
-              <div v-if="selectedATexture === texture"
-                class="absolute inset-0 bg-black bg-opacity-20 rounded-full flex items-center justify-center">
-                <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd"
-                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                    clip-rule="evenodd" />
-                </svg>
-              </div>
-              <!-- 颜色名称标签 -->
-              <div
-                class="absolute -bottom-8 left-1/2 transform -translate-x-1/2 text-xs text-gray-600 whitespace-nowrap">
-                {{ getColorName('A', texture) }}
+          <div class="grid grid-cols-6 gap-x-4 gap-y-3 justify-items-center">
+            <div v-for="texture in aTextureNames" :key="texture" class="flex flex-col items-center">
+              <button type="button" @click="switchToATexture(texture)" :class="[
+                'w-14 h-14 md:w-16 md:h-16 rounded-[18px] border border-gray-200 shadow-sm transition-transform duration-200',
+                selectedATexture === texture ? 'ring-2 ring-offset-2 ring-blue-400 scale-105' : 'hover:scale-105'
+              ]" :style="{ backgroundColor: getColorForTexture('A', texture) }" />
+              <div class="text-center leading-tight">
+                <div class="text-[13px] text-gray-800">{{ getColorName('A', texture) }}</div>
+                <div class="text-[11px] text-gray-500">{{ getColorEn('A', texture) }}</div>
               </div>
             </div>
           </div>
@@ -141,56 +131,35 @@
 
         <!-- 区域2 颜色选择 -->
         <div>
-          <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center justify-center mb-4">
             <h3 class="text-lg font-semibold text-gray-800">区域2</h3>
-            <span class="text-sm text-gray-500">当前: {{ selectedBTexture.replace('.png', '') }}</span>
           </div>
-          <div class="flex justify-center space-x-4">
-            <div v-for="(texture, index) in bTextureNames" :key="texture" @click="switchToBTexture(texture)" :class="[
-              'w-12 h-12 rounded-full border-4 transition-all duration-200 cursor-pointer flex items-center justify-center relative overflow-hidden',
-              selectedBTexture === texture ? 'border-green-500 shadow-lg transform scale-110' : 'border-gray-300 hover:border-gray-400'
-            ]" :style="{ backgroundColor: getColorForTexture('B', texture) }">
-              <!-- 选中指示器 -->
-              <div v-if="selectedBTexture === texture"
-                class="absolute inset-0 bg-black bg-opacity-20 rounded-full flex items-center justify-center">
-                <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd"
-                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                    clip-rule="evenodd" />
-                </svg>
-              </div>
-              <!-- 颜色名称标签 -->
-              <div
-                class="absolute -bottom-8 left-1/2 transform -translate-x-1/2 text-xs text-gray-600 whitespace-nowrap">
-                {{ getColorName('B', texture) }}
+          <div class="grid grid-cols-6 gap-x-4 gap-y-3 justify-items-center">
+            <div v-for="texture in bTextureNames" :key="texture" class="flex flex-col items-center">
+              <button type="button" @click="switchToBTexture(texture)" :class="[
+                'w-14 h-14 md:w-16 md:h-16 rounded-[18px] border border-gray-200 shadow-sm transition-transform duration-200',
+                selectedBTexture === texture ? 'ring-2 ring-offset-2 ring-green-500 scale-105' : 'hover:scale-105'
+              ]" :style="{ backgroundColor: getColorForTexture('B', texture) }" />
+              <div class="text-center leading-tight">
+                <div class="text-[13px] text-gray-800">{{ getColorName('B', texture) }}</div>
+                <div class="text-[11px] text-gray-500">{{ getColorEn('B', texture) }}</div>
               </div>
             </div>
           </div>
         </div>
 
         <!-- 定制完成按钮 -->
-        <div class="pt-4">
-          <svg width="391" height="198" viewBox="0 0 391 198" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect x="65.6152" y="103.578" width="263.272" height="50.1719" rx="25.0859" fill="#FFEBF0" />
-            <g filter="url(#filter0_f_0_1)">
-              <rect x="79.4043" y="103.578" width="235.694" height="48.4016" rx="20" fill="#DFB2BD" />
-            </g>
-            <path
-              d="M170.417 126.184H179.177V127.279H170.417V126.184ZM174.737 129.739H179.792V130.789H174.737V129.739ZM174.152 126.694H175.322V134.299L174.152 134.134V126.694ZM170.612 128.494L171.752 128.614C171.552 130.124 171.207 131.449 170.717 132.589C170.227 133.729 169.557 134.669 168.707 135.409C168.657 135.339 168.577 135.254 168.467 135.154C168.357 135.064 168.242 134.969 168.122 134.869C168.002 134.779 167.892 134.709 167.792 134.659C168.632 134.009 169.272 133.159 169.712 132.109C170.152 131.059 170.452 129.854 170.612 128.494ZM171.332 130.414C171.592 131.174 171.932 131.794 172.352 132.274C172.772 132.744 173.257 133.104 173.807 133.354C174.357 133.604 174.962 133.774 175.622 133.864C176.292 133.954 177.012 133.999 177.782 133.999C177.892 133.999 178.072 133.999 178.322 133.999C178.572 133.999 178.852 133.999 179.162 133.999C179.482 133.999 179.807 133.999 180.137 133.999C180.467 133.999 180.767 133.999 181.037 133.999C181.307 133.989 181.512 133.984 181.652 133.984C181.602 134.074 181.547 134.184 181.487 134.314C181.427 134.454 181.372 134.594 181.322 134.734C181.282 134.884 181.252 135.014 181.232 135.124H180.482H177.722C176.832 135.124 176.007 135.064 175.247 134.944C174.497 134.834 173.817 134.624 173.207 134.314C172.607 134.004 172.072 133.564 171.602 132.994C171.132 132.414 170.737 131.669 170.417 130.759L171.332 130.414ZM168.482 123.259H181.022V126.529H179.867V124.324H169.592V126.529H168.482V123.259ZM173.642 121.774L174.752 121.459C174.922 121.749 175.092 122.069 175.262 122.419C175.442 122.759 175.567 123.054 175.637 123.304L174.482 123.664C174.412 123.424 174.297 123.124 174.137 122.764C173.977 122.404 173.812 122.074 173.642 121.774ZM192.392 122.944H193.457V131.254H192.392V122.944ZM195.062 121.714H196.172V133.804C196.172 134.174 196.122 134.454 196.022 134.644C195.922 134.834 195.757 134.984 195.527 135.094C195.297 135.184 194.977 135.239 194.567 135.259C194.167 135.289 193.687 135.304 193.127 135.304C193.097 135.144 193.047 134.949 192.977 134.719C192.907 134.499 192.832 134.299 192.752 134.119C193.202 134.129 193.612 134.139 193.982 134.149C194.362 134.149 194.622 134.144 194.762 134.134C194.872 134.134 194.947 134.114 194.987 134.074C195.037 134.024 195.062 133.939 195.062 133.819V121.714ZM186.587 121.624H187.667V135.349H186.587V121.624ZM189.752 128.899H190.787V133.009C190.787 133.269 190.757 133.479 190.697 133.639C190.637 133.789 190.512 133.909 190.322 133.999C190.152 134.079 189.917 134.129 189.617 134.149C189.327 134.169 188.977 134.179 188.567 134.179C188.547 134.029 188.507 133.864 188.447 133.684C188.387 133.494 188.322 133.329 188.252 133.189C188.572 133.199 188.847 133.204 189.077 133.204C189.307 133.204 189.462 133.204 189.542 133.204C189.682 133.204 189.752 133.134 189.752 132.994V128.899ZM183.617 128.899H190.172V129.919H184.637V134.134H183.617V128.899ZM182.927 126.334H191.312V127.369H182.927V126.334ZM184.367 123.724H190.727V124.759H184.157L184.367 123.724ZM184.382 121.924L185.432 122.134C185.252 122.914 185.022 123.679 184.742 124.429C184.472 125.169 184.182 125.794 183.872 126.304C183.792 126.264 183.692 126.219 183.572 126.169C183.452 126.109 183.327 126.054 183.197 126.004C183.077 125.954 182.967 125.914 182.867 125.884C183.217 125.374 183.517 124.769 183.767 124.069C184.017 123.359 184.222 122.644 184.382 121.924ZM200.657 125.974H208.817V127.009H200.657V125.974ZM198.092 128.764H211.397V129.814H198.092V128.764ZM202.157 129.439H203.312C203.262 130.289 203.162 131.039 203.012 131.689C202.872 132.329 202.632 132.889 202.292 133.369C201.962 133.849 201.492 134.249 200.882 134.569C200.282 134.899 199.492 135.169 198.512 135.379C198.482 135.279 198.432 135.169 198.362 135.049C198.292 134.939 198.217 134.829 198.137 134.719C198.057 134.609 197.982 134.519 197.912 134.449C198.802 134.279 199.517 134.059 200.057 133.789C200.607 133.509 201.027 133.174 201.317 132.784C201.607 132.384 201.807 131.909 201.917 131.359C202.037 130.809 202.117 130.169 202.157 129.439ZM205.907 129.394H207.047V133.579C207.047 133.789 207.087 133.929 207.167 133.999C207.257 134.059 207.457 134.089 207.767 134.089C207.847 134.089 207.977 134.089 208.157 134.089C208.347 134.089 208.557 134.089 208.787 134.089C209.017 134.089 209.232 134.089 209.432 134.089C209.632 134.089 209.777 134.089 209.867 134.089C210.057 134.089 210.197 134.044 210.287 133.954C210.387 133.864 210.457 133.674 210.497 133.384C210.537 133.094 210.562 132.664 210.572 132.094C210.662 132.154 210.767 132.214 210.887 132.274C211.007 132.334 211.132 132.389 211.262 132.439C211.402 132.479 211.517 132.514 211.607 132.544C211.567 133.224 211.492 133.754 211.382 134.134C211.282 134.514 211.117 134.774 210.887 134.914C210.667 135.054 210.357 135.124 209.957 135.124C209.887 135.124 209.742 135.124 209.522 135.124C209.312 135.124 209.072 135.124 208.802 135.124C208.542 135.124 208.302 135.124 208.082 135.124C207.872 135.124 207.732 135.124 207.662 135.124C207.192 135.124 206.832 135.079 206.582 134.989C206.332 134.899 206.157 134.739 206.057 134.509C205.957 134.289 205.907 133.979 205.907 133.579V129.394ZM198.482 123.289H210.992V126.619H209.822V124.369H199.607V126.619H198.482V123.289ZM203.567 121.759L204.692 121.429C204.902 121.749 205.107 122.109 205.307 122.509C205.507 122.909 205.652 123.254 205.742 123.544L204.557 123.919C204.477 123.639 204.342 123.294 204.152 122.884C203.962 122.474 203.767 122.099 203.567 121.759ZM214.817 127.189H218.537V128.239H214.817V127.189ZM218.102 127.189H219.197C219.197 127.189 219.197 127.219 219.197 127.279C219.197 127.329 219.192 127.394 219.182 127.474C219.182 127.554 219.182 127.619 219.182 127.669C219.162 128.789 219.132 129.699 219.092 130.399C219.062 131.089 219.017 131.614 218.957 131.974C218.907 132.334 218.827 132.584 218.717 132.724C218.597 132.864 218.467 132.964 218.327 133.024C218.197 133.084 218.027 133.129 217.817 133.159C217.617 133.179 217.357 133.189 217.037 133.189C216.717 133.179 216.372 133.164 216.002 133.144C215.992 132.984 215.957 132.809 215.897 132.619C215.847 132.419 215.777 132.244 215.687 132.094C216.027 132.134 216.347 132.159 216.647 132.169C216.947 132.169 217.157 132.169 217.277 132.169C217.387 132.169 217.477 132.159 217.547 132.139C217.627 132.119 217.697 132.074 217.757 132.004C217.827 131.914 217.882 131.714 217.922 131.404C217.972 131.084 218.007 130.604 218.027 129.964C218.057 129.314 218.082 128.449 218.102 127.369V127.189ZM222.317 122.314L222.992 121.624C223.312 121.774 223.642 121.954 223.982 122.164C224.332 122.364 224.657 122.569 224.957 122.779C225.257 122.979 225.507 123.164 225.707 123.334L225.002 124.114C224.812 123.934 224.567 123.739 224.267 123.529C223.967 123.309 223.647 123.094 223.307 122.884C222.967 122.674 222.637 122.484 222.317 122.314ZM224.477 126.379L225.602 126.664C224.962 128.624 224.087 130.324 222.977 131.764C221.867 133.204 220.547 134.379 219.017 135.289C218.957 135.209 218.877 135.109 218.777 134.989C218.677 134.879 218.572 134.764 218.462 134.644C218.362 134.534 218.272 134.439 218.192 134.359C219.712 133.559 220.997 132.484 222.047 131.134C223.097 129.774 223.907 128.189 224.477 126.379ZM214.907 124.114H226.517V125.209H214.907V124.114ZM214.172 124.114H215.342V128.344C215.342 128.874 215.322 129.449 215.282 130.069C215.242 130.689 215.167 131.319 215.057 131.959C214.947 132.599 214.787 133.224 214.577 133.834C214.367 134.434 214.087 134.979 213.737 135.469C213.677 135.389 213.587 135.299 213.467 135.199C213.357 135.099 213.237 135.004 213.107 134.914C212.987 134.824 212.882 134.759 212.792 134.719C213.212 134.099 213.517 133.419 213.707 132.679C213.907 131.939 214.032 131.194 214.082 130.444C214.142 129.684 214.172 128.979 214.172 128.329V124.114ZM220.412 121.579H221.582C221.572 122.969 221.622 124.289 221.732 125.539C221.842 126.789 221.997 127.939 222.197 128.989C222.397 130.029 222.637 130.934 222.917 131.704C223.207 132.464 223.522 133.054 223.862 133.474C224.212 133.894 224.577 134.104 224.957 134.104C225.177 134.104 225.337 133.894 225.437 133.474C225.547 133.044 225.622 132.329 225.662 131.329C225.792 131.449 225.947 131.569 226.127 131.689C226.317 131.809 226.487 131.894 226.637 131.944C226.567 132.804 226.467 133.474 226.337 133.954C226.217 134.434 226.037 134.769 225.797 134.959C225.567 135.159 225.257 135.259 224.867 135.259C224.367 135.259 223.907 135.089 223.487 134.749C223.067 134.409 222.692 133.929 222.362 133.309C222.042 132.689 221.762 131.959 221.522 131.119C221.282 130.269 221.077 129.334 220.907 128.314C220.747 127.294 220.627 126.219 220.547 125.089C220.467 123.949 220.422 122.779 220.412 121.579Z"
-              fill="white" />
-            <path d="M299.73 124.391L304 128.661L299.73 132.931" stroke="white" stroke-linecap="round"
-              stroke-linejoin="round" />
-            <defs>
-              <filter id="filter0_f_0_1" x="-23.8957" y="0.278122" width="442.293" height="254.998"
-                filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
-                <feFlood flood-opacity="0" result="BackgroundImageFix" />
-                <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
-                <feGaussianBlur stdDeviation="51.65" result="effect1_foregroundBlur_0_1" />
-              </filter>
-            </defs>
-          </svg>
-
-
+        <div class="flex justify-center mt-8">
+          <button
+            type="button"
+            class="w-full max-w-[420px] h-16 rounded-[32px] bg-gradient-to-b from-[#F7E3EA] to-[#EED6E3] flex items-center justify-center px-6 shadow-md border border-[#EEC9D9] relative"
+            style="backdrop-filter: blur(2px);"
+          >
+            <span class="text-white text-xl font-medium flex-1 text-center">定制完成</span>
+            <svg class="w-6 h-6 text-white absolute right-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
         </div>
       </div>
     </div>
@@ -203,6 +172,7 @@ import * as THREE from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js'
+import EndButton from './button.vue'
 
 // 环境检测和路径适配工具
 const getTexturePath = (folder: 'A' | 'B', filename: string): string => {
@@ -708,7 +678,7 @@ const loadShoeModel = async () => {
 
   return new Promise((resolve, reject) => {
     loader.load(
-      '/xie.gltf',
+      '/xie1.gltf',
       (gltf) => {
         shoeModel = gltf.scene
 
@@ -904,6 +874,28 @@ const colorMapping: Record<string, { name: string, color: string }> = {
 const getColorName = (folder: 'A' | 'B', textureName: string) => {
   const mapping = colorMapping[textureName]
   return mapping ? mapping.name : textureName.replace('.png', '')
+}
+
+// 英文名映射（展示用）
+const colorEnMapping: Record<string, string> = {
+  // A
+  'A6C.png': 'Sparrow Brew',
+  'A5C.png': 'Sakura Drift',
+  'A4C.png': 'Willow Mist',
+  'A3C.png': 'Luminous Ripple',
+  'A2C.png': 'Imperial Infusion',
+  'AC.png': 'Eternal Sandalwood',
+  // B
+  'B6C.png': 'Gilded Void',
+  'B5C.png': 'Dewbound Violet',
+  'B4C.png': 'Dawn Althea',
+  'B3C.png': 'Willow Wash',
+  'B2C.png': 'Amber Nomad',
+  'BC.png': 'Perpetual Verdure'
+}
+
+const getColorEn = (folder: 'A' | 'B', textureName: string) => {
+  return colorEnMapping[textureName] || textureName.replace('.png', '')
 }
 
 // 获取颜色
