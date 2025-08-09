@@ -19,6 +19,10 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/wait/:a?/:b?',
     component: () => import('@/views/wait/wait.vue'),
+  },
+  {
+    path: '/winning',
+    component: () => import('@/views/winning/winning.vue'),
   }
 ]
 

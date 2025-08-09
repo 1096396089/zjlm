@@ -33,6 +33,23 @@
         <span></span>
         <input type="number" step="0.01" v-model.number="shoeOffsetY" class="w-full border rounded px-1 py-0.5" />
       </div>
+      <div class="font-semibold pt-1">Model rotation (rad)</div>
+      <div class="grid grid-cols-[18px_1fr] items-center gap-2">
+        <label class="text-gray-600">Rx</label>
+        <input type="range" min="-3.14" max="3.14" step="0.01" v-model.number="rotX" />
+        <span></span>
+        <input type="number" step="0.01" v-model.number="rotX" class="w-full border rounded px-1 py-0.5" />
+
+        <label class="text-gray-600">Ry</label>
+        <input type="range" min="-3.14" max="3.14" step="0.01" v-model.number="rotY" />
+        <span></span>
+        <input type="number" step="0.01" v-model.number="rotY" class="w-full border rounded px-1 py-0.5" />
+
+        <label class="text-gray-600">Rz</label>
+        <input type="range" min="-3.14" max="3.14" step="0.01" v-model.number="rotZ" />
+        <span></span>
+        <input type="number" step="0.01" v-model.number="rotZ" class="w-full border rounded px-1 py-0.5" />
+      </div>
       <div class="flex gap-2">
         <button class="px-2 py-1 rounded bg-gray-100" @click="resetCamera">重置</button>
         <button class="px-2 py-1 rounded bg-gray-100" @click="copyCamera">复制</button>
@@ -56,8 +73,12 @@ let animationId = 0
 let shoeModel: THREE.Group | null = null
 let focusCenter = new THREE.Vector3(0, 0, 0)
 // 模型偏移
-const shoeOffsetX = ref(-10)
+const shoeOffsetX = ref(0)
 const shoeOffsetY = ref(0)
+// 模型旋转（默认更接近设计图：轻微俯视，朝右下）
+const rotX = ref(0)
+const rotY = ref(1.9)
+const rotZ = ref(0)
 
 // 从路由中获取两个区域参数（优先 params，其次 query）。
 const route = useRoute()
@@ -83,7 +104,7 @@ const debugMode = computed(() => {
   return v === '1' || v.toLowerCase() === 'true'
 })
 
-// 可调相机坐标
+// 可调相机坐标（给一个合理的初始距离）
 const camX = ref(0)
 const camY = ref(0)
 const camZ = ref(5)
@@ -101,6 +122,12 @@ watch([shoeOffsetX, shoeOffsetY], () => {
   if (!shoeModel) return
   shoeModel.position.x = shoeOffsetX.value
   shoeModel.position.y = shoeOffsetY.value
+})
+
+// 应用旋转
+watch([rotX, rotY, rotZ], () => {
+  if (!shoeModel) return
+  shoeModel.rotation.set(rotX.value, rotY.value, rotZ.value)
 })
 
 const getTexturePath = (area: 'A' | 'B', filename: string): string => {
@@ -197,8 +224,8 @@ const init = () => {
     (gltf) => {
       shoeModel = gltf.scene
       shoeModel.scale.set(14, 14, 14)
-      // 轻微俯视，脚尖朝右下，接近设计图
-      shoeModel.rotation.set(0, -0.65, -0.32)
+      // 初始旋转：更贴近设计图
+      shoeModel.rotation.set(rotX.value, rotY.value, rotZ.value)
 
       scene.add(shoeModel)
 
