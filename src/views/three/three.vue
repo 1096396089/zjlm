@@ -156,19 +156,7 @@
           </button>
         </div>
 
-        <!-- 确认弹窗 -->
-        <div v-if="showConfirm" class="fixed inset-0 z-[200]">
-          <div class="absolute inset-0 bg-black/40" @click="onCancel"></div>
-          <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[347.02px] h-[152.2px] bg-[#F6DBE1] rounded-[45px] shadow-xl border border-[#F1CFE0] text-center relative select-none">
-            <!-- 标题 -->
-            <div class="absolute left-1/2 -translate-x-1/2 top-[24px] w-[141.92px] text-white text-[14px] leading-[21px] font-medium">确认定制？</div>
-            <!-- 按钮组：宽 309.5，间距约 5px，按钮 152.2x50.73 -->
-            <div class="absolute left-1/2 -translate-x-1/2 bottom-[24.7px] w-[309.5px] flex items-center justify-between gap-[5px]">
-              <button @click="onCancel" class="w-[152.2px] h-[50.73px] rounded-[45px] bg-white/25 text-white text-[14px] font-medium">否</button>
-              <button @click="onConfirm" class="w-[152.2px] h-[50.73px] rounded-[45px] bg-white/25 text-white text-[14px] font-medium">是</button>
-            </div>
-          </div>
-        </div>
+
       </div>
     </div>
   </div>
