@@ -19,6 +19,11 @@ let animationId = 0
 let shoeModel: THREE.Group | null = null
 const textureCache: Record<string, THREE.Texture> = {}
 
+
+const rotX = ref(0)
+const rotY = ref(1.9)
+const rotZ = ref(0)
+
 // 基础路径适配（支持子路径部署，与 three.vue 保持一致）
 const withBase = (path: string): string => {
   const base = (import.meta.env.BASE_URL || '/').replace(/\/+$/, '')
@@ -263,6 +268,7 @@ const init = () => {
       (gltf) => {
         shoeModel = gltf.scene
         shoeModel.scale.set(11, 11, 11)
+        shoeModel.rotation.set(rotX.value, rotY.value, rotZ.value)
         scene.add(shoeModel)
 
       // 自动框选模型，确保可见

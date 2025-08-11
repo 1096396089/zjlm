@@ -1,6 +1,6 @@
 <template>
     <div class="p-4">
-        <div class="p-20">
+        <div class="p-20 relative">
 
             <svg id="_鍥惧眰_1" data-name="鍥惧眰 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 781.27 783.65">
 
@@ -204,12 +204,15 @@
                     </g>
                 </g>
             </svg>
-
+            <Three class=" absolute -left-10 top-52"></Three>
         </div>
 
     </div>
 </template>
 
+<script setup>
+import Three from './dan_three.vue';
+</script>
 
 
 <style scoped>

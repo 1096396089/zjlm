@@ -30,7 +30,7 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import('@/views/winning/winning.vue'),
   },
   {
-    path: '/result',
+    path: '/result/:a?/:b?',
     component: () => import('@/views/result/result.vue'),
   }
 ]
