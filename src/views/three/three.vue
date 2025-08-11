@@ -182,20 +182,16 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js'
 
 
-// 环境检测和路径适配工具
+// 基础路径适配（支持子路径部署）
+const withBase = (path: string): string => {
+  const base = (import.meta.env.BASE_URL || '/').replace(/\/+$/, '')
+  const cleaned = path.replace(/^\/+/, '')
+  return `${base}/${cleaned}`
+}
+
+// 贴图路径（A/B）
 const getTexturePath = (folder: 'A' | 'B', filename: string): string => {
-  // 检测环境
-  const isDev = import.meta.env.DEV
-  const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-
-  // 生产环境路径
-  const prodPath = `/tietu/${folder}/${filename}`
-
-  // 开发环境路径
-  const devPath = `/tietu/${folder}/${filename}`
-
-
-  return isDev ? devPath : prodPath
+  return withBase(`tietu/${folder}/${filename}`)
 }
 
 // 响应式数据
@@ -288,6 +284,33 @@ const getMeshByName = (name: string): THREE.Mesh | null => {
 const getMeshByIndex = (index: number): THREE.Mesh | null => {
   const found = meshList.value.find(item => item.index === index)
   return found ? found.mesh : null
+}
+
+// 控制台打印 Mesh 名称/索引/父级
+const logMeshNames = (limit: number = 200) => {
+  if (!meshList.value.length) {
+    console.warn('[Mesh] 当前 meshList 为空')
+    return
+  }
+  const rows = meshList.value.slice(0, limit).map(({ name, index, mesh }) => {
+    const parents: string[] = []
+    let p: any = mesh.parent
+    let depth = 0
+    while (p && depth < 5) {
+      parents.push(String(p.name || ''))
+      p = p.parent
+      depth++
+    }
+    return {
+      index,
+      name,
+      parentChain: parents.join(' > '),
+      materialType: Array.isArray(mesh.material) ? 'Array' : (mesh.material as any)?.type || 'Unknown'
+    }
+  })
+  console.log(`[Mesh] 共 ${meshList.value.length} 个，以下展示前 ${rows.length} 个：`)
+  // @ts-ignore console.table 在浏览器存在
+  console.table(rows)
 }
 
 
@@ -614,6 +637,9 @@ const initThree = async () => {
     // 加载模型
     await loadShoeModel()
 
+    // 加载完成后，给 AB 区和 public 下的默认贴图先贴上
+    applyInitialDefaultTextures()
+
     // 开始渲染循环
     animate()
 
@@ -688,7 +714,7 @@ const loadShoeModel = async () => {
 
   return new Promise((resolve, reject) => {
     loader.load(
-      '/xie.gltf',
+      withBase('xie.gltf'),
       (gltf) => {
         shoeModel = gltf.scene
 
@@ -740,6 +766,9 @@ const loadShoeModel = async () => {
           })
         }
 
+        // 打印 Mesh 列表，方便定位名称
+        logMeshNames(300)
+
         resolve(gltf)
       },
       (progress) => {
@@ -751,6 +780,197 @@ const loadShoeModel = async () => {
       }
     )
   })
+}
+
+// 根据关键词集合匹配 Mesh（支持包含匹配和父级节点名匹配）并应用贴图
+const applyTextureToMeshesByKeywords = (keywords: string[], texturePath: string) => {
+  if (!shoeModel) return
+
+  const textureLoader = new THREE.TextureLoader()
+
+  const tryApply = (texture: THREE.Texture) => {
+    // 确保颜色空间正确
+    // @ts-ignore - 兼容不同 three 版本
+    texture.colorSpace = (THREE as any).SRGBColorSpace || (THREE as any).sRGBEncoding
+    texture.wrapS = THREE.ClampToEdgeWrapping
+    texture.wrapT = THREE.ClampToEdgeWrapping
+    texture.repeat.set(1, 1)
+    texture.offset.set(0, 0)
+    texture.minFilter = THREE.LinearMipmapLinearFilter
+    texture.magFilter = THREE.LinearFilter
+    texture.flipY = false
+
+    let appliedCount = 0
+    const lowers = keywords.map(k => k.trim().toLowerCase()).filter(Boolean)
+
+    shoeModel.traverse((child) => {
+      if (child instanceof THREE.Mesh) {
+        const meshName = (child.name || '').trim()
+        const meshLower = meshName.toLowerCase()
+
+        const parentNames: string[] = []
+        let p: any = child.parent
+        while (p && p !== shoeModel && parentNames.length < 4) {
+          if (p.name) parentNames.push(String(p.name).toLowerCase())
+          p = p.parent
+        }
+
+        const matched = lowers.some(k =>
+          meshLower.includes(k) || parentNames.some(n => n.includes(k))
+        )
+
+        if (matched) {
+          if (child.material instanceof THREE.MeshStandardMaterial) {
+            const newMaterial = child.material.clone()
+            newMaterial.map = texture
+            newMaterial.needsUpdate = true
+            child.material = newMaterial
+            appliedCount++
+          } else if (Array.isArray(child.material)) {
+            child.material = child.material.map((mat) => {
+              if (mat instanceof THREE.MeshStandardMaterial) {
+                const newMat = mat.clone()
+                newMat.map = texture
+                newMat.needsUpdate = true
+                return newMat
+              }
+              return mat
+            })
+            appliedCount++
+          }
+        }
+      }
+    })
+    if (appliedCount === 0) {
+      console.warn('[贴图未匹配] 未找到匹配的 Mesh：', keywords, ' 当前可用Mesh示例：', meshList.value.slice(0, 10))
+    } else {
+      console.info('[贴图已应用]', texturePath, ' 匹配关键词：', keywords, ' 数量：', appliedCount)
+    }
+    return appliedCount
+  }
+
+  const candidates: string[] = Array.from(new Set([
+    texturePath,
+    withBase(texturePath.replace(/^\//, '')),
+    `/` + texturePath.replace(/^\//, ''),
+    texturePath.replace(/^\//, ''),
+    `./` + texturePath.replace(/^\//, ''),
+    `${window.location.origin}${withBase(texturePath.replace(/^\//, ''))}`
+  ]))
+
+  const loadNext = () => {
+    const next = candidates.shift()
+    if (!next) {
+      console.error('[贴图加载失败-所有候选均失败]', texturePath)
+      return
+    }
+    if (textureCache[next]) {
+      tryApply(textureCache[next])
+      return
+    }
+    textureLoader.load(
+      next,
+      (texture) => {
+        textureCache[next] = texture
+        tryApply(texture)
+      },
+      undefined,
+      (err) => {
+        console.error('[贴图加载失败]', next, err)
+        loadNext()
+      }
+    )
+  }
+  loadNext()
+}
+
+// 移除指定网格的材质
+const removeMaterialFromMesh = (keywords: string[]) => {
+  if (!shoeModel) return
+
+  const lowers = keywords.map(k => k.trim().toLowerCase()).filter(Boolean)
+  let removedCount = 0
+
+  shoeModel.traverse((child) => {
+    if (child instanceof THREE.Mesh) {
+      const meshName = (child.name || '').trim()
+      const meshLower = meshName.toLowerCase()
+
+      const parentNames: string[] = []
+      let p: any = child.parent
+      while (p && p !== shoeModel && parentNames.length < 4) {
+        if (p.name) parentNames.push(String(p.name).toLowerCase())
+        p = p.parent
+      }
+
+      const matched = lowers.some(k =>
+        meshLower.includes(k) || parentNames.some(n => n.includes(k))
+      )
+
+      if (matched) {
+        child.material = new THREE.MeshBasicMaterial({ visible: false })
+        removedCount++
+      }
+    }
+  })
+
+  if (removedCount > 0) {
+    console.info('[材质已移除]', keywords, '数量：', removedCount)
+  } else {
+    console.warn('[材质移除失败] 未找到匹配的 Mesh：', keywords)
+  }
+}
+
+// 应用默认贴图：AB + public 根目录的 xiedai/xiedi/xiedian
+const applyInitialDefaultTextures = () => {
+  // A/B 默认
+  applyTextureToMeshA(getTexturePath('A', selectedATexture.value))
+  applyTextureToMeshB(getTexturePath('B', selectedBTexture.value))
+
+  // public 根目录（Vite 会以站点根路径提供）
+  const publicDefaults: Array<{ keywords: string[]; path: string }> = [
+    {
+      path: withBase('tietu/xiedai.png'),
+      keywords: ['xiedai']
+    },
+    {
+      path: withBase('tietu/xiedi.png'),
+      keywords: ['xiedi']
+    },
+    {
+      path: withBase('tietu/xian.png'),
+      keywords: ['xian']
+    },  
+     {
+      path: withBase('tietu/xian2.png'),
+      keywords: ['xian2']
+    },
+    {
+      path: withBase('tietu/xiedian.png'),
+      keywords: ['xiedian']
+    }
+  ]
+
+  publicDefaults.forEach(({ keywords, path }) => applyTextureToMeshesByKeywords(keywords, path))
+
+  // 兜底：对已知精确名称再匹配一次（避免关键词不命中）
+  const applyExact = (meshName: string, path: string) => applyTextureToMeshesByKeywords([meshName], path)
+  applyExact('xiedai', withBase('tietu/xiedai.png'))
+  applyExact('xian', withBase('tietu/xian.png'))     // xian 用专属的 xian.png 贴图
+  applyExact('xiedian', withBase('tietu/xiedian.png'))
+
+  // 兜底2：如果仍未命中，尝试按常见索引（基于你提供的清单顺序，安全起见仅当索引存在时）
+  const byIndex = (idx: number, path: string) => {
+    const item = meshList.value.find(m => m.index === idx)
+    if (item) {
+      applyTextureToMeshesByKeywords([item.name], path)
+    }
+  }
+  byIndex(2, withBase('tietu/xiedai.png'))  // index 2: xiedai
+  byIndex(3, withBase('tietu/xian.png'))    // index 3: xian 用专属的 xian.png 贴图
+  byIndex(7, withBase('tietu/xiedian.png')) // index 7: xiedian
+
+  
 }
 
 // 渲染循环
@@ -953,6 +1173,7 @@ onMounted(async () => {
     ; (window as any).getColorName = getColorName
     ; (window as any).getColorForTexture = getColorForTexture
     ; (window as any).completeCustomization = completeCustomization
+    ; (window as any).dumpMeshNames = (limit?: number) => logMeshNames(limit)
 
 })
 
