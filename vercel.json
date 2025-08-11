@@ -1,6 +1,18 @@
 {
   "routes": [
     {
+      "src": "/music/(.*)",
+      "dest": "/music/$1"
+    },
+    {
+      "src": "/tietu/(.*)",
+      "dest": "/tietu/$1"
+    },
+    {
+      "src": "/(.*\\.(js|css|png|jpg|jpeg|gif|svg|ico|gltf|glb))",
+      "dest": "/$1"
+    },
+    {
       "src": "/(.*)",
       "dest": "/index.html"
     }
