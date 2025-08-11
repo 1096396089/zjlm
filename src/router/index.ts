@@ -9,6 +9,11 @@ const routes: Array<RouteRecordRaw> = [
  
   },
   {
+    path: '/card',
+    component: () => import('../views/card/card.vue'),
+ 
+  },
+  {
     path: '/model',
     component: () => import('../views/three/three.vue'),
   },

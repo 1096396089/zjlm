@@ -11,8 +11,16 @@
     </div>
 
     <div class="flex-1 flex items-center justify-center px-6 z-0">
-      <div class="w-full max-w-[390px] aspect-[1/1]">
-        <Three />
+      <div class="w-full max-w-[390px] aspect-[1/1] relative">
+        <!-- 加载中占位 -->
+        <div v-if="!threeLoaded" class="absolute inset-0 flex items-center justify-center text-black/70">
+          加载中...
+        </div>
+        <!-- 模型，加载完成后再展示 -->
+        <Three v-if="threeLoaded" @loaded="threeLoaded = true" />
+        <!-- 如果 Three 组件在加载完后才显示，此处需先挂载以捕获 loaded 事件。为简单起见，使用双渲染避免闪烁：
+             1) 隐藏态先挂载 Three 捕获事件 2) 加载后切换到可见实例。-->
+        <Three v-else class="opacity-0 pointer-events-none select-none" @loaded="threeLoaded = true" />
       </div>
     </div>
 
@@ -154,4 +162,7 @@
 <script setup lang="ts">
 import Three from './dan_three.vue'
 import TitleCom from './title.vue'
+import { ref } from 'vue'
+
+const threeLoaded = ref(false)
 </script>

@@ -2,6 +2,12 @@
   <div class="w-full h-full relative">
     <div ref="containerRef" class="w-full h-full"></div>
 
+    <!-- 加载中遮罩 -->
+    <div v-if="!loaded"
+      class="absolute inset-0 flex items-center justify-center bg-white/0 text-black z-20">
+      加载中...
+    </div>
+
     <div v-if="debugMode"
       class="absolute top-2 right-2 z-20 bg-white/85 backdrop-blur rounded-md shadow p-3 text-xs space-y-2 w-60">
       <div class="font-semibold">Camera (XYZ)</div>
@@ -65,6 +71,8 @@ import * as THREE from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 
 const containerRef = ref<HTMLElement | null>(null)
+const loaded = ref(false)
+const emit = defineEmits<{ (e: 'loaded'): void }>()
 
 let scene: THREE.Scene
 let camera: THREE.PerspectiveCamera
@@ -260,6 +268,10 @@ const init = () => {
       applyTextureToArea('A', aParam.value)
       applyTextureToArea('B', bParam.value)
       console.log('模型已加载，已应用贴图 A:', aParam.value, 'B:', bParam.value)
+
+      // 标记加载完成并通知父组件
+      loaded.value = true
+      emit('loaded')
     },
     undefined,
     (err) => {
