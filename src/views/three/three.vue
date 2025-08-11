@@ -212,12 +212,12 @@ const cameraPosition = ref({ x: 0, y: 0, z: 5 })
 const showConfirm = ref(false)
 
 // A和B贴图文件名数组
-const aTextureNames = ['A6C.png', 'A5C.png', 'A4C.png', 'A3C.png', 'A2C.png', 'AC.png',]
-const bTextureNames = ['B6C.png', 'B5C.png', 'B4C.png', 'B3C.png', 'B2C.png', 'BC.png',]
+const aTextureNames = ['A1.png', 'A2.png', 'A3.png', 'A4.png', 'A5.png', 'A6.png',]
+const bTextureNames = ['B1.png', 'B2.png', 'B3.png', 'B4.png', 'B5.png', 'B6.png',]
 
 // 当前选中的贴图
-const selectedATexture = ref('AC.png')
-const selectedBTexture = ref('BC.png')
+const selectedATexture = ref('A2.png')
+const selectedBTexture = ref('B3.png')
 
 // 贴图缓存
 const textureCache: Record<string, THREE.Texture> = {}
@@ -688,7 +688,7 @@ const loadShoeModel = async () => {
 
   return new Promise((resolve, reject) => {
     loader.load(
-      '/xie1.gltf',
+      '/xie.gltf',
       (gltf) => {
         shoeModel = gltf.scene
 
@@ -864,20 +864,20 @@ const setupResponsive = () => {
 // 颜色映射表
 const colorMapping: Record<string, { name: string, color: string }> = {
   // A区域颜色
-  'A6C.png': { name: '深棕', color: '#8B4513' },
-  'A5C.png': { name: '玫瑰红', color: '#DC143C' },
-  'A4C.png': { name: '薄荷绿', color: '#98FB98' },
-  'A3C.png': { name: '纯白', color: '#FFFFFF' },
-  'A2C.png': { name: '帝王棕', color: '#8B7355' },
-  'AC.png': { name: '琥珀棕', color: '#D2691E' },
+  'A1.png': { name: '深棕', color: '#8B4513' },
+  'A2.png': { name: '玫瑰红', color: '#DC143C' },
+  'A3.png': { name: '薄荷绿', color: '#98FB98' },
+  'A4.png': { name: '纯白', color: '#FFFFFF' },
+  'A5.png': { name: '帝王棕', color: '#8B7355' },
+  'A6.png': { name: '琥珀棕', color: '#D2691E' },
 
   // B区域颜色
-  'B6C.png': { name: '百里茶', color: '#8B7D6B' },
-  'B5C.png': { name: '栗紫', color: '#722F37' },
-  'B4C.png': { name: '红褐', color: '#A0522D' },
-  'B3C.png': { name: '柳绿', color: '#9ACD32' },
-  'B2C.png': { name: '奶白', color: '#FDF5E6' },
-  'BC.png': { name: '常春', color: '#D2B48C' }
+  'B1.png': { name: '百里茶', color: '#8B7D6B' },
+  'B2.png': { name: '栗紫', color: '#722F37' },
+  'B3.png': { name: '红褐', color: '#A0522D' },
+  'B4.png': { name: '柳绿', color: '#9ACD32' },
+  'B5.png': { name: '奶白', color: '#FDF5E6' },
+  'B6.png': { name: '常春', color: '#D2B48C' }
 }
 
 // 获取颜色名称
@@ -889,19 +889,19 @@ const getColorName = (folder: 'A' | 'B', textureName: string) => {
 // 英文名映射（展示用）
 const colorEnMapping: Record<string, string> = {
   // A
-  'A6C.png': 'Sparrow Brew',
-  'A5C.png': 'Sakura Drift',
-  'A4C.png': 'Willow Mist',
-  'A3C.png': 'Luminous Ripple',
-  'A2C.png': 'Imperial Infusion',
-  'AC.png': 'Eternal Sandalwood',
+  'A1.png': 'Sparrow Brew',
+  'A2.png': 'Sakura Drift',
+  'A3.png': 'Willow Mist',
+  'A4.png': 'Luminous Ripple',
+  'A5.png': 'Imperial Infusion',
+  'A6.png': 'Eternal Sandalwood',
   // B
-  'B6C.png': 'Gilded Void',
-  'B5C.png': 'Dewbound Violet',
-  'B4C.png': 'Dawn Althea',
-  'B3C.png': 'Willow Wash',
-  'B2C.png': 'Amber Nomad',
-  'BC.png': 'Perpetual Verdure'
+  'B1.png': 'Gilded Void',
+  'B2.png': 'Dewbound Violet',
+  'B3.png': 'Dawn Althea',
+  'B4.png': 'Willow Wash',
+  'B5.png': 'Amber Nomad',
+  'B6.png': 'Perpetual Verdure'
 }
 
 const getColorEn = (folder: 'A' | 'B', textureName: string) => {
