@@ -28,6 +28,10 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/winning',
     component: () => import('@/views/winning/winning.vue'),
+  },
+  {
+    path: '/result',
+    component: () => import('@/views/result/result.vue'),
   }
 ]
 
