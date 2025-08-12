@@ -4,7 +4,7 @@
       <Title />
     </div>
 
-    <div class=" relative  w-full flex-1 " @click='$router.push("wait")'>
+    <div class=" relative  w-full flex-1 " @click="$router.push({ path: `/wait/${selectedATexture}/${selectedBTexture}` })">
 
       <div class=" relative  z-30   -left-[1.25rem] w-[90%] h-full bg-cover bg-center  rounded-lg bg-[#e6d5be] "
         style="transform: rotate(-2deg);  ">
@@ -325,7 +325,8 @@
 import { ref } from 'vue'
 import Title from './title.vue'
 import wen from '@/assets/wen.png'
-
+const selectedATexture = ref('A3.png')
+const selectedBTexture = ref('B2.png')
 const options = ref([
   '圆融脑',
   '气氛大王',

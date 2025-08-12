@@ -111,7 +111,7 @@
 
     </div>
 
-    <div class="pb-10 px-8 z-10  flex items-center justify-center" @click="$router.push('model')">
+    <div class="pb-10 px-8 z-10  flex items-center justify-center" @click="$router.push('/model')">
 
 
       <svg width="194" height="38" viewBox="0 0 194 38" fill="none" xmlns="http://www.w3.org/2000/svg">
