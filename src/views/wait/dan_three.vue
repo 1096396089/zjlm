@@ -1,77 +1,18 @@
 <template>
-  <div class="w-full h-full relative">
-    <div ref="containerRef" class="w-full h-full"></div>
-
-    <!-- 加载中遮罩 -->
-    <div v-if="!loaded"
-      class="absolute inset-0 flex items-center justify-center bg-white/0 text-black z-20">
-      加载中...
-    </div>
-
-    <div v-if="debugMode"
-      class="absolute top-2 right-2 z-20 bg-white/85 backdrop-blur rounded-md shadow p-3 text-xs space-y-2 w-60">
-      <div class="font-semibold">Camera (XYZ)</div>
-      <div class="grid grid-cols-[18px_1fr] items-center gap-2">
-        <label class="text-gray-600">X</label>
-        <input type="range" min="-50" max="50" step="0.01" v-model.number="camX" />
-        <span></span>
-        <input type="number" step="0.01" v-model.number="camX" class="w-full border rounded px-1 py-0.5" />
-
-        <label class="text-gray-600">Y</label>
-        <input type="range" min="-50" max="50" step="0.01" v-model.number="camY" />
-        <span></span>
-        <input type="number" step="0.01" v-model.number="camY" class="w-full border rounded px-1 py-0.5" />
-
-        <label class="text-gray-600">Z</label>
-        <input type="range" min="-50" max="50" step="0.01" v-model.number="camZ" />
-        <span></span>
-        <input type="number" step="0.01" v-model.number="camZ" class="w-full border rounded px-1 py-0.5" />
-      </div>
-      <div class="font-semibold pt-1">Model offset</div>
-      <div class="grid grid-cols-[18px_1fr] items-center gap-2">
-        <label class="text-gray-600">X</label>
-        <input type="range" min="-5" max="5" step="0.01" v-model.number="shoeOffsetX" />
-        <span></span>
-        <input type="number" step="0.01" v-model.number="shoeOffsetX" class="w-full border rounded px-1 py-0.5" />
-
-        <label class="text-gray-600">Y</label>
-        <input type="range" min="-5" max="5" step="0.01" v-model.number="shoeOffsetY" />
-        <span></span>
-        <input type="number" step="0.01" v-model.number="shoeOffsetY" class="w-full border rounded px-1 py-0.5" />
-      </div>
-      <div class="font-semibold pt-1">Model rotation (rad)</div>
-      <div class="grid grid-cols-[18px_1fr] items-center gap-2">
-        <label class="text-gray-600">Rx</label>
-        <input type="range" min="-3.14" max="3.14" step="0.01" v-model.number="rotX" />
-        <span></span>
-        <input type="number" step="0.01" v-model.number="rotX" class="w-full border rounded px-1 py-0.5" />
-
-        <label class="text-gray-600">Ry</label>
-        <input type="range" min="-3.14" max="3.14" step="0.01" v-model.number="rotY" />
-        <span></span>
-        <input type="number" step="0.01" v-model.number="rotY" class="w-full border rounded px-1 py-0.5" />
-
-        <label class="text-gray-600">Rz</label>
-        <input type="range" min="-3.14" max="3.14" step="0.01" v-model.number="rotZ" />
-        <span></span>
-        <input type="number" step="0.01" v-model.number="rotZ" class="w-full border rounded px-1 py-0.5" />
-      </div>
-      <div class="flex gap-2">
-        <button class="px-2 py-1 rounded bg-gray-100" @click="resetCamera">重置</button>
-        <button class="px-2 py-1 rounded bg-gray-100" @click="copyCamera">复制</button>
-      </div>
-    </div>
+  <div class="">
+    <div ref="containerRef" class="w-full h-[45%]"></div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref, watch, nextTick, computed } from 'vue'
+import { onMounted, onUnmounted, ref, watch, nextTick } from 'vue'
 import { useRoute } from 'vue-router'
 import * as THREE from 'three'
 import { getClonedGLTF } from '@/util/gltfCache'
+import { loadTextureFromCandidates } from '@/util/textureCache'
+import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js'
 
 const containerRef = ref<HTMLElement | null>(null)
-const loaded = ref(false)
 const emit = defineEmits<{ (e: 'loaded'): void }>()
 
 let scene: THREE.Scene
@@ -79,14 +20,21 @@ let camera: THREE.PerspectiveCamera
 let renderer: THREE.WebGLRenderer
 let animationId = 0
 let shoeModel: THREE.Group | null = null
-let focusCenter = new THREE.Vector3(0, 0, 0)
-// 模型偏移
-const shoeOffsetX = ref(0)
-const shoeOffsetY = ref(0)
-// 模型旋转（默认更接近设计图：轻微俯视，朝右下）
+const textureCache: Record<string, THREE.Texture> = {}
+let pmremGenerator: THREE.PMREMGenerator | null = null
+let roomEnvironment: RoomEnvironment | null = null
+
+
 const rotX = ref(0)
 const rotY = ref(1.9)
 const rotZ = ref(0)
+
+// 基础路径适配（支持子路径部署，与 three.vue 保持一致）
+const withBase = (path: string): string => {
+  const base = (import.meta.env.BASE_URL || '/').replace(/\/+$/, '')
+  const cleaned = path.replace(/^\/+/, '')
+  return `${base}/${cleaned}`
+}
 
 // 从路由中获取两个区域参数（优先 params，其次 query）。
 const route = useRoute()
@@ -106,173 +54,249 @@ const resolveAreaParam = (key: 'a' | 'b', fallback: string): string => {
 const aParam = ref<string>(resolveAreaParam('a', 'AC.png'))
 const bParam = ref<string>(resolveAreaParam('b', 'BC.png'))
 
-// 调试开关：?debug=1
-const debugMode = computed(() => {
-  const v = (route.query.debug as string) || ''
-  return v === '1' || v.toLowerCase() === 'true'
-})
-
-// 可调相机坐标（给一个合理的初始距离）
-const camX = ref(0)
-const camY = ref(0)
-const camZ = ref(5)
-
-const applyCam = () => {
-  if (!camera) return
-  camera.position.set(camX.value, camY.value, camZ.value)
-  camera.lookAt(focusCenter)
-}
-
-watch([camX, camY, camZ], applyCam)
-
-// 应用模型偏移
-watch([shoeOffsetX, shoeOffsetY], () => {
-  if (!shoeModel) return
-  shoeModel.position.x = shoeOffsetX.value
-  shoeModel.position.y = shoeOffsetY.value
-})
-
-// 应用旋转
-watch([rotX, rotY, rotZ], () => {
-  if (!shoeModel) return
-  shoeModel.rotation.set(rotX.value, rotY.value, rotZ.value)
-})
-
 const getTexturePath = (area: 'A' | 'B', filename: string): string => {
   if (!filename) return ''
   // 若传入的是绝对/相对路径，则原样返回
   if (filename.startsWith('http') || filename.startsWith('/') || filename.startsWith('./')) {
+    // 同时适配 withBase 版本
     return filename
   }
   // 确保带扩展名
   const finalName = filename.toLowerCase().endsWith('.png') ? filename : `${filename}.png`
-  return `/tietu/${area}/${finalName}`
+  return withBase(`tietu/${area}/${finalName}`)
 }
 
 const applyTextureToArea = (area: 'A' | 'B', filename: string) => {
   if (!shoeModel || !filename) return
 
-  const loader = new THREE.TextureLoader()
   const path = getTexturePath(area, filename)
-  loader.load(
-    path,
-    (texture) => {
-      texture.wrapS = THREE.ClampToEdgeWrapping
-      texture.wrapT = THREE.ClampToEdgeWrapping
-      texture.flipY = false
-      texture.minFilter = THREE.LinearMipmapLinearFilter
-      texture.magFilter = THREE.LinearFilter
 
-      let applied = false
-      shoeModel!.traverse((child) => {
-        if (child instanceof THREE.Mesh) {
-          if (child.name.trim() === area) {
-            if (Array.isArray(child.material)) {
-              child.material = child.material.map((m) => {
-                if (m instanceof THREE.MeshStandardMaterial) {
-                  const nm = m.clone()
-                  nm.map = texture
-                  nm.needsUpdate = true
-                  return nm
-                }
-                return m
-              })
-            } else if (child.material instanceof THREE.MeshStandardMaterial) {
-              const nm = child.material.clone()
-              nm.map = texture
-              nm.needsUpdate = true
-              child.material = nm
-            }
-            applied = true
+  const tryApply = (texture: THREE.Texture) => {
+    // @ts-ignore 兼容不同 three 版本
+    texture.colorSpace = (THREE as any).SRGBColorSpace || (THREE as any).sRGBEncoding
+    texture.wrapS = THREE.ClampToEdgeWrapping
+    texture.wrapT = THREE.ClampToEdgeWrapping
+    texture.minFilter = THREE.LinearMipmapLinearFilter
+    texture.magFilter = THREE.LinearFilter
+    texture.flipY = false
+
+    shoeModel!.traverse((child) => {
+      if (child instanceof THREE.Mesh) {
+        if (child.name.trim() === area) {
+          if (Array.isArray(child.material)) {
+            child.material = child.material.map((m) => {
+              if (m instanceof THREE.MeshStandardMaterial) {
+                const nm = m.clone()
+                nm.map = texture
+                nm.needsUpdate = true
+                return nm
+              }
+              return m
+            })
+          } else if (child.material instanceof THREE.MeshStandardMaterial) {
+            const nm = child.material.clone()
+            nm.map = texture
+            nm.needsUpdate = true
+            child.material = nm
           }
         }
-      })
-
-      if (!applied) {
-        // 没找到对应区域，不报错，只忽略
       }
-    },
-    undefined,
-    () => {
-      // 贴图加载失败时忽略
-    }
-  )
+    })
+  }
+
+  const candidates: string[] = Array.from(new Set([
+    path,
+    withBase(path.replace(/^\//, '')),
+    '/' + path.replace(/^\//, ''),
+    path.replace(/^\//, ''),
+    './' + path.replace(/^\//, ''),
+  ]))
+
+  loadTextureFromCandidates(candidates)
+    .then((texture) => {
+      const key = candidates[0]
+      if (key) textureCache[key] = texture
+      tryApply(texture)
+    })
+    .catch(() => {})
+}
+
+// 关键词匹配贴图（用于 logo/xiedi/xian/xian2/xiedian 等初始贴图）
+const applyTextureToMeshesByKeywords = (keywords: string[], texturePath: string) => {
+  if (!shoeModel) return
+  const tryApply = (texture: THREE.Texture) => {
+    // @ts-ignore
+    texture.colorSpace = (THREE as any).SRGBColorSpace || (THREE as any).sRGBEncoding
+    texture.wrapS = THREE.ClampToEdgeWrapping
+    texture.wrapT = THREE.ClampToEdgeWrapping
+    texture.minFilter = THREE.LinearMipmapLinearFilter
+    texture.magFilter = THREE.LinearFilter
+    texture.flipY = false
+
+    const lowers = keywords.map(k => k.trim().toLowerCase()).filter(Boolean)
+    shoeModel!.traverse((child) => {
+      if (child instanceof THREE.Mesh) {
+        const meshName = (child.name || '').trim()
+        const meshLower = meshName.toLowerCase()
+
+        const parentNames: string[] = []
+        let p: any = child.parent
+        while (p && p !== shoeModel && parentNames.length < 4) {
+          if (p.name) parentNames.push(String(p.name).toLowerCase())
+          p = p.parent
+        }
+
+        const matched = lowers.some(k =>
+          meshLower.includes(k) || parentNames.some(n => n.includes(k))
+        )
+
+        if (matched) {
+          if (child.material instanceof THREE.MeshStandardMaterial) {
+            const newMaterial = child.material.clone()
+            newMaterial.map = texture
+            newMaterial.needsUpdate = true
+            child.material = newMaterial
+          } else if (Array.isArray(child.material)) {
+            child.material = child.material.map((mat) => {
+              if (mat instanceof THREE.MeshStandardMaterial) {
+                const newMat = mat.clone()
+                newMat.map = texture
+                newMat.needsUpdate = true
+                return newMat
+              }
+              return mat
+            })
+          }
+        }
+      }
+    })
+  }
+
+  const normalized = texturePath.replace(/^\//, '')
+  const candidates: string[] = Array.from(new Set([
+    texturePath,
+    withBase(normalized),
+    '/' + normalized,
+    normalized,
+    './' + normalized,
+  ]))
+
+  loadTextureFromCandidates(candidates)
+    .then((texture) => {
+      const key = candidates[0]
+      if (key) textureCache[key] = texture
+      tryApply(texture)
+    })
+    .catch(() => {})
+}
+
+// 应用默认贴图：AB + public 根目录的 xiedai/xiedi/xian/xian2/xiedian
+const applyInitialDefaultTextures = () => {
+  // 根据当前参数应用 A/B 默认
+  applyTextureToArea('A', aParam.value)
+  applyTextureToArea('B', bParam.value)
+
+  const publicDefaults: Array<{ keywords: string[]; path: string }> = [
+    { path: withBase('tietu/xiedai.png'), keywords: ['xiedai'] },
+    { path: withBase('tietu/xiedi.png'), keywords: ['xiedi', 'logoai'] },
+    { path: withBase('tietu/xian.png'), keywords: ['xian'] },
+    { path: withBase('tietu/xian2.png'), keywords: ['xian2'] },
+    { path: withBase('tietu/xiedian.png'), keywords: ['xiedian'] },
+  ]
+
+  publicDefaults.forEach(({ keywords, path }) => applyTextureToMeshesByKeywords(keywords, path))
+
+  // 兜底精确名称
+  applyTextureToMeshesByKeywords(['xiedai'], withBase('tietu/xiedai.png'))
+  applyTextureToMeshesByKeywords(['xian'], withBase('tietu/xian.png'))
+  applyTextureToMeshesByKeywords(['xiedian'], withBase('tietu/xiedian.png'))
 }
 
 const init = () => {
   if (!containerRef.value) return
 
-  scene = new THREE.Scene()
+    scene = new THREE.Scene()
 
-  const container = containerRef.value
+    const container = containerRef.value
   camera = new THREE.PerspectiveCamera(50, container.clientWidth / container.clientHeight, 0.1, 1000)
-  camera.position.set(camX.value, camY.value, camZ.value)
+  camera.position.set(0, 0, 5)
 
   renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true })
   const initialWidth = container.clientWidth || window.innerWidth
   const initialHeight = container.clientHeight || Math.max(1, Math.round(window.innerHeight * 0.45))
   renderer.setSize(initialWidth, initialHeight)
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-  renderer.outputColorSpace = THREE.SRGBColorSpace
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+    renderer.outputColorSpace = THREE.SRGBColorSpace
+    renderer.toneMapping = THREE.ACESFilmicToneMapping
+    renderer.toneMappingExposure = 1.35
+    ;(renderer as any).physicallyCorrectLights = true
   renderer.setClearColor(0x000000, 0)
-  container.appendChild(renderer.domElement)
+    container.appendChild(renderer.domElement)
 
+  // 环境贴图（提升整体亮度与金属/塑料质感）
+  pmremGenerator = new THREE.PMREMGenerator(renderer)
+  // @ts-ignore 兼容不同 three 版本的 RoomEnvironment 构造
+  roomEnvironment = new RoomEnvironment(renderer)
+  const envTexture = pmremGenerator.fromScene(roomEnvironment as unknown as THREE.Scene, 0.04).texture
+  scene.environment = envTexture
 
-  // 基础灯光
-  const ambient = new THREE.AmbientLight(0xffffff, 3)
+  // 基础与补光灯光
+  const ambient = new THREE.AmbientLight(0xffffff, 2.2)
   scene.add(ambient)
-  const dir = new THREE.DirectionalLight(0xffffff, 3)
-  dir.position.set(5, 5, 5)
+  const hemi = new THREE.HemisphereLight(0xffffff, 0x666666, 0.8)
+  hemi.position.set(0, 5, 0)
+  scene.add(hemi)
+  const dir = new THREE.DirectionalLight(0xffffff, 2.2)
+  dir.position.set(5, 7, 6)
   scene.add(dir)
+  const fill = new THREE.DirectionalLight(0xffffff, 1.2)
+  fill.position.set(-4, 3, -3)
+  scene.add(fill)
 
-  // 加载模型（使用缓存）
-  getClonedGLTF('/xie1.gltf')
+    // 加载模型（使用缓存）
+  getClonedGLTF(withBase('xie.gltf'))
     .then(({ scene: clonedScene }) => {
       shoeModel = clonedScene
-      shoeModel.scale.set(14, 14, 14)
-      // 初始旋转：更贴近设计图
+      shoeModel.scale.set(11, 11, 11)
       shoeModel.rotation.set(rotX.value, rotY.value, rotZ.value)
-
       scene.add(shoeModel)
+
+      // 提升基于环境光的反射强度
+      shoeModel.traverse((child) => {
+        if (child instanceof THREE.Mesh) {
+          const materials = Array.isArray(child.material) ? child.material : [child.material]
+          materials.forEach((m: any) => {
+            if (m) {
+              m.envMapIntensity = 1.2
+              m.needsUpdate = true
+            }
+          })
+        }
+      })
 
       // 自动框选模型，确保可见
       try {
         const box = new THREE.Box3().setFromObject(shoeModel)
         const center = box.getCenter(new THREE.Vector3())
-        focusCenter.copy(center)
         const size = box.getSize(new THREE.Vector3())
         const maxDim = Math.max(size.x, size.y, size.z)
         const fov = (camera.fov * Math.PI) / 180
         const dist = (maxDim / 2) / Math.tan(fov / 2)
-        if (!debugMode.value) {
-          // 相机略向左上偏移并更接近主体（默认构图）
-          camera.position.set(
-            center.x - size.x * 0.06,
-            center.y + size.y * 0.06,
-            center.z + dist * 0.95
-          )
-          camX.value = camera.position.x
-          camY.value = camera.position.y
-          camZ.value = camera.position.z
-        }
-        camera.lookAt(center.x, center.y + size.y * 0.02, center.z)
+        camera.position.set(center.x, center.y, center.z + dist * 1.4)
+        camera.lookAt(center)
         camera.updateProjectionMatrix()
-
       } catch (e) {
         console.warn('无法自动框选模型:', e)
       }
 
-      // 应用查询参数贴图
-      applyTextureToArea('A', aParam.value)
-      applyTextureToArea('B', bParam.value)
-      console.log('模型已加载，已应用贴图 A:', aParam.value, 'B:', bParam.value)
-
-      // 标记加载完成并通知父组件
-      loaded.value = true
+      // 初始贴图：A/B + logo/xiedi/xian/xiedian 等
+      applyInitialDefaultTextures()
+      console.log('模型已加载，已应用默认贴图 A:', aParam.value, 'B:', bParam.value)
+      // 通知父组件加载完成，用于隐藏“加载中”占位并显示画面
       emit('loaded')
     })
     .catch((err) => {
-      console.error('模型加载失败 /xie1.gltf:', err)
+      console.error('模型加载失败 xie.gltf:', err)
     })
 
   const onResize = () => {
@@ -297,8 +321,8 @@ const init = () => {
 
   const renderLoop = () => {
     animationId = requestAnimationFrame(renderLoop)
-    renderer.render(scene, camera)
-  }
+  renderer.render(scene, camera)
+}
   renderLoop()
 
   // 清理函数
@@ -306,32 +330,21 @@ const init = () => {
     window.removeEventListener('resize', onResize)
     if (animationId) cancelAnimationFrame(animationId)
     if (renderer) renderer.dispose()
+    if (pmremGenerator) { pmremGenerator.dispose(); pmremGenerator = null }
+    if (roomEnvironment && (roomEnvironment as any).dispose) { (roomEnvironment as any).dispose(); roomEnvironment = null }
+    // @ts-ignore
+    if (scene) scene.environment = null
     if (ro) ro.disconnect()
   }
 }
 
-let cleanup: () => void = () => { }
+let cleanup: () => void = () => {}
 
 onMounted(async () => {
   // 等待一帧，确保 Tailwind 类已应用并参与布局
   await nextTick()
   init()
 })
-
-const resetCamera = () => {
-  camX.value = 0
-  camY.value = 0
-  camZ.value = 5
-  applyCam()
-}
-
-const copyCamera = async () => {
-  const text = `camera.position.set(${camX.value.toFixed(3)}, ${camY.value.toFixed(3)}, ${camZ.value.toFixed(3)})`
-  try {
-    await navigator.clipboard.writeText(text)
-    // no-op: 静默复制
-  } catch { }
-}
 
 // 监听路由变化，支持在同页内切换不同参数
 watch(
@@ -353,4 +366,7 @@ onUnmounted(() => {
 })
 </script>
 
-<style scoped></style>
+<style scoped>
+</style>
+
+
