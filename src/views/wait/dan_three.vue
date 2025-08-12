@@ -9,6 +9,7 @@ import { onMounted, onUnmounted, ref, watch, nextTick } from 'vue'
 import { useRoute } from 'vue-router'
 import * as THREE from 'three'
 import { getClonedGLTF } from '@/util/gltfCache'
+import { loadTextureFromCandidates } from '@/util/textureCache'
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js'
 
 const containerRef = ref<HTMLElement | null>(null)
@@ -68,7 +69,6 @@ const getTexturePath = (area: 'A' | 'B', filename: string): string => {
 const applyTextureToArea = (area: 'A' | 'B', filename: string) => {
   if (!shoeModel || !filename) return
 
-  const textureLoader = new THREE.TextureLoader()
   const path = getTexturePath(area, filename)
 
   const tryApply = (texture: THREE.Texture) => {
@@ -112,33 +112,18 @@ const applyTextureToArea = (area: 'A' | 'B', filename: string) => {
     './' + path.replace(/^\//, ''),
   ]))
 
-  const loadNext = () => {
-    const next = candidates.shift()
-    if (!next) return
-    if (textureCache[next]) {
-      tryApply(textureCache[next])
-      return
-    }
-    textureLoader.load(
-      next,
-      (texture) => {
-        textureCache[next] = texture
-        tryApply(texture)
-      },
-      undefined,
-      () => {
-        loadNext()
-      }
-    )
-  }
-  loadNext()
+  loadTextureFromCandidates(candidates)
+    .then((texture) => {
+      const key = candidates[0]
+      if (key) textureCache[key] = texture
+      tryApply(texture)
+    })
+    .catch(() => {})
 }
 
 // 关键词匹配贴图（用于 logo/xiedi/xian/xian2/xiedian 等初始贴图）
 const applyTextureToMeshesByKeywords = (keywords: string[], texturePath: string) => {
   if (!shoeModel) return
-  const textureLoader = new THREE.TextureLoader()
-
   const tryApply = (texture: THREE.Texture) => {
     // @ts-ignore
     texture.colorSpace = (THREE as any).SRGBColorSpace || (THREE as any).sRGBEncoding
@@ -196,26 +181,13 @@ const applyTextureToMeshesByKeywords = (keywords: string[], texturePath: string)
     './' + normalized,
   ]))
 
-  const loadNext = () => {
-    const next = candidates.shift()
-    if (!next) return
-    if (textureCache[next]) {
-      tryApply(textureCache[next])
-      return
-    }
-    textureLoader.load(
-      next,
-      (texture) => {
-        textureCache[next] = texture
-        tryApply(texture)
-      },
-      undefined,
-      () => {
-        loadNext()
-      }
-    )
-  }
-  loadNext()
+  loadTextureFromCandidates(candidates)
+    .then((texture) => {
+      const key = candidates[0]
+      if (key) textureCache[key] = texture
+      tryApply(texture)
+    })
+    .catch(() => {})
 }
 
 // 应用默认贴图：AB + public 根目录的 xiedai/xiedi/xian/xian2/xiedian

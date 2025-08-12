@@ -250,6 +250,7 @@
 import { ref, onMounted, onUnmounted, nextTick } from 'vue'
 import * as THREE from 'three'
 import { getClonedGLTF } from '@/util/gltfCache'
+import { loadTextureFromCandidates } from '@/util/textureCache'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js'
 
@@ -418,182 +419,104 @@ const switchToBTexture = (textureName: string) => {
 const applyTextureToMeshA = (texturePath: string) => {
   if (!shoeModel) return
 
-  const textureLoader = new THREE.TextureLoader()
-
-  // 添加错误处理和备用路径
-  const tryLoadTexture = (path: string, fallbackPaths: string[] = []) => {
-    textureLoader.load(
-      path,
-      (texture) => {
-        // 成功加载贴图
-        // UV贴图设置 - 不重复，按UV坐标映射
-        texture.wrapS = THREE.ClampToEdgeWrapping
-        texture.wrapT = THREE.ClampToEdgeWrapping
-        texture.repeat.set(1, 1)
-        texture.offset.set(0, 0)
-        texture.minFilter = THREE.LinearMipmapLinearFilter
-        texture.magFilter = THREE.LinearFilter
-        texture.flipY = false // 根据需要调整Y轴翻转
-
-        let appliedCount = 0
-
-        // 查找名称为'A'的mesh（精确匹配）
-        shoeModel.traverse((child) => {
-          if (child instanceof THREE.Mesh) {
-            const meshName = child.name.trim()
-            // 精确匹配名称为"A"的Mesh
-            if (meshName === 'A') {
-
-              if (child.material instanceof THREE.MeshStandardMaterial) {
-                // 克隆材质避免影响其他使用相同材质的对象
-                const newMaterial = child.material.clone()
-                newMaterial.map = texture
-                newMaterial.needsUpdate = true
-                child.material = newMaterial
-                appliedCount++
-              } else if (Array.isArray(child.material)) {
-                // 如果是材质数组，更新所有材质
-                child.material = child.material.map((mat) => {
-                  if (mat instanceof THREE.MeshStandardMaterial) {
-                    const newMat = mat.clone()
-                    newMat.map = texture
-                    newMat.needsUpdate = true
-                    return newMat
-                  }
-                  return mat
-                })
-                appliedCount++
-              }
-            }
-          }
-        })
-
-        if (appliedCount === 0) {
-          shoeModel.traverse((child) => {
-            if (child instanceof THREE.Mesh) {
-            }
-          })
-        } else {
-        }
-      },
-      (progress) => {
-        console.log(`A贴图加载进度: ${path}`, progress)
-      },
-      (error) => {
-        console.error(`A贴图加载失败: ${path}`, error)
-
-        // 尝试备用路径
-        if (fallbackPaths.length > 0) {
-          const nextPath = fallbackPaths.shift()!
-          tryLoadTexture(nextPath, fallbackPaths)
-        } else {
-        }
-      }
-    )
-  }
-
-  // 定义多个可能的路径
   const fileName = texturePath.split('/').pop()!
-  const possiblePaths = [
-    texturePath, // 主路径
-    `/assets/tietu/A/${fileName}`, // 备用路径1
-    `./tietu/A/${fileName}`, // 备用路径2
-    `./src/assets/tietu/A/${fileName}` // 备用路径3
+  const candidates = [
+    texturePath,
+    `/assets/tietu/A/${fileName}`,
+    `./tietu/A/${fileName}`,
+    `./src/assets/tietu/A/${fileName}`,
   ]
 
-  const mainPath = possiblePaths.shift()!
-  tryLoadTexture(mainPath, possiblePaths)
+  loadTextureFromCandidates(candidates)
+    .then((texture) => {
+      texture.wrapS = THREE.ClampToEdgeWrapping
+      texture.wrapT = THREE.ClampToEdgeWrapping
+      texture.repeat.set(1, 1)
+      texture.offset.set(0, 0)
+      texture.minFilter = THREE.LinearMipmapLinearFilter
+      texture.magFilter = THREE.LinearFilter
+      texture.flipY = false
+
+      let appliedCount = 0
+      shoeModel!.traverse((child) => {
+        if (child instanceof THREE.Mesh) {
+          const meshName = child.name.trim()
+          if (meshName === 'A') {
+            if (child.material instanceof THREE.MeshStandardMaterial) {
+              const newMaterial = child.material.clone()
+              newMaterial.map = texture
+              newMaterial.needsUpdate = true
+              child.material = newMaterial
+              appliedCount++
+            } else if (Array.isArray(child.material)) {
+              child.material = child.material.map((mat) => {
+                if (mat instanceof THREE.MeshStandardMaterial) {
+                  const newMat = mat.clone()
+                  newMat.map = texture
+                  newMat.needsUpdate = true
+                  return newMat
+                }
+                return mat
+              })
+              appliedCount++
+            }
+          }
+        }
+      })
+    })
+    .catch(() => {})
 }
 
 // 应用贴图到B mesh
 const applyTextureToMeshB = (texturePath: string) => {
   if (!shoeModel) return
 
-  const textureLoader = new THREE.TextureLoader()
-
-  // 添加错误处理和备用路径
-  const tryLoadTexture = (path: string, fallbackPaths: string[] = []) => {
-    textureLoader.load(
-      path,
-      (texture) => {
-        // 成功加载贴图
-
-        // UV贴图设置 - 不重复，按UV坐标映射
-        texture.wrapS = THREE.ClampToEdgeWrapping
-        texture.wrapT = THREE.ClampToEdgeWrapping
-        texture.repeat.set(1, 1)
-        texture.offset.set(0, 0)
-        texture.minFilter = THREE.LinearMipmapLinearFilter
-        texture.magFilter = THREE.LinearFilter
-        texture.flipY = false // 根据需要调整Y轴翻转
-
-        let appliedCount = 0
-
-        // 查找名称为'B'的mesh（精确匹配）
-        shoeModel.traverse((child) => {
-          if (child instanceof THREE.Mesh) {
-            const meshName = child.name.trim()
-            // 精确匹配名称为"B"的Mesh
-            if (meshName === 'B') {
-
-              if (child.material instanceof THREE.MeshStandardMaterial) {
-                // 克隆材质避免影响其他使用相同材质的对象
-                const newMaterial = child.material.clone()
-                newMaterial.map = texture
-                newMaterial.needsUpdate = true
-                child.material = newMaterial
-                appliedCount++
-              } else if (Array.isArray(child.material)) {
-                // 如果是材质数组，更新所有材质
-                child.material = child.material.map((mat) => {
-                  if (mat instanceof THREE.MeshStandardMaterial) {
-                    const newMat = mat.clone()
-                    newMat.map = texture
-                    newMat.needsUpdate = true
-                    return newMat
-                  }
-                  return mat
-                })
-                appliedCount++
-              }
-            }
-          }
-        })
-
-        if (appliedCount === 0) {
-          // 输出所有可用的Mesh名称供参考
-          shoeModel.traverse((child) => {
-            if (child instanceof THREE.Mesh) {
-            }
-          })
-        } else {
-        }
-      },
-      (progress) => {
-      },
-      (error) => {
-
-        // 尝试备用路径
-        if (fallbackPaths.length > 0) {
-          const nextPath = fallbackPaths.shift()!
-          tryLoadTexture(nextPath, fallbackPaths)
-        } else {
-        }
-      }
-    )
-  }
-
-  // 定义多个可能的路径
   const fileName = texturePath.split('/').pop()!
-  const possiblePaths = [
-    texturePath, // 主路径
-    `/assets/tietu/B/${fileName}`, // 备用路径1
-    `./tietu/B/${fileName}`, // 备用路径2
-    `./src/assets/tietu/B/${fileName}` // 备用路径3
+  const candidates = [
+    texturePath,
+    `/assets/tietu/B/${fileName}`,
+    `./tietu/B/${fileName}`,
+    `./src/assets/tietu/B/${fileName}`,
   ]
 
-  const mainPath = possiblePaths.shift()!
-  tryLoadTexture(mainPath, possiblePaths)
+  loadTextureFromCandidates(candidates)
+    .then((texture) => {
+      texture.wrapS = THREE.ClampToEdgeWrapping
+      texture.wrapT = THREE.ClampToEdgeWrapping
+      texture.repeat.set(1, 1)
+      texture.offset.set(0, 0)
+      texture.minFilter = THREE.LinearMipmapLinearFilter
+      texture.magFilter = THREE.LinearFilter
+      texture.flipY = false
+
+      let appliedCount = 0
+      shoeModel!.traverse((child) => {
+        if (child instanceof THREE.Mesh) {
+          const meshName = child.name.trim()
+          if (meshName === 'B') {
+            if (child.material instanceof THREE.MeshStandardMaterial) {
+              const newMaterial = child.material.clone()
+              newMaterial.map = texture
+              newMaterial.needsUpdate = true
+              child.material = newMaterial
+              appliedCount++
+            } else if (Array.isArray(child.material)) {
+              child.material = child.material.map((mat) => {
+                if (mat instanceof THREE.MeshStandardMaterial) {
+                  const newMat = mat.clone()
+                  newMat.map = texture
+                  newMat.needsUpdate = true
+                  return newMat
+                }
+                return mat
+              })
+              appliedCount++
+            }
+          }
+        }
+      })
+    })
+    .catch(() => {})
 }
 
 
@@ -847,8 +770,6 @@ const loadShoeModel = async () => {
 const applyTextureToMeshesByKeywords = (keywords: string[], texturePath: string) => {
   if (!shoeModel) return
 
-  const textureLoader = new THREE.TextureLoader()
-
   const tryApply = (texture: THREE.Texture) => {
     // 确保颜色空间正确
     // @ts-ignore - 兼容不同 three 版本
@@ -919,30 +840,15 @@ const applyTextureToMeshesByKeywords = (keywords: string[], texturePath: string)
     `${window.location.origin}${withBase(texturePath.replace(/^\//, ''))}`
   ]))
 
-  const loadNext = () => {
-    const next = candidates.shift()
-    if (!next) {
-      console.error('[贴图加载失败-所有候选均失败]', texturePath)
-      return
-    }
-    if (textureCache[next]) {
-      tryApply(textureCache[next])
-      return
-    }
-    textureLoader.load(
-      next,
-      (texture) => {
-        textureCache[next] = texture
-        tryApply(texture)
-      },
-      undefined,
-      (err) => {
-        console.error('[贴图加载失败]', next, err)
-        loadNext()
-      }
-    )
-  }
-  loadNext()
+  loadTextureFromCandidates(candidates)
+    .then((texture) => {
+      const key = candidates[0]
+      if (key) textureCache[key] = texture
+      tryApply(texture)
+    })
+    .catch((err) => {
+      console.error('[贴图加载失败-所有候选均失败]', texturePath, err)
+    })
 }
 
 // 移除指定网格的材质
