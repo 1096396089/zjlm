@@ -25,5 +25,6 @@ import { RouterView } from 'vue-router'
   z-index: 1;
   min-height: 100vh;
   width: 100%;
+  overflow: hidden; 
 }
 </style>
