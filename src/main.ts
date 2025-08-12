@@ -6,7 +6,6 @@ import 'element-plus/dist/index.css'
 import App from './App.vue'
 import router from './router'
 import './index.css'
-// 导入自定义主题样式，确保它在其他样式之后导入以覆盖默认样式
 
 const app = createApp(App)
 
