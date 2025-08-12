@@ -9,6 +9,7 @@ import { onMounted, onUnmounted, ref, watch, nextTick } from 'vue'
 import { useRoute } from 'vue-router'
 import * as THREE from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
+import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js'
 
 const containerRef = ref<HTMLElement | null>(null)
 
@@ -18,6 +19,8 @@ let renderer: THREE.WebGLRenderer
 let animationId = 0
 let shoeModel: THREE.Group | null = null
 const textureCache: Record<string, THREE.Texture> = {}
+let pmremGenerator: THREE.PMREMGenerator | null = null
+let roomEnvironment: RoomEnvironment | null = null
 
 
 const rotX = ref(0)
@@ -251,15 +254,31 @@ const init = () => {
   renderer.setSize(initialWidth, initialHeight)
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
     renderer.outputColorSpace = THREE.SRGBColorSpace
+    renderer.toneMapping = THREE.ACESFilmicToneMapping
+    renderer.toneMappingExposure = 1.35
+    ;(renderer as any).physicallyCorrectLights = true
   renderer.setClearColor(0x000000, 0)
     container.appendChild(renderer.domElement)
 
-  // 基础灯光
-  const ambient = new THREE.AmbientLight(0xffffff, 3)
+  // 环境贴图（提升整体亮度与金属/塑料质感）
+  pmremGenerator = new THREE.PMREMGenerator(renderer)
+  // @ts-ignore 兼容不同 three 版本的 RoomEnvironment 构造
+  roomEnvironment = new RoomEnvironment(renderer)
+  const envTexture = pmremGenerator.fromScene(roomEnvironment as unknown as THREE.Scene, 0.04).texture
+  scene.environment = envTexture
+
+  // 基础与补光灯光
+  const ambient = new THREE.AmbientLight(0xffffff, 2.2)
   scene.add(ambient)
-  const dir = new THREE.DirectionalLight(0xffffff, 3)
-  dir.position.set(5, 5, 5)
+  const hemi = new THREE.HemisphereLight(0xffffff, 0x666666, 0.8)
+  hemi.position.set(0, 5, 0)
+  scene.add(hemi)
+  const dir = new THREE.DirectionalLight(0xffffff, 2.2)
+  dir.position.set(5, 7, 6)
   scene.add(dir)
+  const fill = new THREE.DirectionalLight(0xffffff, 1.2)
+  fill.position.set(-4, 3, -3)
+  scene.add(fill)
 
     // 加载模型
   const loader = new GLTFLoader()
@@ -270,6 +289,19 @@ const init = () => {
         shoeModel.scale.set(11, 11, 11)
         shoeModel.rotation.set(rotX.value, rotY.value, rotZ.value)
         scene.add(shoeModel)
+
+        // 提升基于环境光的反射强度
+        shoeModel.traverse((child) => {
+          if (child instanceof THREE.Mesh) {
+            const materials = Array.isArray(child.material) ? child.material : [child.material]
+            materials.forEach((m: any) => {
+              if (m) {
+                m.envMapIntensity = 1.2
+                m.needsUpdate = true
+              }
+            })
+          }
+        })
 
       // 自动框选模型，确保可见
       try {
@@ -327,6 +359,10 @@ const init = () => {
     window.removeEventListener('resize', onResize)
     if (animationId) cancelAnimationFrame(animationId)
     if (renderer) renderer.dispose()
+    if (pmremGenerator) { pmremGenerator.dispose(); pmremGenerator = null }
+    if (roomEnvironment && (roomEnvironment as any).dispose) { (roomEnvironment as any).dispose(); roomEnvironment = null }
+    // @ts-ignore
+    if (scene) scene.environment = null
     if (ro) ro.disconnect()
   }
 }
