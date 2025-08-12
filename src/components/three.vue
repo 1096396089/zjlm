@@ -292,7 +292,7 @@
   <script setup lang="ts">
   import { ref, onMounted, onUnmounted, nextTick } from 'vue'
   import * as THREE from 'three'
-  import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
+import { getClonedGLTF } from '@/util/gltfCache'
   import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
   import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js'
   
@@ -1102,107 +1102,97 @@
   
   // 修改加载鞋子模型函数
   const loadShoeModel = async () => {
-    const loader = new GLTFLoader()
-    
-    return new Promise((resolve, reject) => {
-      loader.load(
-        '/xie.gltf',
-        (gltf) => {
-          shoeModel = gltf.scene
-          
-          // 设置模型属性 - 进一步增大缩放比例
-          shoeModel.scale.set(10, 10, 10)
-          shoeModel.position.set(0, -1, 0)
-          
-          // 输出所有Mesh信息
-          console.log('=== 鞋子模型Mesh信息 ===')
-          let meshIndex = 0
-          
-          // 遍历模型，设置材质和阴影，并输出详细信息
-          shoeModel.traverse((child) => {
-            if (child instanceof THREE.Mesh) {
-              console.log(`--- Mesh ${meshIndex} ---`)
-              console.log('名称:', child.name || '未命名')
-              console.log('类型:', child.type)
-              console.log('Mesh对象:', child)
-              console.log('几何体:', child.geometry)
-              console.log('材质:', child.material)
-              
-              // 保存原始材质到userData
-              if (child.material) {
-                child.userData.originalMaterial = child.material.clone()
-                
-                if (Array.isArray(child.material)) {
-                  console.log('材质数组:')
-                  child.material.forEach((mat, index) => {
-                    console.log(`  材质 ${index}:`, mat)
-                    console.log(`  材质名称:`, mat.name || '未命名')
-                    console.log(`  材质类型:`, mat.type)
-                    if (mat.map) console.log(`  贴图:`, mat.map)
-                    if (mat.normalMap) console.log(`  法线贴图:`, mat.normalMap)
-                    if (mat.roughnessMap) console.log(`  粗糙度贴图:`, mat.roughnessMap)
-                    if (mat.metalnessMap) console.log(`  金属度贴图:`, mat.metalnessMap)
-                  })
-                } else {
-                  console.log('材质名称:', child.material.name || '未命名')
-                  console.log('材质类型:', child.material.type)
-                  if (child.material.map) console.log('贴图:', child.material.map)
-                  if (child.material.normalMap) console.log('法线贴图:', child.material.normalMap)
-                  if (child.material.roughnessMap) console.log('粗糙度贴图:', child.material.roughnessMap)
-                  if (child.material.metalnessMap) console.log('金属度贴图:', child.material.metalnessMap)
-                }
-              }
-              
-              console.log('位置:', child.position)
-              console.log('旋转:', child.rotation)
-              console.log('缩放:', child.scale)
-              console.log('包围盒:', child.geometry.boundingBox)
-              console.log('顶点数:', child.geometry.attributes.position?.count || 0)
-              console.log('UV坐标:', child.geometry.attributes.uv ? '有' : '无')
-              if (child.geometry.attributes.uv) {
-                console.log('UV数据:', child.geometry.attributes.uv)
-              }
-              console.log('---')
-              
-              child.castShadow = true
-              child.receiveShadow = true
-              
-              // 如果是鞋子主体，设置可变色材质
-              if (child.material) {
-                child.material.needsUpdate = true
-              }
-              
-              meshList.value.push({ name: child.name || `Mesh ${meshIndex}`, index: meshIndex, mesh: child })
-              meshIndex++
+    try {
+      const { scene: clonedScene, animations } = await getClonedGLTF('/xie.gltf')
+      shoeModel = clonedScene
+
+      // 设置模型属性 - 进一步增大缩放比例
+      shoeModel.scale.set(10, 10, 10)
+      shoeModel.position.set(0, -1, 0)
+
+      // 输出所有Mesh信息
+      console.log('=== 鞋子模型Mesh信息 ===')
+      let meshIndex = 0
+
+      // 遍历模型，设置材质和阴影，并输出详细信息
+      shoeModel.traverse((child) => {
+        if (child instanceof THREE.Mesh) {
+          console.log(`--- Mesh ${meshIndex} ---`)
+          console.log('名称:', child.name || '未命名')
+          console.log('类型:', child.type)
+          console.log('Mesh对象:', child)
+          console.log('几何体:', child.geometry)
+          console.log('材质:', child.material)
+
+          // 保存原始材质到userData
+          if (child.material) {
+            child.userData.originalMaterial = (Array.isArray(child.material)
+              ? child.material[0]
+              : child.material
+            )?.clone?.()
+
+            if (Array.isArray(child.material)) {
+              console.log('材质数组:')
+              child.material.forEach((mat, index) => {
+                console.log(`  材质 ${index}:`, mat)
+                console.log(`  材质名称:`, mat.name || '未命名')
+                console.log(`  材质类型:`, mat.type)
+                if ((mat as any).map) console.log(`  贴图:`, (mat as any).map)
+                if ((mat as any).normalMap) console.log(`  法线贴图:`, (mat as any).normalMap)
+                if ((mat as any).roughnessMap) console.log(`  粗糙度贴图:`, (mat as any).roughnessMap)
+                if ((mat as any).metalnessMap) console.log(`  金属度贴图:`, (mat as any).metalnessMap)
+              })
+            } else {
+              const mat = child.material as any
+              console.log('材质名称:', mat?.name || '未命名')
+              console.log('材质类型:', mat?.type)
+              if (mat?.map) console.log('贴图:', mat.map)
+              if (mat?.normalMap) console.log('法线贴图:', mat.normalMap)
+              if (mat?.roughnessMap) console.log('粗糙度贴图:', mat.roughnessMap)
+              if (mat?.metalnessMap) console.log('金属度贴图:', mat.metalnessMap)
             }
-          })
-          
-          console.log(`总共找到 ${meshIndex} 个Mesh`)
-          console.log('完整模型结构:', gltf.scene)
-          console.log('=== Mesh信息输出完成 ===')
-          
-          scene.add(shoeModel)
-          
-          // 如果有动画，设置动画混合器
-          if (gltf.animations.length > 0) {
-            mixer = new THREE.AnimationMixer(shoeModel)
-            gltf.animations.forEach((clip) => {
-              const action = mixer.clipAction(clip)
-              action.play()
-            })
           }
-          
-          resolve(gltf)
-        },
-        (progress) => {
-          loadingProgress.value = Math.round((progress.loaded / progress.total) * 100)
-        },
-        (err) => {
-          console.error('模型加载失败:', err)
-          reject(err)
+
+          console.log('位置:', child.position)
+          console.log('旋转:', child.rotation)
+          console.log('缩放:', child.scale)
+          console.log('包围盒:', child.geometry?.boundingBox)
+          console.log('顶点数:', child.geometry?.attributes?.position?.count || 0)
+          console.log('UV坐标:', child.geometry?.attributes?.uv ? '有' : '无')
+          if (child.geometry?.attributes?.uv) {
+            console.log('UV数据:', child.geometry.attributes.uv)
+          }
+          console.log('---')
+
+          child.castShadow = true
+          child.receiveShadow = true
+
+          // 如果是鞋子主体，设置可变色材质
+          if (child.material) {
+            ;(child.material as any).needsUpdate = true
+          }
+
+          meshList.value.push({ name: child.name || `Mesh ${meshIndex}`, index: meshIndex, mesh: child })
+          meshIndex++
         }
-      )
-    })
+      })
+
+      console.log('=== Mesh信息输出完成 ===')
+
+      scene.add(shoeModel)
+
+      // 如果有动画，设置动画混合器
+      if (animations && animations.length > 0) {
+        mixer = new THREE.AnimationMixer(shoeModel)
+        animations.forEach((clip) => {
+          const action = mixer.clipAction(clip)
+          action.play()
+        })
+      }
+    } catch (err) {
+      console.error('模型加载失败:', err)
+      throw err
+    }
   }
   
   // 渲染循环

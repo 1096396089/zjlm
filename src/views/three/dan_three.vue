@@ -8,7 +8,7 @@
 import { onMounted, onUnmounted, ref, watch, nextTick } from 'vue'
 import { useRoute } from 'vue-router'
 import * as THREE from 'three'
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
+import { getClonedGLTF } from '@/util/gltfCache'
 
 const containerRef = ref<HTMLElement | null>(null)
 
@@ -256,14 +256,12 @@ const init = () => {
   dir.position.set(5, 5, 5)
   scene.add(dir)
 
-    // 加载模型
-  const loader = new GLTFLoader()
-    loader.load(
-      withBase('xie.gltf'),
-      (gltf) => {
-        shoeModel = gltf.scene
-        shoeModel.scale.set(11, 11, 11)
-        scene.add(shoeModel)
+  // 加载模型（使用缓存）
+  getClonedGLTF(withBase('xie.gltf'))
+    .then(({ scene: clonedScene }) => {
+      shoeModel = clonedScene
+      shoeModel.scale.set(11, 11, 11)
+      scene.add(shoeModel)
 
       // 自动框选模型，确保可见
       try {
@@ -283,12 +281,10 @@ const init = () => {
       // 初始贴图：A/B + logo/xiedi/xian/xiedian 等
       applyInitialDefaultTextures()
       console.log('模型已加载，已应用默认贴图 A:', aParam.value, 'B:', bParam.value)
-    },
-    undefined,
-      (err) => {
-      console.error('模型加载失败 /xie1.gltf:', err)
-    }
-  )
+    })
+    .catch((err) => {
+      console.error('模型加载失败 xie.gltf:', err)
+    })
 
   const onResize = () => {
     if (!containerRef.value) return

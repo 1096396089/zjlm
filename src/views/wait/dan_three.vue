@@ -68,7 +68,7 @@
 import { onMounted, onUnmounted, ref, watch, nextTick, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import * as THREE from 'three'
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
+import { getClonedGLTF } from '@/util/gltfCache'
 
 const containerRef = ref<HTMLElement | null>(null)
 const loaded = ref(false)
@@ -225,12 +225,10 @@ const init = () => {
   dir.position.set(5, 5, 5)
   scene.add(dir)
 
-  // 加载模型
-  const loader = new GLTFLoader()
-  loader.load(
-    '/xie1.gltf',
-    (gltf) => {
-      shoeModel = gltf.scene
+  // 加载模型（使用缓存）
+  getClonedGLTF('/xie1.gltf')
+    .then(({ scene: clonedScene }) => {
+      shoeModel = clonedScene
       shoeModel.scale.set(14, 14, 14)
       // 初始旋转：更贴近设计图
       shoeModel.rotation.set(rotX.value, rotY.value, rotZ.value)
@@ -272,12 +270,10 @@ const init = () => {
       // 标记加载完成并通知父组件
       loaded.value = true
       emit('loaded')
-    },
-    undefined,
-    (err) => {
+    })
+    .catch((err) => {
       console.error('模型加载失败 /xie1.gltf:', err)
-    }
-  )
+    })
 
   const onResize = () => {
     if (!containerRef.value) return

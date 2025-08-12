@@ -249,7 +249,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, nextTick } from 'vue'
 import * as THREE from 'three'
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
+import { getClonedGLTF } from '@/util/gltfCache'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js'
 
@@ -782,76 +782,65 @@ const setupLighting = () => {
 
 // 修改加载鞋子模型函数
 const loadShoeModel = async () => {
-  const loader = new GLTFLoader()
+  try {
+    const { scene: clonedScene, animations } = await getClonedGLTF(withBase('xie.gltf'))
+    shoeModel = clonedScene
 
-  return new Promise((resolve, reject) => {
-    loader.load(
-      withBase('xie.gltf'),
-      (gltf) => {
-        shoeModel = gltf.scene
+    // 设置模型属性 - 放大3倍
+    shoeModel.scale.set(11, 11, 11)
+    shoeModel.position.set(0, 0, 0)
 
-        // 设置模型属性 - 放大3倍
-        shoeModel.scale.set(11, 11, 11)
-        shoeModel.position.set(0, 0, 0)
-
-        // 遍历模型，设置材质和阴影
-        let meshIndex = 0
-        shoeModel.traverse((child) => {
-          if (child instanceof THREE.Mesh) {
-            // 保存原始材质到userData
-            if (child.material) {
-              child.userData.originalMaterial = child.material.clone()
-            }
-
-            child.castShadow = true
-            child.receiveShadow = true
-
-            // 确保材质没有额外的颜色偏移
-            if (child.material) {
-              if (Array.isArray(child.material)) {
-                child.material.forEach((mat) => {
-                  if (mat instanceof THREE.MeshStandardMaterial) {
-                    // 重置可能的颜色偏移
-                    mat.envMapIntensity = 0 // 移除环境反射
-                  }
-                })
-              } else if (child.material instanceof THREE.MeshStandardMaterial) {
-                // 重置可能的颜色偏移
-                child.material.envMapIntensity = 0 // 移除环境反射
-              }
-              child.material.needsUpdate = true
-            }
-
-            meshList.value.push({ name: child.name || `Mesh ${meshIndex}`, index: meshIndex, mesh: child })
-            meshIndex++
-          }
-        })
-
-        scene.add(shoeModel)
-
-        // 如果有动画，设置动画混合器
-        if (gltf.animations.length > 0) {
-          mixer = new THREE.AnimationMixer(shoeModel)
-          gltf.animations.forEach((clip) => {
-            const action = mixer.clipAction(clip)
-            action.play()
-          })
+    // 遍历模型，设置材质和阴影
+    let meshIndex = 0
+    shoeModel.traverse((child) => {
+      if (child instanceof THREE.Mesh) {
+        // 保存原始材质到userData（克隆后取一个代表材质）
+        if (child.material) {
+          child.userData.originalMaterial = (Array.isArray(child.material)
+            ? child.material[0]
+            : child.material
+          )?.clone?.()
         }
 
-        // 打印 Mesh 列表，方便定位名称
-        logMeshNames(300)
+        child.castShadow = true
+        child.receiveShadow = true
 
-        resolve(gltf)
-      },
-      (progress) => {
-        loadingProgress.value = Math.round((progress.loaded / progress.total) * 100)
-      },
-      (err) => {
-        console.error('模型加载失败:', err)
-        reject(err)
+        // 确保材质没有额外的颜色偏移
+        if (child.material) {
+          if (Array.isArray(child.material)) {
+            child.material.forEach((mat) => {
+              if (mat instanceof THREE.MeshStandardMaterial) {
+                mat.envMapIntensity = 0
+              }
+            })
+          } else if (child.material instanceof THREE.MeshStandardMaterial) {
+            child.material.envMapIntensity = 0
+          }
+          ;(child.material as any).needsUpdate = true
+        }
+
+        meshList.value.push({ name: child.name || `Mesh ${meshIndex}`, index: meshIndex, mesh: child })
+        meshIndex++
       }
-    )
-  })
+    })
+
+    scene.add(shoeModel)
+
+    // 如果有动画，设置动画混合器
+    if (animations && animations.length > 0) {
+      mixer = new THREE.AnimationMixer(shoeModel)
+      animations.forEach((clip) => {
+        const action = mixer.clipAction(clip)
+        action.play()
+      })
+    }
+
+    // 打印 Mesh 列表，方便定位名称
+    logMeshNames(300)
+  } catch (err) {
+    console.error('模型加载失败:', err)
+    throw err
+  }
 }
 
 // 根据关键词集合匹配 Mesh（支持包含匹配和父级节点名匹配）并应用贴图
