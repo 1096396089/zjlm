@@ -7,35 +7,46 @@
     <div class=" relative  w-full flex-1 "
       @click="$router.push({ path: `/wait/${selectedATexture}/${selectedBTexture}` })">
 
-      <div class=" zaodian relative  z-30   -left-[1.25rem] w-[90%] h-full bg-cover bg-center  rounded-lg bg-[#e6d5be] "
+      <div class=" zaodian relative  z-30   -left-[1.25rem] w-[90%] h-full bg-cover bg-center  rounded-lg "
+        :style="{ backgroundColor: colors[0] }"
         style="transform: rotate(-2deg);  ">
         <div class="absolute left-[19.87%] top-[6.1%] bg-cover bg-center p-4" style="transform: rotate(2deg)">
           <a_one_title />
+          <b_one_title />
+          <c_one_title />
         </div>
 
         <div class=" absolute left-[9.5rem] top-[17rem]" style="transform: rotate(2deg)">
           <a_one_q />
+          <b_one_q />
+          <c_one_q />
         </div>
 
 
         <div class=" absolute left-[6rem] top-[22rem]" style="transform: rotate(2deg)">
           <a_tow_q />
+          <b_tow_q />
+          <c_tow_q />
         </div>
 
         <div class=" absolute left-[9.5rem] top-[27rem]" style="transform: rotate(2deg)">
           <a_three_q />
-
+          <b_three_q />
+          <c_three_q />
 
         </div>
 
 
         <div class="absolute left-[6rem] top-[32rem]" style=" transform: rotate(2deg)">
           <a_four_q />
-
+          <b_four_q />
+          <c_four_q />
         </div>
 
         <div class=" absolute left-[9.5rem] top-[37rem]" style="transform: rotate(2deg)">
           <a_five_q />
+          <b_five_q />
+          <c_five_q />
         </div>
 
       </div>
@@ -134,17 +145,29 @@ import a_three_q from './one/three.vue'
 import a_four_q from './one/four.vue'
 import a_five_q from './one/five.vue'
 
+
+import b_one_title from './tow/title.vue'
+import b_one_q from './tow/one.vue'
+import b_tow_q from './tow/two.vue'
+import b_three_q from './tow/three.vue'
+import b_four_q from './tow/four.vue'
+import b_five_q from './tow/five.vue'
+
+
+import c_one_title from './three/title.vue'
+import c_one_q from './three/one.vue'
+import c_tow_q from './three/two.vue'
+import c_three_q from './three/three.vue'
+import c_four_q from './three/four.vue'
+import c_five_q from './three/five.vue'
+
 const selectedATexture = ref('A3.png')
 const selectedBTexture = ref('B2.png')
-const options = ref([
-  '圆融脑',
-  '气氛大王',
-  '行走的锦鲤',
-  '电子布洛芬',
-  '课题分离侠',
-])
 
-const letters = ['A', 'B', 'C', 'D', 'E']
+const colors = ref(['#ead1bc', '#a48260', '#b884af'])
+
+
+
 // 生成噪点图片的工具函数
 function generateNoise(opacity: number = 0.06, size: number = 100): string {
   const canvas = document.createElement('canvas');
