@@ -12,37 +12,37 @@
         style="transform: rotate(-2deg);  ">
         <transition name="dissolve" mode="out-in">
           <div :key="`stage-${stage}`" class="dissolve-wrap">
-            <div class="absolute left-[19.87%] top-[6.1%] bg-cover bg-center p-4" style="transform: rotate(2deg)">
+            <div class="  absolute left-[19.87%] top-[6.1%] bg-cover bg-center p-4" style="transform: rotate(2deg)">
               <a_one_title v-if="stage === 0" />
               <b_one_title v-else-if="stage === 1" />
               <c_one_title v-else />
             </div>
 
-            <div class=" absolute left-[9.5rem] top-[17rem]" style="transform: rotate(2deg)">
+            <div class=" absolute left-[9.5rem] top-[12rem]" style="transform: rotate(2deg)">
               <a_one_q v-if="stage === 0" />
               <b_one_q v-else-if="stage === 1" />
               <c_one_q v-else />
             </div>
 
-            <div class=" absolute left-[6rem] top-[22rem]" style="transform: rotate(2deg)">
+            <div class=" absolute left-[6rem] top-[16rem]" style="transform: rotate(2deg)">
               <a_tow_q v-if="stage === 0" />
               <b_tow_q v-else-if="stage === 1" />
               <c_tow_q v-else />
             </div>
 
-            <div class=" absolute left-[9.5rem] top-[27rem]" style="transform: rotate(2deg)">
+            <div class=" absolute left-[9.5rem] top-[20rem]" style="transform: rotate(2deg)">
               <a_three_q v-if="stage === 0" />
               <b_three_q v-else-if="stage === 1" />
               <c_three_q v-else />
             </div>
 
-            <div class="absolute left-[6rem] top-[32rem]" style=" transform: rotate(2deg)">
+            <div class="absolute left-[6rem] top-[24rem]" style=" transform: rotate(2deg)">
               <a_four_q v-if="stage === 0" />
               <b_four_q v-else-if="stage === 1" />
               <c_four_q v-else />
             </div>
 
-            <div class=" absolute left-[9.5rem] top-[37rem]" style="transform: rotate(2deg)">
+            <div class=" absolute left-[9.5rem] top-[28rem]" style="transform: rotate(2deg)">
               <a_five_q v-if="stage === 0" />
               <b_five_q v-else-if="stage === 1" />
               <c_five_q v-else />
