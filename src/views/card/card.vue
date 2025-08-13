@@ -1,5 +1,5 @@
 <template>
-  <div class=" relative flex flex-col  h-dvh">
+  <div class=" relative flex flex-col  h-dvh ios-safe">
     <div class="p-14">
       <Title />
     </div>
@@ -228,6 +228,12 @@ onMounted(() => {
 </script>
 
 <style scoped>
+/* iOS bottom bar safe-area padding for full-bleed pages */
+.ios-safe {
+  padding-bottom: calc(constant(safe-area-inset-bottom) + 12px);
+  padding-bottom: calc(env(safe-area-inset-bottom) + 12px);
+}
+
 /* 颗粒消散 + 淡入淡出 */
 .dissolve-enter-active,
 .dissolve-leave-active {
