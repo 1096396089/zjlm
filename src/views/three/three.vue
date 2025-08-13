@@ -119,7 +119,7 @@
 
         <!-- 区域2 颜色选择 -->
 
-          <div class="relative z-20 w-full -top-[16rem] bg-[#e7d2ba] py-10 rounded-lg  px-6 pb-28 -mt-12"
+          <div class="relative z-20 w-full -top-[16rem] bg-[#e7d2ba] py-10 rounded-lg  px-6 pb-44 -mt-12"
             style="transform: rotate(2deg); ">
 
 
@@ -169,7 +169,7 @@
           </div>
 
         <!-- 定制完成按钮 -->
-        <div class="absolute z-40 bottom-14 left-1/2 transform -translate-x-1/2 flex justify-center mt-8"
+        <div class="absolute z-40 bottom-6 left-1/2 transform -translate-x-1/2 flex justify-center mt-8"
           @click="showConfirm = true">
           <svg width="124" height="31" viewBox="0 0 124 31" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path
