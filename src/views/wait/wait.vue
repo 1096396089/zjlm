@@ -12,15 +12,17 @@
 
     <div class="flex-1 flex items-center justify-center px-6 z-0">
       <div class="w-full max-w-[390px] aspect-[1/1] relative">
-        <!-- 加载中占位 -->
-        <div v-if="!threeLoaded" class="absolute inset-0 flex items-center justify-center text-black/70">
-          加载中...
-        </div>
-        <!-- 模型，加载完成后再展示 -->
-        <Three v-if="threeLoaded" @loaded="threeLoaded = true" />
-        <!-- 如果 Three 组件在加载完后才显示，此处需先挂载以捕获 loaded 事件。为简单起见，使用双渲染避免闪烁：
-             1) 隐藏态先挂载 Three 捕获事件 2) 加载后切换到可见实例。-->
-        <Three v-else class="opacity-0 pointer-events-none select-none" @loaded="threeLoaded = true" />
+        <!-- 加载中占位（显示到最少 2 秒） -->
+        <transition name="fade" @after-leave="stopLottie">
+          <div v-if="!showThree" class="absolute inset-0 flex flex-col items-center justify-center gap-4 text-black/70">
+            <div ref="lottieBoxRef" class="w-[210px] h-[210px]"></div>
+            <div>加载中...</div>
+          </div>
+        </transition>
+        <!-- 模型：只挂载一个实例，用 v-show 控制可见性（仍可提前触发 loaded） -->
+        <transition name="fade">
+          <Three v-show="showThree" @loaded="onThreeLoaded" />
+        </transition>
       </div>
     </div>
 
@@ -162,7 +164,79 @@
 <script setup lang="ts">
 import Three from './dan_three.vue'
 import TitleCom from './title.vue'
-import { ref } from 'vue'
+import { onMounted, onUnmounted, ref, watch } from 'vue'
+import lottie from 'lottie-web'
+import type { AnimationItem } from 'lottie-web'
 
-const threeLoaded = ref(false)
+const showThree = ref(false)
+const modelReady = ref(false)
+const lottieBoxRef = ref<HTMLDivElement | null>(null)
+let lottieInstance: AnimationItem | null = null
+let showTimer: number | null = null
+let loadingStartAt = performance.now()
+
+const jiazaiPath = new URL('../../assets/jiazai.json', import.meta.url).href
+
+function startLottie() {
+  if (lottieInstance || !lottieBoxRef.value) return
+  lottieInstance = lottie.loadAnimation({
+    container: lottieBoxRef.value,
+    renderer: 'svg',
+    loop: true,
+    autoplay: true,
+    path: jiazaiPath,
+    rendererSettings: { preserveAspectRatio: 'xMidYMid meet' }
+  })
+}
+
+function stopLottie() {
+  if (lottieInstance) {
+    lottieInstance.destroy()
+    lottieInstance = null
+  }
+}
+
+onMounted(() => {
+  loadingStartAt = performance.now()
+  if (!showThree.value) startLottie()
+})
+
+onUnmounted(() => {
+  stopLottie()
+  if (showTimer) {
+    window.clearTimeout(showTimer)
+    showTimer = null
+  }
+})
+
+watch(showThree, (v) => {
+  if (v) stopLottie()
+  else startLottie()
+})
+
+function onThreeLoaded() {
+  modelReady.value = true
+  const MIN_MS = 2000
+  const elapsed = performance.now() - loadingStartAt
+  const remain = Math.max(0, MIN_MS - elapsed)
+  if (remain === 0) {
+    showThree.value = true
+  } else {
+    showTimer = window.setTimeout(() => {
+      showThree.value = true
+      showTimer = null
+    }, remain)
+  }
+}
 </script>
+
+<style scoped>
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 400ms ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+</style>
