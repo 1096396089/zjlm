@@ -56,7 +56,14 @@
     </div>
 
 
-    <div class="pb-10 flex justify-center px-36">
+    <div
+      class="pb-10 flex justify-center px-36"
+      role="button"
+      tabindex="0"
+      @click="openDialog"
+      @keydown.enter.prevent="openDialog"
+      @keydown.space.prevent="openDialog"
+    >
       <svg id="_鍥惧眰_1" data-name="鍥惧眰 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 341.15 83.29">
         <g>
           <path
@@ -72,11 +79,104 @@
           d="M317.1,82.14c-82.75.29-167.26,1.94-250.14.69-7.85-.1-29.82-.25-37.52-.27-3.13-.05-6.34.15-9.45-.39-9.56-1.48-17.53-9.36-19.4-18.81-.76-3.63-.41-8.86-.51-12.57-.02-6.23-.05-18.78-.06-25.01C-.47,15.53,6.28,5.46,16.03,2.17c2.53-.96,5.23-1.32,7.92-1.41C57.3.47,90.65.25,124.01.17c61.46-.2,126.32-.33,187.6.27,4.22.05,8.62-.11,12.7,1.24,10.51,3.29,17.58,13.93,16.78,24.86-.02,3.95-.18,14.67-.21,18.76-.05,4.17-.09,8.34-.1,12.51.11,4.21-.95,8.45-2.95,12.15-4.09,7.44-12.25,12.26-20.73,12.19h0ZM317.1,81.84c8.32,0,16.34-4.8,20.28-12.14,1.92-3.65,2.92-7.76,2.77-11.9,0-4.17-.05-8.34-.1-12.51l-.14-12.51c-.1-3.59.15-8.87-.59-12.34-2.04-9.96-11.32-17.74-21.5-17.76-63.39.58-130.26.56-193.82.31-33.35-.09-66.7-.3-100.05-.59-2.51.06-5.04.35-7.42,1.22-5.28,1.75-9.79,5.58-12.52,10.44-1.93,3.57-2.97,7.6-2.87,11.72l-.03,12.51c-.02,4.13-.03,14.76-.05,18.76-.81,12.83,9.24,24.11,22.15,24.37,11.08.08,32.41-.17,43.76-.26,82.91-1.27,167.36.4,250.14.69h0Z" />
       </svg>
     </div>
+
+    <!-- Dialog Modal -->
+    <div
+      v-if="showDialog"
+      class="fixed inset-0 z-50 flex items-center justify-center"
+      aria-modal="true"
+      role="dialog"
+      @click.self="closeDialog"
+    >
+      <!-- Overlay -->
+      <div class="absolute inset-0 bg-black/50"></div>
+      <!-- Panel (Redesigned) -->
+      <div class="relative z-10 w-[90%] max-w-sm">
+        <div class="relative rounded-2xl bg-[#E6D6C4] p-10 text-center shadow-xl">
+          <!-- close button -->
+          <button
+            type="button"
+            class="absolute right-2 top-2 rounded-md p-1 text-gray-500 hover:bg-black/5 hover:text-gray-700"
+            aria-label="关闭"
+            @click="closeDialog"
+          >
+            ✕
+          </button>
+
+          <!-- Step: QR code -->
+          <template v-if="step === 'qrcode'">
+            <div class="mx-auto inline-block rounded-lg bg-white p-3 shadow">
+              <img
+                class="h-40 w-40 object-contain"
+                src="https://steppy-dev.oss-cn-guangzhou.aliyuncs.com/qrcode.png"
+                alt="客服二维码"
+              />
+            </div>
+            <div class="mt-4 space-y-1 text-sm leading-6 text-gray-800">
+              <p>长按图片保存蹬愉管家二维码</p>
+              <p>添加客服获取兑换奖品信息</p>
+              <p>超过7天不领视为自动放弃奖品</p>
+            </div>
+            <button
+              type="button"
+              class="absolute left-1/2 -bottom-4 -translate-x-1/2 rounded-md bg-[#50744E] px-6 py-2 text-white shadow cursor-pointer"
+              @click="toForm"
+            >
+              已添加
+            </button>
+          </template>
+
+          <!-- Step: Form -->
+          <template v-else>
+            <div class="text-center text-[15px] font-semibold text-black">
+              <p>请仔细填写收件信息</p>
+              <p class="mt-1">填写错误视为自动放弃奖品</p>
+            </div>
+
+            <div class="mt-5 space-y-4">
+              <div>
+                <input
+                  v-model.trim="form.name"
+                  type="text"
+                  placeholder="请输入收件人"
+                  class="w-full rounded-xl border border-black/70 bg-transparent px-4 py-2 placeholder:text-gray-400 focus:outline-none"
+                />
+                <p v-if="errors.name" class="mt-1 text-left text-xs text-red-600">{{ errors.name }}</p>
+              </div>
+              <div>
+                <input
+                  v-model.trim="form.phone"
+                  type="tel"
+                  placeholder="请输入手机号码"
+                  class="w-full rounded-xl border border-black/70 bg-transparent px-4 py-2 placeholder:text-gray-400 focus:outline-none"
+                />
+                <p v-if="errors.phone" class="mt-1 text-left text-xs text-red-600">{{ errors.phone }}</p>
+              </div>
+              <div>
+                <textarea
+                  v-model.trim="form.address"
+                  rows="4"
+                  placeholder="请输入收件地址"
+                  class="w-full resize-none rounded-xl border border-black/70 bg-transparent px-4 py-2 placeholder:text-gray-400 focus:outline-none"
+                ></textarea>
+                <p v-if="errors.address" class="mt-1 text-left text-xs text-red-600">{{ errors.address }}</p>
+              </div>
+            </div>
+
+            <!-- button bar outside the card bottom -->
+            <div class="absolute inset-x-0 -bottom-4 flex justify-between px-8">
+              <button type="button" class="w-36 whitespace-nowrap rounded-md bg-[#9C7D5E] px-6 py-2 text-white shadow" @click="confirmForm">是，确认无误</button>
+              <button type="button" class="w-36 whitespace-nowrap rounded-md bg-[#50744E] px-6 py-2 text-white shadow" @click="closeDialog">否，需要修改</button>
+            </div>
+          </template>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import Title from './title.vue'
 
@@ -89,6 +189,37 @@ const desc = computed(() => {
   const v = (route.query.desc as string) || '蹬愉小程序德训鞋优惠券99元'
   try { return decodeURIComponent(v) } catch { return v }
 })
+
+const showDialog = ref(false)
+const openDialog = () => { showDialog.value = true }
+const closeDialog = () => { showDialog.value = false }
+const step = ref<'qrcode' | 'form'>('qrcode')
+const toForm = () => { step.value = 'form' }
+
+const form = ref({ name: '', phone: '', address: '' })
+const errors = ref<{ name?: string; phone?: string; address?: string }>({})
+
+const validateForm = (): boolean => {
+  const currentErrors: { name?: string; phone?: string; address?: string } = {}
+  if (!form.value.name) currentErrors.name = '请输入收件人'
+  const phone = form.value.phone
+  if (!phone) {
+    currentErrors.phone = '请输入手机号码'
+  } else if (!/^1[3-9]\d{9}$/.test(phone)) {
+    currentErrors.phone = '请输入有效的手机号'
+  }
+  if (!form.value.address) currentErrors.address = '请输入收件地址'
+  errors.value = currentErrors
+  return Object.keys(currentErrors).length === 0
+}
+
+const confirmForm = () => {
+  if (!validateForm()) return
+  // TODO: 在此处提交表单到后端接口
+  closeDialog()
+  // 重置状态
+  step.value = 'qrcode'
+}
 </script>
 
 
