@@ -1,9 +1,7 @@
 <template>
   <div class="p-4   h-screen  flex flex-col items-center justify-between">
-    <div v-if="isIntroPlaying" class="fixed inset-0 z-50 bg-black flex items-center justify-center">
-      <div v-if="isLoadingIntro" class="text-white text-sm tracking-widest select-none">
-        {{ Math.min(100, Math.round(initialBufferProgress * 100)) }}%
-      </div>
+    <div v-if="isIntroPlaying" class="fixed inset-0 z-50 flex items-center justify-center bg-white">
+      <div v-if="isLoadingIntro" ref="lottieRef" class="w-40 h-40"></div>
       <canvas v-else ref="canvasRef" class="w-full h-full pointer-events-none select-none"></canvas>
     </div>
     <div class="mt-10 flex justify-center items-center">
@@ -42,15 +40,20 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount } from 'vue'
+import lottie from 'lottie-web'
 
 
 import Title from './title.vue'
 import Info from './info.vue'
 
+
+import jiazaiData from '../../assets/jiazai.json'
+
 const isIntroPlaying = ref(true)
 const isLoadingIntro = ref(true)
 const initialBufferProgress = ref(0)
 const canvasRef = ref<HTMLCanvasElement | null>(null)
+const lottieRef = ref<HTMLDivElement | null>(null)
 
 const totalFrames = 107 // 00000 - 00106 inclusive
 const fps = 24
@@ -215,6 +218,17 @@ onMounted(async () => {
   resizeCanvasToWindow(tempCanvas)
 
   // Warm-up: fill buffer to warmupFrames before starting
+  let lottieInstance: any | null = null
+  if (lottieRef.value) {
+    lottieInstance = lottie.loadAnimation({
+      container: lottieRef.value,
+      renderer: 'svg',
+      loop: true,
+      autoplay: true,
+      animationData: jiazaiData as unknown as object
+    })
+  }
+
   while (bufferedBitmaps.size < warmupFrames && nextToLoadIndex < totalFrames) {
     pumpLoader()
     // simple wait
@@ -223,6 +237,10 @@ onMounted(async () => {
   }
 
   isLoadingIntro.value = false
+  if (lottieInstance) {
+    lottieInstance.destroy()
+    lottieInstance = null
+  }
   requestAnimationFrame(() => {
     startAnimation()
   })
