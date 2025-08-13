@@ -172,6 +172,8 @@
         </div>
       </div>
     </div>
+
+    
   </div>
 </template>
 
@@ -191,13 +193,25 @@ const desc = computed(() => {
 })
 
 const showDialog = ref(false)
-const openDialog = () => { showDialog.value = true }
-const closeDialog = () => { showDialog.value = false }
 const step = ref<'qrcode' | 'form'>('qrcode')
-const toForm = () => { step.value = 'form' }
-
 const form = ref({ name: '', phone: '', address: '' })
 const errors = ref<{ name?: string; phone?: string; address?: string }>({})
+
+const resetState = () => {
+  step.value = 'qrcode'
+  form.value = { name: '', phone: '', address: '' }
+  errors.value = {}
+}
+
+const openDialog = () => {
+  resetState()
+  showDialog.value = true
+}
+const closeDialog = () => {
+  showDialog.value = false
+  resetState()
+}
+const toForm = () => { step.value = 'form' }
 
 const validateForm = (): boolean => {
   const currentErrors: { name?: string; phone?: string; address?: string } = {}
