@@ -205,13 +205,13 @@
                     </g>
                 </g>
             </svg>
-            <Three class=" absolute -left-8 top-64"></Three>
+            <Three class=" absolute -left-8 top-72"></Three>
 
 
         </div>
         <div class=" w-full absolute bottom-10 flex flex-col items-center justify-center">
 
-            <div class="px-32 pb-24">
+            <div class="px-32  pb-12">
                 <svg id="_鍥惧眰_1" data-name="鍥惧眰 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 406.55 144.81"
                     width="100%" height="auto">
                     <path

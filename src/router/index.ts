@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { useOpenIdStore } from '@/stores/openId'
 import type { RouteRecordRaw } from 'vue-router'
 
 // 定义路由
@@ -59,11 +60,28 @@ const router = createRouter({
   routes,
 })
 
-// 全局前置守卫，设置页面标题
+// 全局前置守卫，设置页面标题 + 保持 openId 透传
 router.beforeEach((to, from, next) => {
   if (to.meta.title) {
     document.title = to.meta.title as string
   }
+
+  const store = useOpenIdStore()
+  // 优先从参数或 query 读 openId
+  const queryOpenId = (to.query.openId as string) || ''
+  const ensuredOpenId = store.initializeFromUrlOrStorage(queryOpenId)
+
+  // 若路由上没有 openId，但本地存在，则追加到 query，以便分享/刷新时不丢失
+  if (ensuredOpenId && !to.query.openId) {
+    next({
+      path: to.path,
+      query: { ...to.query, openId: ensuredOpenId },
+      hash: to.hash,
+      replace: true,
+    })
+    return
+  }
+
   next()
 })
 
