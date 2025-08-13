@@ -8,7 +8,7 @@
       @click="handleClick">
 
       <div class=" zaodian relative  z-30   -left-[1.25rem] w-[90%] h-full bg-cover bg-center  rounded-lg "
-        :style="{ backgroundColor: colors[stage] }"
+        :style="{ backgroundColor: layerColors[0] }"
         style="transform: rotate(-2deg);  ">
         <transition name="dissolve" mode="out-in">
           <div :key="`stage-${stage}`" class="dissolve-wrap">
@@ -57,7 +57,8 @@
 
 
 
-      <div class=" z-20 absolute left-5 -top-[1.25rem] w-[85%] h-full bg-cover bg-center  rounded-lg bg-[#a47f61]">
+      <div class=" z-20 absolute left-5 -top-[1.25rem] w-[85%] h-full bg-cover bg-center  rounded-lg "
+      :style="{ backgroundColor: layerColors[1] }">
         <div class=" absolute -right-[27px] top-[1.5rem]">
           <svg width="27" height="116" viewBox="0 0 27 116" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path
@@ -126,7 +127,8 @@
 
       </div>
 
-      <div class=" z-10  absolute  -bottom-2 left-[0.4rem]  w-[90%] h-full bg-cover bg-center  rounded-lg bg-[#b883ab]">
+      <div class=" z-10  absolute  -bottom-2 left-[0.4rem]  w-[90%] h-full bg-cover bg-center  rounded-lg "
+      :style="{ backgroundColor: layerColors[2] }">
 
       </div>
 
@@ -166,6 +168,8 @@ const selectedATexture = ref('A3.png')
 const selectedBTexture = ref('B2.png')
 
 const colors = ref(['#ead1bc', '#a48260', '#b884af'])
+// 三层颜色栈，随阶段循环（出栈入栈）
+const layerColors = ref<string[]>([...colors.value])
 
 // 0: A, 1: B, 2: C
 const stage = ref(0)
@@ -174,9 +178,13 @@ const router = useRouter()
 function handleClick() {
   if (stage.value < 2) {
     stage.value += 1
-  } else {
-    router.push({ path: `/wait/${selectedATexture.value}/${selectedBTexture.value}` })
+    // 颜色栈旋转：仅在阶段推进时旋转
+    const first = layerColors.value.shift()
+    if (first) layerColors.value.push(first)
+    return
   }
+  // 最后一阶段直接跳转，不再变更颜色
+  router.push({ path: `/wait/${selectedATexture.value}/${selectedBTexture.value}` })
 }
 
 
