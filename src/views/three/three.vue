@@ -64,7 +64,12 @@
 
         <!-- 区域1 颜色选择 -->
         <div>
-          <div class="  flex items-end w-full justify-end pr-10">
+  
+
+
+          <div class="relative z-10 w-full bg-[#f7ebdd] py-10 rounded-lg  px-6 -top-[5rem]  pb-[17rem]"
+            style="transform: rotate(-2deg); ">
+            <div class="-top-[1.2rem]  absolute flex items-end w-full justify-end pr-10">
             <svg width="80" height="21" viewBox="0 0 80 21" fill="none" xmlns="http://www.w3.org/2000/svg">
               <g clip-path="url(#clip0_721_3986)">
                 <path
@@ -94,11 +99,6 @@
             </svg>
 
           </div>
-
-
-          <div class="relative z-10 w-full bg-[#f7ebdd] py-10 rounded-lg  px-6  pb-[17rem]"
-            style="transform: rotate(-2deg); ">
-
             <div class="grid grid-cols-6 gap-x-4 gap-y-3 justify-items-center" style="transform: rotate(2deg);">
               <div v-for="texture in aTextureNames" :key="texture" class="flex flex-col items-center">
                 <button type="button" @click="switchToATexture(texture)" :class="[
@@ -119,7 +119,7 @@
 
         <!-- 区域2 颜色选择 -->
 
-          <div class="relative z-20 w-full -top-[16rem] bg-[#e7d2ba] py-10 rounded-lg  px-6 pb-44 -mt-12"
+          <div class="relative z-20 w-full -top-[20rem] bg-[#e7d2ba] py-10 rounded-lg  px-6 pb-52 -mt-12"
             style="transform: rotate(2deg); ">
 
 
@@ -169,7 +169,7 @@
           </div>
 
         <!-- 定制完成按钮 -->
-        <div class="absolute z-40 bottom-6 left-1/2 transform -translate-x-1/2 flex justify-center mt-8"
+        <div class="absolute z-40 bottom-24 left-1/2 transform -translate-x-1/2 flex justify-center mt-8"
           @click="showConfirm = true">
           <svg width="124" height="31" viewBox="0 0 124 31" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path
