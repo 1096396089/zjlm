@@ -1,9 +1,11 @@
 <template>
   <div class="p-4   h-screen  flex flex-col items-center justify-between">
-    <div v-if="isIntroPlaying" class="fixed inset-0 z-50 flex items-center justify-center bg-white">
-      <div v-if="isLoadingIntro" ref="lottieRef" class="w-40 h-40"></div>
-      <canvas v-else ref="canvasRef" class="w-full h-full pointer-events-none select-none"></canvas>
-    </div>
+    <transition name="fade">
+      <div v-if="isIntroPlaying" class="fixed inset-0 z-50 flex items-center justify-center bg-white">
+        <div v-if="isLoadingIntro" ref="lottieRef" class="w-40 h-40"></div>
+        <canvas v-else ref="canvasRef" class="w-full h-full pointer-events-none select-none"></canvas>
+      </div>
+    </transition>
     <div class="mt-10 flex justify-center items-center">
       <Title />
     </div>
@@ -51,24 +53,19 @@ import jiazaiData from '../../assets/jiazai.json'
 
 const isIntroPlaying = ref(true)
 const isLoadingIntro = ref(true)
-const initialBufferProgress = ref(0)
 const canvasRef = ref<HTMLCanvasElement | null>(null)
 const lottieRef = ref<HTMLDivElement | null>(null)
 
-const totalFrames = 107 // 00000 - 00106 inclusive
+const totalFrames = 95 // 00000 - 00106 inclusive
 const fps = 24
 const frameDurationMs = 1000 / fps
 const devicePixelRatioClamp = 1 // keep pixel work low for smoothness
-const bufferSize = 12 // frames to keep ahead
-const warmupFrames = 8 // frames before we start playback
-const maxConcurrency = 4
+const maxConcurrency = 6
 
 let animationHandle: number | null = null
 let lastTimestampMs = 0
 let accumulatedMs = 0
 let currentFrameIndex = 0
-let nextToLoadIndex = 0
-let activeLoads = 0
 let cw = 0
 let ch = 0
 let crop: { sx: number; sy: number; sw: number; sh: number } | null = null
@@ -126,39 +123,48 @@ function computeCoverCrop(iw: number, ih: number) {
   }
 }
 
-async function loadNextFrameToBuffer() {
-  if (nextToLoadIndex >= totalFrames) return
-  if (bufferedBitmaps.size >= bufferSize) return
-  const index = nextToLoadIndex
-  nextToLoadIndex += 1
-  activeLoads += 1
-  try {
-    const img = await loadImage(frameUrl(index))
-    if (!crop) {
-      const iw = img.naturalWidth || img.width
-      const ih = img.naturalHeight || img.height
-      computeCoverCrop(iw, ih)
+async function preloadAllFramesBitmaps() {
+  let completed = 0
+  let nextIndex = 0
+  let inFlight = 0
+  return new Promise<void>((resolve) => {
+    const launchNext = () => {
+      while (inFlight < maxConcurrency && nextIndex < totalFrames) {
+        const index = nextIndex++
+        inFlight += 1
+        loadImage(frameUrl(index))
+          .then(async (img) => {
+            if (!crop) {
+              const iw = img.naturalWidth || img.width
+              const ih = img.naturalHeight || img.height
+              computeCoverCrop(iw, ih)
+            }
+            const bmp = await createImageBitmap(
+              img,
+              crop!.sx,
+              crop!.sy,
+              crop!.sw,
+              crop!.sh,
+              { resizeWidth: cw, resizeHeight: ch, resizeQuality: 'high' }
+            )
+            bufferedBitmaps.set(index, bmp)
+          })
+          .catch(() => {
+            // skip on error, but keep timeline moving
+          })
+          .finally(() => {
+            inFlight -= 1
+            completed += 1
+            if (completed >= totalFrames) {
+              resolve()
+            } else {
+              launchNext()
+            }
+          })
+      }
     }
-    const bitmap = await createImageBitmap(
-      img,
-      crop!.sx,
-      crop!.sy,
-      crop!.sw,
-      crop!.sh,
-      { resizeWidth: cw, resizeHeight: ch, resizeQuality: 'high' }
-    )
-    bufferedBitmaps.set(index, bitmap)
-  } catch (e) {
-    // skip this frame on error
-  } finally {
-    activeLoads -= 1
-  }
-}
-
-function pumpLoader() {
-  while (activeLoads < maxConcurrency && bufferedBitmaps.size < bufferSize && nextToLoadIndex < totalFrames) {
-    void loadNextFrameToBuffer()
-  }
+    launchNext()
+  })
 }
 
 function startAnimation() {
@@ -195,8 +201,6 @@ function startAnimation() {
       ctx.clearRect(0, 0, cw, ch)
       ctx.drawImage(bmp, 0, 0)
       bufferedBitmaps.delete(currentFrameIndex)
-      // keep loader pumping as we consume frames
-      pumpLoader()
     }
 
     animationHandle = requestAnimationFrame(step)
@@ -217,7 +221,7 @@ onMounted(async () => {
   const tempCanvas = document.createElement('canvas')
   resizeCanvasToWindow(tempCanvas)
 
-  // Warm-up: fill buffer to warmupFrames before starting
+  // Lottie loading animation
   let lottieInstance: any | null = null
   if (lottieRef.value) {
     lottieInstance = lottie.loadAnimation({
@@ -229,12 +233,8 @@ onMounted(async () => {
     })
   }
 
-  while (bufferedBitmaps.size < warmupFrames && nextToLoadIndex < totalFrames) {
-    pumpLoader()
-    // simple wait
-    await new Promise((r) => setTimeout(r, 16))
-    initialBufferProgress.value = Math.min(1, bufferedBitmaps.size / warmupFrames)
-  }
+  // Preload all bitmaps before starting playback
+  await preloadAllFramesBitmaps()
 
   isLoadingIntro.value = false
   if (lottieInstance) {
@@ -260,5 +260,12 @@ onBeforeUnmount(() => {
 .card-container {
   min-height: 300px;
   text-align: center;
+}
+
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 500ms ease;
+}
+.fade-enter-from, .fade-leave-to {
+  opacity: 0;
 }
 </style>
