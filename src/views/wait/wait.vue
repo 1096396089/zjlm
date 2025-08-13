@@ -167,6 +167,7 @@ import TitleCom from './title.vue'
 import { onMounted, onUnmounted, ref, watch } from 'vue'
 import lottie from 'lottie-web'
 import type { AnimationItem } from 'lottie-web'
+import jiazaiData from '../../assets/jiazai.json'
 
 const showThree = ref(false)
 const modelReady = ref(false)
@@ -175,7 +176,6 @@ let lottieInstance: AnimationItem | null = null
 let showTimer: number | null = null
 let loadingStartAt = performance.now()
 
-const jiazaiPath = new URL('../../assets/jiazai.json', import.meta.url).href
 
 function startLottie() {
   if (lottieInstance || !lottieBoxRef.value) return
@@ -184,7 +184,7 @@ function startLottie() {
     renderer: 'svg',
     loop: true,
     autoplay: true,
-    path: jiazaiPath,
+    animationData: jiazaiData,
     rendererSettings: { preserveAspectRatio: 'xMidYMid meet' }
   })
 }
