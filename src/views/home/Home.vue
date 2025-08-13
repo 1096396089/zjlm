@@ -1,5 +1,11 @@
 <template>
   <div class="p-4   h-screen  flex flex-col items-center justify-between">
+    <div v-if="isIntroPlaying" class="fixed inset-0 z-50 bg-black flex items-center justify-center">
+      <div v-if="isLoadingIntro" class="text-white text-sm tracking-widest select-none">
+        {{ Math.min(100, Math.round(initialBufferProgress * 100)) }}%
+      </div>
+      <canvas v-else ref="canvasRef" class="w-full h-full pointer-events-none select-none"></canvas>
+    </div>
     <div class="mt-10 flex justify-center items-center">
       <Title />
     </div>
@@ -30,139 +36,205 @@
 
 
 
-    <div v-if="removedCount == 4">
-      <jindu />
-    </div>
+
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, nextTick } from 'vue'
-import { gsap } from 'gsap'
-import { useRouter } from 'vue-router'
+import { ref, onMounted, onBeforeUnmount } from 'vue'
 
 
 import Title from './title.vue'
-import jindu from './jindu.vue'
 import Info from './info.vue'
 
-const router = useRouter()
+const isIntroPlaying = ref(true)
+const isLoadingIntro = ref(true)
+const initialBufferProgress = ref(0)
+const canvasRef = ref<HTMLCanvasElement | null>(null)
 
-const selectedATexture = ref('A3.png')
-const selectedBTexture = ref('B2.png')
-// 定义卡片名称类型
-type CardName = 'one' | 'tow' | 'three' | 'four'
+const totalFrames = 107 // 00000 - 00106 inclusive
+const fps = 24
+const frameDurationMs = 1000 / fps
+const devicePixelRatioClamp = 1 // keep pixel work low for smoothness
+const bufferSize = 12 // frames to keep ahead
+const warmupFrames = 8 // frames before we start playback
+const maxConcurrency = 4
 
+let animationHandle: number | null = null
+let lastTimestampMs = 0
+let accumulatedMs = 0
+let currentFrameIndex = 0
+let nextToLoadIndex = 0
+let activeLoads = 0
+let cw = 0
+let ch = 0
+let crop: { sx: number; sy: number; sw: number; sh: number } | null = null
+const bufferedBitmaps: Map<number, ImageBitmap> = new Map()
 
+function frameUrl(index: number): string {
+  const frameStr = String(index).padStart(5, '0')
+  return `https://steppy-dev.oss-cn-guangzhou.aliyuncs.com/animition/%E5%BC%80%E5%A4%B4%E5%8A%A8%E7%94%BB_${frameStr}.png`
+}
 
-// 卡片显示顺序（从前到后：one -> tow -> three -> four）
-const cardOrder = ref<CardName[]>(['one', 'tow', 'three', 'four'])
+function resizeCanvasToWindow(canvas: HTMLCanvasElement) {
+  const dpr = devicePixelRatioClamp
+  const width = window.innerWidth
+  const height = window.innerHeight
+  cw = Math.floor(width * dpr)
+  ch = Math.floor(height * dpr)
+  canvas.width = cw
+  canvas.height = ch
+  canvas.style.width = width + 'px'
+  canvas.style.height = height + 'px'
+}
 
-// 动画状态
-const isAnimating = ref(false)
-const removedCount = ref(0) // 记录已移除的卡片数量
+function loadImage(src: string): Promise<HTMLImageElement> {
+  return new Promise((resolve, reject) => {
+    const image = new Image()
+    image.crossOrigin = 'anonymous'
+    image.src = src
+    const done = () => resolve(image)
+    image.onload = () => {
+      if (typeof (image as any).decode === 'function') {
+        ;(image as any).decode().then(done).catch(done)
+      } else {
+        done()
+      }
+    }
+    image.onerror = reject
+  })
+}
 
-// 卡片元素引用
-const card0 = ref()
-const card1 = ref()
-const card2 = ref()
-const card3 = ref()
+function computeCoverCrop(iw: number, ih: number) {
+  const targetAR = cw / ch
+  const imageAR = iw / ih
+  if (imageAR > targetAR) {
+    const sh = ih
+    const sw = Math.floor(ih * targetAR)
+    const sx = Math.floor((iw - sw) / 2)
+    const sy = 0
+    crop = { sx, sy, sw, sh }
+  } else {
+    const sw = iw
+    const sh = Math.floor(iw / targetAR)
+    const sx = 0
+    const sy = Math.floor((ih - sh) / 2)
+    crop = { sx, sy, sw, sh }
+  }
+}
 
-// 卡片位置配置 - 恢复原始配置，只添加移动端检测
-const cardPositions = [
-  { scale: 1.1, y: -40, z: 40 },  // 第一张卡片
-  { scale: 1, y: 24, z: 30 },     // 第二张卡片
-  { scale: 0.9, y: 80, z: 20 },   // 第三张卡片
-  { scale: 0.8, y: 128, z: 10 }   // 第四张卡片
-]
+async function loadNextFrameToBuffer() {
+  if (nextToLoadIndex >= totalFrames) return
+  if (bufferedBitmaps.size >= bufferSize) return
+  const index = nextToLoadIndex
+  nextToLoadIndex += 1
+  activeLoads += 1
+  try {
+    const img = await loadImage(frameUrl(index))
+    if (!crop) {
+      const iw = img.naturalWidth || img.width
+      const ih = img.naturalHeight || img.height
+      computeCoverCrop(iw, ih)
+    }
+    const bitmap = await createImageBitmap(
+      img,
+      crop!.sx,
+      crop!.sy,
+      crop!.sw,
+      crop!.sh,
+      { resizeWidth: cw, resizeHeight: ch, resizeQuality: 'high' }
+    )
+    bufferedBitmaps.set(index, bitmap)
+  } catch (e) {
+    // skip this frame on error
+  } finally {
+    activeLoads -= 1
+  }
+}
 
-// 移动端检测
+function pumpLoader() {
+  while (activeLoads < maxConcurrency && bufferedBitmaps.size < bufferSize && nextToLoadIndex < totalFrames) {
+    void loadNextFrameToBuffer()
+  }
+}
 
-onMounted(() => {
-  // 初始化卡片位置
-  initCardPositions()
+function startAnimation() {
+  const canvas = canvasRef.value
+  if (!canvas) return
+  const ctx = canvas.getContext('2d')
+  if (!ctx) return
+
+  const onResize = () => resizeCanvasToWindow(canvas)
+  onResize()
+  window.addEventListener('resize', onResize)
+
+  const step = (now: number) => {
+    if (!lastTimestampMs) lastTimestampMs = now
+    const delta = now - lastTimestampMs
+    lastTimestampMs = now
+    accumulatedMs += delta
+
+    while (accumulatedMs >= frameDurationMs) {
+      accumulatedMs -= frameDurationMs
+      currentFrameIndex += 1
+    }
+
+    if (currentFrameIndex >= totalFrames) {
+      isIntroPlaying.value = false
+      cancelAnimationFrameIfAny()
+      window.removeEventListener('resize', onResize)
+      return
+    }
+
+    // draw only when bitmap available, keep previous frame otherwise
+    const bmp = bufferedBitmaps.get(currentFrameIndex)
+    if (bmp) {
+      ctx.clearRect(0, 0, cw, ch)
+      ctx.drawImage(bmp, 0, 0)
+      bufferedBitmaps.delete(currentFrameIndex)
+      // keep loader pumping as we consume frames
+      pumpLoader()
+    }
+
+    animationHandle = requestAnimationFrame(step)
+  }
+
+  animationHandle = requestAnimationFrame(step)
+}
+
+function cancelAnimationFrameIfAny() {
+  if (animationHandle !== null) {
+    cancelAnimationFrame(animationHandle)
+    animationHandle = null
+  }
+}
+
+onMounted(async () => {
+  // Prepare canvas size up-front for cropping/resizing
+  const tempCanvas = document.createElement('canvas')
+  resizeCanvasToWindow(tempCanvas)
+
+  // Warm-up: fill buffer to warmupFrames before starting
+  while (bufferedBitmaps.size < warmupFrames && nextToLoadIndex < totalFrames) {
+    pumpLoader()
+    // simple wait
+    await new Promise((r) => setTimeout(r, 16))
+    initialBufferProgress.value = Math.min(1, bufferedBitmaps.size / warmupFrames)
+  }
+
+  isLoadingIntro.value = false
+  requestAnimationFrame(() => {
+    startAnimation()
+  })
 })
 
-// 初始化卡片位置
-const initCardPositions = () => {
-  const cards = [card0.value, card1.value, card2.value, card3.value]
+onBeforeUnmount(() => {
+  cancelAnimationFrameIfAny()
+})
 
-  cards.forEach((card, index) => {
-    if (card?.$el && index < cardOrder.value.length) {
-      const pos = cardPositions[index]
-      gsap.set(card.$el, {
-        scale: pos.scale,
-        y: pos.y,
-        zIndex: pos.z,
-        opacity: 1
-      })
-    } else if (card?.$el) {
-      // 隐藏已移除的卡片
-      gsap.set(card.$el, {
-        opacity: 0,
-        scale: 0
-      })
-    }
-  })
-}
 
-// 切换到下一张卡片
-const nextCard = async () => {
-  if (isAnimating.value || removedCount.value >= 4) return // 防止动画期间重复点击或已执行完4次
 
-  isAnimating.value = true
 
-  const cards = [card0.value, card1.value, card2.value, card3.value]
-  const remainingCards = cardOrder.value.length
-
-  // 创建时间线
-  const tl = gsap.timeline({
-    onComplete: () => {
-      // 动画完成后移除第一张卡片
-      cardOrder.value.shift()
-      removedCount.value++
-
-      // 等待Vue更新DOM后重新初始化位置
-      nextTick(() => {
-        initCardPositions()
-        isAnimating.value = false
-
-        // 如果是第4次点击，2秒后跳转到model页面
-        if (removedCount.value === 4) {
-          setTimeout(() => {
-            router.push('/wait?a=A3C.png&b=B2C.png')
-          }, 2000)
-        }
-      })
-    }
-  })
-
-  // 第一张卡片：淡出并向上消失
-  if (cards[0]?.$el) {
-    tl.to(cards[0].$el, {
-      opacity: 0,
-      scale: 0.6,
-      y: -100,
-      rotation: 15,
-      duration: 0.8,
-      ease: "power2.inOut"
-    }, 0)
-  }
-
-  // 其他卡片：向前移动一个位置
-  for (let i = 1; i < remainingCards; i++) {
-    if (cards[i]?.$el) {
-      const targetPos = cardPositions[i - 1] // 移动到前一个位置
-      tl.to(cards[i].$el, {
-        scale: targetPos.scale,
-        y: targetPos.y,
-        zIndex: targetPos.z,
-        duration: 0.8,
-        ease: "power2.inOut"
-      }, 0.2) // 稍微延迟，让消失动画先开始
-    }
-  }
-}
 </script>
 
 <style scoped>
