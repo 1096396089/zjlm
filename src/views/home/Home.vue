@@ -10,13 +10,12 @@
       <Title />
     </div>
 
-    <div class=" w-full min-[127px]  pt-16 flex justify-center items-center">
-
+    <div class=" w-full h-20  pt-16 flex justify-center items-center">
         <img
-        class=" w-[90%]"
-          :key="currentCarouselIndex"
+          class=" w-[90%] block select-none img-smooth"
           :src="carouselImages[currentCarouselIndex]"
           alt=""
+          decoding="async"
         />
     </div>
 
@@ -268,6 +267,17 @@ onMounted(async () => {
 
   // start carousel
   if (!carouselTimer) {
+    // Preload carousel images to avoid decode jank during swap (not awaited)
+    ;(() => {
+      carouselImages.forEach((src) => {
+        const img = new Image()
+        try {
+          img.decoding = 'async'
+          ;(img as any).loading = 'eager'
+        } catch {}
+        img.src = src
+      })
+    })()
     carouselTimer = window.setInterval(() => {
       currentCarouselIndex.value = (currentCarouselIndex.value + 1) % carouselImages.length
     }, 2000)
@@ -327,5 +337,14 @@ onBeforeUnmount(() => {
 }
 .button-zoom.is-animating {
   transform: scale(1.06);
+}
+
+/* iOS Safari: avoid flicker/jump during img src swap */
+.img-smooth {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  will-change: opacity, transform;
 }
 </style>
