@@ -8,6 +8,7 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import('../views/home/Home.vue'),
  
   },
+
   {
     path: '/card',
     component: () => import('../views/card/card.vue'),
@@ -32,7 +33,25 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/result/:a?/:b?',
     component: () => import('@/views/result/result.vue'),
-  }
+  },
+
+
+  {
+    path: '/tp_home',
+    component: () => import('../views/Tp_home/Home.vue'),
+  },
+  {
+    path: '/tp_card',
+    component: () => import('../views/Tp_card/card.vue'),
+  },
+  {
+    path: '/vote',
+    component: () => import('../views/vote/vote.vue'),
+  },
+  {
+    path: '/vote_result',
+    component: () => import('../views/vote_result/vote.vue'),
+  },
 ]
 
 const router = createRouter({
