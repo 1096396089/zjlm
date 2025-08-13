@@ -1054,20 +1054,20 @@ const setupResponsive = () => {
 // 颜色映射表
 const colorMapping: Record<string, { name: string, color: string }> = {
   // A区域颜色
-  'A1.png': { name: '深棕', color: '#8B4513' },
-  'A2.png': { name: '玫瑰红', color: '#DC143C' },
-  'A3.png': { name: '薄荷绿', color: '#98FB98' },
-  'A4.png': { name: '纯白', color: '#FFFFFF' },
-  'A5.png': { name: '帝王棕', color: '#8B7355' },
-  'A6.png': { name: '琥珀棕', color: '#D2691E' },
+  'A1.png': { name: '雀茶', color: '#8B572A' },
+  'A2.png': { name: '樱落', color: '#BA6A74' },
+  'A3.png': { name: '衰柳', color: '#C4D69B' },
+  'A4.png': { name: '盈盈', color: '#D9A1B3' },
+  'A5.png': { name: '唐茶', color: '#A57A68' },
+  'A6.png': { name: '古檀', color: '#2B1B12' },
 
   // B区域颜色
-  'B1.png': { name: '百里茶', color: '#8B7D6B' },
-  'B2.png': { name: '栗紫', color: '#722F37' },
-  'B3.png': { name: '红褐', color: '#A0522D' },
-  'B4.png': { name: '柳绿', color: '#9ACD32' },
-  'B5.png': { name: '奶白', color: '#FDF5E6' },
-  'B6.png': { name: '常春', color: '#D2B48C' }
+  'B1.png': { name: '金豹', color: '#C49D4D' },
+  'B2.png': { name: '凝露', color: '#5C0A1D' },
+  'B3.png': { name: '木檀', color: '#9B738F' },
+  'B4.png': { name: '柳染', color: '#B4B24B' },
+  'B5.png': { name: '胡杏', color: '#FFF1E5' },
+  'B6.png': { name: '常春', color: '#C98E85' }
 }
 
 // 获取颜色名称
