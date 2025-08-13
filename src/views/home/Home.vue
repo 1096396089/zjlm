@@ -6,13 +6,14 @@
         <canvas v-else ref="canvasRef" class="w-full h-full pointer-events-none select-none"></canvas>
       </div>
     </transition>
-    <div class="mt-10 flex justify-center items-center">
+    <div class="mt-5 flex justify-center items-center">
       <Title />
     </div>
 
-    <div class=" w-full h-20 ">
+    <div class=" w-full h-20  pt-16 flex justify-center items-center">
       <transition name="fade-img" mode="out-in">
         <img
+        class=" w-[90%]"
           :key="currentCarouselIndex"
           :src="carouselImages[currentCarouselIndex]"
           alt=""
@@ -20,7 +21,7 @@
       </transition>
     </div>
 
-    <div class=" mb-20 mt-10 flex flex-col items-center justify-between">
+    <div class=" mb-20 mt-6 flex flex-col items-center justify-between">
       <Info class="mt-20"></Info>
       <div class=" mt-12" @click="$router.push({ path: `/card` })">
         <svg width="119" height="30" viewBox="0 0 119 30" fill="none" xmlns="http://www.w3.org/2000/svg">

@@ -1,7 +1,7 @@
 <template>
     <div class=" relative overflow-hidden h-dvh">
 
-        <div class="p-20 relative ">
+        <div class="px-20 py-8 relative ">
 
             <svg id="_鍥惧眰_1" data-name="鍥惧眰 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 781.27 783.65">
 
