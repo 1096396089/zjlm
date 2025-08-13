@@ -164,8 +164,13 @@ import c_three_q from './three/three.vue'
 import c_four_q from './three/four.vue'
 import c_five_q from './three/five.vue'
 
-const selectedATexture = ref('A3.png')
-const selectedBTexture = ref('B2.png')
+const aTextureNames = ['A1.png', 'A2.png', 'A3.png', 'A4.png', 'A5.png', 'A6.png']
+const bTextureNames = ['B2.png', 'B1.png', 'B3.png', 'B4.png', 'B5.png', 'B6.png']
+
+const randomIndex = Math.floor(Math.random() * Math.min(aTextureNames.length, bTextureNames.length))
+const selectedATexture = ref(aTextureNames[randomIndex])
+const selectedBTexture = ref(bTextureNames[randomIndex])
+
 
 const colors = ref(['#ead1bc', '#a48260', '#b884af'])
 // 三层颜色栈，随阶段循环（出栈入栈）
