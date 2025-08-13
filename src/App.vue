@@ -8,7 +8,11 @@ import { RouterView } from 'vue-router'
 
     <!-- 内容区域 -->
     <div class="content-wrapper ">
-      <RouterView />
+      <RouterView v-slot="{ Component }">
+        <transition name="page-fade" mode="out-in">
+          <component :is="Component" />
+        </transition>
+      </RouterView>
     </div>
   </div>
 </template>
@@ -26,5 +30,14 @@ import { RouterView } from 'vue-router'
   min-height: 100vh;
   width: 100%;
   overflow: hidden; 
+}
+</style>
+
+<style>
+.page-fade-enter-active, .page-fade-leave-active {
+  transition: opacity 300ms ease;
+}
+.page-fade-enter-from, .page-fade-leave-to {
+  opacity: 0;
 }
 </style>

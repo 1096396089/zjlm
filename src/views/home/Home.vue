@@ -10,20 +10,19 @@
       <Title />
     </div>
 
-    <div class=" w-full h-20  pt-16 flex justify-center items-center">
-      <transition name="fade-img" mode="out-in">
+    <div class=" w-full min-[127px]  pt-16 flex justify-center items-center">
+
         <img
         class=" w-[90%]"
           :key="currentCarouselIndex"
           :src="carouselImages[currentCarouselIndex]"
           alt=""
         />
-      </transition>
     </div>
 
     <div class=" mb-20 mt-6 flex flex-col items-center justify-between">
       <Info class="mt-20"></Info>
-      <div class=" mt-12" @click="$router.push({ path: `/card` })">
+      <div class=" mt-12" :class="['button-zoom', { 'is-animating': isButtonAnimating }]" @click="handleButtonClick">
         <svg width="119" height="30" viewBox="0 0 119 30" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path
             d="M37.7589 18.6182C37.3786 19.6576 36.7907 20.801 36.1683 21.5286L35.373 21.0782C35.9954 20.4546 36.5833 19.3805 36.929 18.3757L37.7589 18.6182ZM44.5362 13.248V17.5788H36.7907V13.248H44.5362ZM37.6206 16.6087H43.6717V14.1834H37.6206V16.6087ZM39.6261 18.6529C39.799 19.5191 39.9027 20.6277 39.9373 21.286L39.0729 21.4247C39.0729 20.7317 38.9691 19.623 38.8308 18.7222L39.6261 18.6529ZM41.0092 9.125V13.7331H40.1448V9.125H41.0092ZM45.4006 10.5455V11.5156H40.5251V10.5455H45.4006ZM41.9774 18.549C42.3232 19.3805 42.7035 20.4545 42.8418 21.1475L42.012 21.39C41.8737 20.6971 41.5279 19.5884 41.1821 18.7569L41.9774 18.549ZM44.3287 18.3064C44.9165 19.138 45.5735 20.2813 45.8501 21.0435L45.0202 21.4593C44.7436 20.697 44.1212 19.5191 43.5334 18.6529L44.3287 18.3064Z"
@@ -54,6 +53,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import lottie from 'lottie-web'
+import { useRouter } from 'vue-router'
 
 
 import Title from './title.vue'
@@ -92,6 +92,17 @@ const carouselImages = [
 ]
 const currentCarouselIndex = ref(0)
 let carouselTimer: number | null = null
+
+// click zoom then navigate
+const router = useRouter()
+const isButtonAnimating = ref(false)
+function handleButtonClick() {
+  if (isButtonAnimating.value) return
+  isButtonAnimating.value = true
+  window.setTimeout(() => {
+    router.push({ path: '/card' })
+  }, 200)
+}
 
 function frameUrl(index: number): string {
   const frameStr = String(index).padStart(5, '0')
@@ -307,5 +318,14 @@ onBeforeUnmount(() => {
 }
 .fade-img-enter-from, .fade-img-leave-to {
   opacity: 0;
+}
+
+.button-zoom {
+  display: inline-block;
+  transform: scale(1);
+  transition: transform 200ms ease;
+}
+.button-zoom.is-animating {
+  transform: scale(1.06);
 }
 </style>

@@ -120,7 +120,6 @@
           <div class="relative z-20 w-full -top-[18rem] bg-[#e7d2ba] py-6 rounded-lg  px-6 pb-52 -mt-12"
             style="transform: rotate(2deg); ">
 
-
             <div class="  absolute z-40  flex items-end w-full justify-end pr-10  -top-[1rem]">
               <svg width="82" height="20" viewBox="0 0 82 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <g clip-path="url(#clip0_722_4066)">
@@ -155,12 +154,13 @@
             <div class="grid grid-cols-6 gap-x-4 gap-y-3 justify-items-center" style="transform: rotate(-2deg);">
               <div v-for="texture in bTextureNames" :key="texture" class="flex flex-col items-center">
                 <button type="button" @click="switchToBTexture(texture)" :class="[
-                  'w-14 h-14 md:w-16 md:h-16 rounded-[18px] border border-gray-200 shadow-sm transition-transform duration-200',
+                  'w-14 h-14 md:w-16 md:h-16 rounded-[18px] border border-gray-200 shadow-sm transition-transform duration-200 overflow-hidden',
                   selectedBTexture === texture ? 'ring-2 ring-offset-2 ring-green-500 scale-105' : 'hover:scale-105'
-                ]" :style="getSwatchStyle('B', texture)" />
+                ]" :style="getSwatchStyle('B', texture)">
+                  <img v-if="texture === 'B2.png'" :src="b2Thumb" alt="金豹" class="w-full h-full object-cover" />
+                </button>
                 <div class="text-center leading-tight mt-2">
                   <div class="text-[13px] text-gray-800">{{ getColorName('B', texture) }}</div>
-                  <!-- <div class="text-[11px] text-gray-500">{{ getColorEn('B', texture) }}</div> -->
                 </div>
               </div>
             </div>
@@ -1098,17 +1098,11 @@ const getColorForTexture = (folder: 'A' | 'B', textureName: string) => {
 
 // 颜色选择器缩略图样式（支持图片预览）
 const getSwatchStyle = (folder: 'A' | 'B', textureName: string) => {
-  if (folder === 'B' && textureName === 'B2.png') {
-    const url = getTexturePath('B', 'B2.png')
-    return {
-      backgroundImage: `url(${url})`,
-      backgroundSize: 'cover',
-      backgroundPosition: 'center',
-      backgroundRepeat: 'no-repeat'
-    } as Record<string, string>
-  }
   return { backgroundColor: getColorForTexture(folder, textureName) } as Record<string, string>
 }
+
+// 金豹(B2)专用缩略图，本地占位，便于你后续直接替换文件
+const b2Thumb = new URL('@/assets/tietu/tu.png', import.meta.url).href
 
 // 定制完成
 const completeCustomization = () => {
