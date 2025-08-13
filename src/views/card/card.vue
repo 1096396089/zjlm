@@ -5,50 +5,50 @@
     </div>
 
     <div class=" relative  w-full flex-1 "
-      @click="$router.push({ path: `/wait/${selectedATexture}/${selectedBTexture}` })">
+      @click="handleClick">
 
       <div class=" zaodian relative  z-30   -left-[1.25rem] w-[90%] h-full bg-cover bg-center  rounded-lg "
-        :style="{ backgroundColor: colors[0] }"
+        :style="{ backgroundColor: colors[stage] }"
         style="transform: rotate(-2deg);  ">
-        <div class="absolute left-[19.87%] top-[6.1%] bg-cover bg-center p-4" style="transform: rotate(2deg)">
-          <a_one_title />
-          <b_one_title />
-          <c_one_title />
-        </div>
+        <transition name="dissolve" mode="out-in">
+          <div :key="`stage-${stage}`" class="dissolve-wrap">
+            <div class="absolute left-[19.87%] top-[6.1%] bg-cover bg-center p-4" style="transform: rotate(2deg)">
+              <a_one_title v-if="stage === 0" />
+              <b_one_title v-else-if="stage === 1" />
+              <c_one_title v-else />
+            </div>
 
-        <div class=" absolute left-[9.5rem] top-[17rem]" style="transform: rotate(2deg)">
-          <a_one_q />
-          <b_one_q />
-          <c_one_q />
-        </div>
+            <div class=" absolute left-[9.5rem] top-[17rem]" style="transform: rotate(2deg)">
+              <a_one_q v-if="stage === 0" />
+              <b_one_q v-else-if="stage === 1" />
+              <c_one_q v-else />
+            </div>
 
+            <div class=" absolute left-[6rem] top-[22rem]" style="transform: rotate(2deg)">
+              <a_tow_q v-if="stage === 0" />
+              <b_tow_q v-else-if="stage === 1" />
+              <c_tow_q v-else />
+            </div>
 
-        <div class=" absolute left-[6rem] top-[22rem]" style="transform: rotate(2deg)">
-          <a_tow_q />
-          <b_tow_q />
-          <c_tow_q />
-        </div>
+            <div class=" absolute left-[9.5rem] top-[27rem]" style="transform: rotate(2deg)">
+              <a_three_q v-if="stage === 0" />
+              <b_three_q v-else-if="stage === 1" />
+              <c_three_q v-else />
+            </div>
 
-        <div class=" absolute left-[9.5rem] top-[27rem]" style="transform: rotate(2deg)">
-          <a_three_q />
-          <b_three_q />
-          <c_three_q />
+            <div class="absolute left-[6rem] top-[32rem]" style=" transform: rotate(2deg)">
+              <a_four_q v-if="stage === 0" />
+              <b_four_q v-else-if="stage === 1" />
+              <c_four_q v-else />
+            </div>
 
-        </div>
-
-
-        <div class="absolute left-[6rem] top-[32rem]" style=" transform: rotate(2deg)">
-          <a_four_q />
-          <b_four_q />
-          <c_four_q />
-        </div>
-
-        <div class=" absolute left-[9.5rem] top-[37rem]" style="transform: rotate(2deg)">
-          <a_five_q />
-          <b_five_q />
-          <c_five_q />
-        </div>
-
+            <div class=" absolute left-[9.5rem] top-[37rem]" style="transform: rotate(2deg)">
+              <a_five_q v-if="stage === 0" />
+              <b_five_q v-else-if="stage === 1" />
+              <c_five_q v-else />
+            </div>
+          </div>
+        </transition>
       </div>
 
 
@@ -137,6 +137,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 import Title from './title.vue'
 import a_one_title from './one/title.vue'
 import a_one_q from './one/one.vue'
@@ -165,6 +166,18 @@ const selectedATexture = ref('A3.png')
 const selectedBTexture = ref('B2.png')
 
 const colors = ref(['#ead1bc', '#a48260', '#b884af'])
+
+// 0: A, 1: B, 2: C
+const stage = ref(0)
+const router = useRouter()
+
+function handleClick() {
+  if (stage.value < 2) {
+    stage.value += 1
+  } else {
+    router.push({ path: `/wait/${selectedATexture.value}/${selectedBTexture.value}` })
+  }
+}
 
 
 
@@ -205,3 +218,52 @@ onMounted(() => {
 });
 
 </script>
+
+<style scoped>
+/* 颗粒消散 + 淡入淡出 */
+.dissolve-enter-active,
+.dissolve-leave-active {
+  transition: opacity 360ms ease;
+  /* 同步粒子遮罩动画时长 */
+}
+.dissolve-enter-from,
+.dissolve-leave-to {
+  opacity: 0;
+}
+
+/* 粒子遮罩实现：使用子层遮罩在切换时制造"砂化"效果 */
+.dissolve-wrap {
+  position: relative;
+}
+.dissolve-wrap::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(circle at 20% 30%, rgba(0,0,0,0.12), transparent 40%),
+              radial-gradient(circle at 70% 40%, rgba(0,0,0,0.10), transparent 42%),
+              radial-gradient(circle at 40% 70%, rgba(0,0,0,0.08), transparent 45%),
+              radial-gradient(circle at 85% 75%, rgba(0,0,0,0.06), transparent 46%),
+              radial-gradient(circle at 10% 80%, rgba(0,0,0,0.06), transparent 44%);
+  opacity: 0;
+  mask-image: radial-gradient(120px 120px at 30% 30%, #000 20%, transparent 60%),
+              radial-gradient(100px 100px at 70% 20%, #000 18%, transparent 55%),
+              radial-gradient(140px 140px at 50% 70%, #000 22%, transparent 60%),
+              radial-gradient(120px 120px at 80% 80%, #000 18%, transparent 58%);
+  -webkit-mask-image: radial-gradient(120px 120px at 30% 30%, #000 20%, transparent 60%),
+                       radial-gradient(100px 100px at 70% 20%, #000 18%, transparent 55%),
+                       radial-gradient(140px 140px at 50% 70%, #000 22%, transparent 60%),
+                       radial-gradient(120px 120px at 80% 80%, #000 18%, transparent 58%);
+  mix-blend-mode: multiply;
+}
+.dissolve-leave-active .dissolve-wrap::before,
+.dissolve-enter-active .dissolve-wrap::before {
+  animation: particle-dissolve 360ms ease forwards;
+}
+
+@keyframes particle-dissolve {
+  0% { opacity: 0; filter: blur(0px); }
+  50% { opacity: 0.35; filter: blur(0.8px); }
+  100% { opacity: 0; filter: blur(0px); }
+}
+</style>
