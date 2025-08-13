@@ -11,9 +11,7 @@ type TextureConfig = {
 }
 
 // Global OSS base for static textures/models
-const OSS_BASE = import.meta.env.PROD
-  ? 'https://steppy-dev.oss-cn-guangzhou.aliyuncs.com/'
-  : '/oss/'
+const OSS_BASE = 'https://steppy-dev.oss-cn-guangzhou.aliyuncs.com/'
 
 // Normalize any project-relative path to the OSS CDN
 const resolveToOSS = (url: string): string => {
@@ -22,7 +20,7 @@ const resolveToOSS = (url: string): string => {
   if (/^https?:\/\//i.test(trimmed)) return trimmed
 
   // In dev, allow '/oss/...' to pass-through without duplication
-  if (!import.meta.env.PROD && trimmed.startsWith('/oss/')) return trimmed
+  // Always use OSS directly per requirement
 
   // Remove leading './' or '/'
   const withoutLeading = trimmed.replace(/^\.\/+/, '').replace(/^\/+/, '')
@@ -31,9 +29,7 @@ const resolveToOSS = (url: string): string => {
   const idx = withoutLeading.indexOf('tietu/')
   const relative = idx >= 0 ? withoutLeading.slice(idx) : withoutLeading
 
-  if (!import.meta.env.PROD && relative.startsWith('oss/')) {
-    return '/' + relative
-  }
+  // No dev proxy; keep absolute OSS only
 
   return OSS_BASE + relative
 }

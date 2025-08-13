@@ -229,7 +229,7 @@
               <path
                 d="M126.681 107.617H29.6073C27.3173 107.617 25.4609 109.475 25.4609 111.768V137.968C25.4609 140.26 27.3173 142.118 29.6073 142.118H126.681C128.971 142.118 130.828 140.26 130.828 137.968V111.768C130.828 109.475 128.971 107.617 126.681 107.617Z"
                 fill="#9C7D5E"
-                @click=" $router.push({ path: `/wait/${selectedATexture}/${selectedBTexture}` })" />
+                @click=" $router.push({ path: `/result/${selectedATexture}/${selectedBTexture}` })" />
               <path
                 d="M55.6637 126.759C55.4944 130.021 54.869 131.688 51.3998 132.487C51.277 132.157 51.0955 131.852 50.8643 131.587C54.0397 130.923 54.4993 129.588 54.6444 126.745L55.6637 126.759ZM62.8543 126.105V127.143H51.0301V126.105H62.8543ZM62.4915 120.831V124.04H61.4549V121.879H52.3673V124.04H51.3687V120.831H62.4915ZM60.5565 123.418V124.421H53.3003V123.418H60.5565ZM56.9007 119.039C57.2769 119.687 57.5893 120.371 57.8337 121.08L56.7729 121.426C56.5466 120.707 56.2516 120.012 55.8918 119.35L56.9007 119.039ZM58.9739 126.714V130.747C58.9739 131.169 59.0707 131.238 59.6201 131.238H61.486C61.987 131.238 62.0699 130.989 62.1148 129.318C62.3938 129.516 62.7048 129.663 63.0339 129.754C62.913 131.743 62.6331 132.245 61.5654 132.245H59.5164C58.2898 132.245 57.9684 131.899 57.9684 130.75V126.714H58.9739Z"
                 fill="white" />
@@ -280,18 +280,14 @@ import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js'
 
 // 基础路径适配（改为使用 OSS 加速）
 const withBase = (path: string): string => {
-  const base = import.meta.env.PROD
-    ? 'https://steppy-dev.oss-cn-guangzhou.aliyuncs.com'
-    : '/oss'
+  const base = 'https://steppy-dev.oss-cn-guangzhou.aliyuncs.com'
   const cleaned = path.replace(/^\/+/, '')
   return `${base}/${cleaned}`
 }
 
 // 贴图路径（A/B）
 const getTexturePath = (folder: 'A' | 'B', filename: string): string => {
-  const base = import.meta.env.PROD
-    ? 'https://steppy-dev.oss-cn-guangzhou.aliyuncs.com'
-    : '/oss'
+  const base = 'https://steppy-dev.oss-cn-guangzhou.aliyuncs.com'
   return `${base}/tietu/${folder}/${filename}`
 }
 

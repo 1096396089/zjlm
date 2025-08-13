@@ -22,9 +22,7 @@ const textureCache: Record<string, THREE.Texture> = {}
 
 // 基础路径适配（支持子路径部署，与 three.vue 保持一致）
 const withBase = (path: string): string => {
-  const base = import.meta.env.PROD
-    ? 'https://steppy-dev.oss-cn-guangzhou.aliyuncs.com'
-    : '/oss'
+  const base = 'https://steppy-dev.oss-cn-guangzhou.aliyuncs.com'
   const cleaned = path.replace(/^\/+/, '')
   return `${base}/${cleaned}`
 }

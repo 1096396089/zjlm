@@ -8,9 +8,7 @@ const gltfPromiseCache: Map<string, Promise<GLTF>> = new Map()
 const gltfResolvedCache: Map<string, GLTF> = new Map()
 
 // Global OSS base for static textures/models
-const OSS_BASE = import.meta.env.PROD
-  ? 'https://steppy-dev.oss-cn-guangzhou.aliyuncs.com/'
-  : '/oss/'
+const OSS_BASE = 'https://steppy-dev.oss-cn-guangzhou.aliyuncs.com/'
 
 // Normalize any project-relative path to the OSS CDN
 const resolveToOSS = (url: string): string => {
@@ -19,14 +17,12 @@ const resolveToOSS = (url: string): string => {
   if (/^https?:\/\//i.test(trimmed)) return trimmed
 
   // In dev, allow '/oss/...' to pass-through without duplication
-  if (!import.meta.env.PROD && trimmed.startsWith('/oss/')) return trimmed
+  // Always use OSS directly per requirement
 
   // Remove leading './' or '/'
   const withoutLeading = trimmed.replace(/^\.\/+/, '').replace(/^\/+/, '')
 
-  if (!import.meta.env.PROD && withoutLeading.startsWith('oss/')) {
-    return '/' + withoutLeading
-  }
+  // No dev proxy; keep absolute OSS only
 
   return OSS_BASE + withoutLeading
 }
