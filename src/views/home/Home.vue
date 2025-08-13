@@ -56,7 +56,7 @@ const isLoadingIntro = ref(true)
 const canvasRef = ref<HTMLCanvasElement | null>(null)
 const lottieRef = ref<HTMLDivElement | null>(null)
 
-const totalFrames = 95 // 00000 - 00106 inclusive
+const totalFrames = 106 // 00000 - 00106 inclusive
 const fps = 24
 const frameDurationMs = 1000 / fps
 const devicePixelRatioClamp = 1 // keep pixel work low for smoothness
