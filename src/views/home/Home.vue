@@ -10,6 +10,16 @@
       <Title />
     </div>
 
+    <div class=" w-full h-20 ">
+      <transition name="fade-img" mode="out-in">
+        <img
+          :key="currentCarouselIndex"
+          :src="carouselImages[currentCarouselIndex]"
+          alt=""
+        />
+      </transition>
+    </div>
+
     <div class=" mb-20 flex flex-col items-center justify-between">
       <Info></Info>
       <div class=" mt-20" @click="$router.push({ path: `/card` })">
@@ -70,6 +80,17 @@ let cw = 0
 let ch = 0
 let crop: { sx: number; sy: number; sw: number; sh: number } | null = null
 const bufferedBitmaps: Map<number, ImageBitmap> = new Map()
+
+// simple carousel for header images
+const carouselImages = [
+  'https://steppy-dev.oss-cn-guangzhou.aliyuncs.com/xiezipng/1.png',
+  'https://steppy-dev.oss-cn-guangzhou.aliyuncs.com/xiezipng/2.png',
+  'https://steppy-dev.oss-cn-guangzhou.aliyuncs.com/xiezipng/3.png',
+  'https://steppy-dev.oss-cn-guangzhou.aliyuncs.com/xiezipng/4.png',
+  'https://steppy-dev.oss-cn-guangzhou.aliyuncs.com/xiezipng/5.png'
+]
+const currentCarouselIndex = ref(0)
+let carouselTimer: number | null = null
 
 function frameUrl(index: number): string {
   const frameStr = String(index).padStart(5, '0')
@@ -233,6 +254,13 @@ onMounted(async () => {
     })
   }
 
+  // start carousel
+  if (!carouselTimer) {
+    carouselTimer = window.setInterval(() => {
+      currentCarouselIndex.value = (currentCarouselIndex.value + 1) % carouselImages.length
+    }, 2000)
+  }
+
   // Preload all bitmaps before starting playback
   await preloadAllFramesBitmaps()
 
@@ -248,6 +276,10 @@ onMounted(async () => {
 
 onBeforeUnmount(() => {
   cancelAnimationFrameIfAny()
+  if (carouselTimer) {
+    clearInterval(carouselTimer)
+    carouselTimer = null
+  }
 })
 
 
@@ -266,6 +298,13 @@ onBeforeUnmount(() => {
   transition: opacity 500ms ease;
 }
 .fade-enter-from, .fade-leave-to {
+  opacity: 0;
+}
+
+.fade-img-enter-active, .fade-img-leave-active {
+  transition: opacity 400ms ease;
+}
+.fade-img-enter-from, .fade-img-leave-to {
   opacity: 0;
 }
 </style>
