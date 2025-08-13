@@ -298,20 +298,10 @@ import { getClonedGLTF } from '@/util/gltfCache'
   
   // 环境检测和路径适配工具
   const getTexturePath = (folder: 'A' | 'B', filename: string): string => {
-    // 检测环境
-    const isDev = import.meta.env.DEV
-    const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-    
-    // 生产环境路径
-    const prodPath = `/tietu/${folder}/${filename}`
-    
-    // 开发环境路径
-    const devPath = `/tietu/${folder}/${filename}`
-    
-    console.log(`环境检测: 开发=${isDev}, 本地=${isLocal}`)
-    console.log(`贴图路径: ${isDev ? devPath : prodPath}`)
-    
-    return isDev ? devPath : prodPath
+    const base = import.meta.env.PROD
+      ? 'https://steppy-dev.oss-cn-guangzhou.aliyuncs.com'
+      : '/oss'
+    return `${base}/tietu/${folder}/${filename}`
   }
   
   // 响应式数据
@@ -1103,7 +1093,7 @@ import { getClonedGLTF } from '@/util/gltfCache'
   // 修改加载鞋子模型函数
   const loadShoeModel = async () => {
     try {
-      const { scene: clonedScene, animations } = await getClonedGLTF('/xie.gltf')
+      const { scene: clonedScene, animations } = await getClonedGLTF('xie.gltf')
       shoeModel = clonedScene
 
       // 设置模型属性 - 进一步增大缩放比例

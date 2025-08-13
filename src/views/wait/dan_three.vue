@@ -31,7 +31,9 @@ const rotZ = ref(0)
 
 // 基础路径适配（支持子路径部署，与 three.vue 保持一致）
 const withBase = (path: string): string => {
-  const base = (import.meta.env.BASE_URL || '/').replace(/\/+$/, '')
+  const base = import.meta.env.PROD
+    ? 'https://steppy-dev.oss-cn-guangzhou.aliyuncs.com'
+    : '/oss'
   const cleaned = path.replace(/^\/+/, '')
   return `${base}/${cleaned}`
 }

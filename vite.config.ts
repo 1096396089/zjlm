@@ -11,6 +11,16 @@ export default defineConfig({
     vue(),
     // vueDevTools(),
   ],
+  server: {
+    proxy: {
+      // 本地开发通过代理转发到 OSS，避免浏览器 CORS 限制
+      '/oss/': {
+        target: 'https://steppy-dev.oss-cn-guangzhou.aliyuncs.com/',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/oss\//, '/')
+      }
+    }
+  },
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),

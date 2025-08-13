@@ -7,6 +7,30 @@ import { clone as skeletonClone } from 'three/examples/jsm/utils/SkeletonUtils.j
 const gltfPromiseCache: Map<string, Promise<GLTF>> = new Map()
 const gltfResolvedCache: Map<string, GLTF> = new Map()
 
+// Global OSS base for static textures/models
+const OSS_BASE = import.meta.env.PROD
+  ? 'https://steppy-dev.oss-cn-guangzhou.aliyuncs.com/'
+  : '/oss/'
+
+// Normalize any project-relative path to the OSS CDN
+const resolveToOSS = (url: string): string => {
+  if (!url) return url
+  const trimmed = url.trim()
+  if (/^https?:\/\//i.test(trimmed)) return trimmed
+
+  // In dev, allow '/oss/...' to pass-through without duplication
+  if (!import.meta.env.PROD && trimmed.startsWith('/oss/')) return trimmed
+
+  // Remove leading './' or '/'
+  const withoutLeading = trimmed.replace(/^\.\/+/, '').replace(/^\/+/, '')
+
+  if (!import.meta.env.PROD && withoutLeading.startsWith('oss/')) {
+    return '/' + withoutLeading
+  }
+
+  return OSS_BASE + withoutLeading
+}
+
 let sharedLoader: GLTFLoader | null = null
 const getLoader = (): GLTFLoader => {
   if (!sharedLoader) {
@@ -19,18 +43,19 @@ const getLoader = (): GLTFLoader => {
  * Load a GLTF once per URL. Subsequent calls return the same in-memory parsed result without re-fetching.
  */
 export const loadGLTFOnce = (url: string): Promise<GLTF> => {
-  if (gltfResolvedCache.has(url)) {
-    return Promise.resolve(gltfResolvedCache.get(url) as GLTF)
+  const ossUrl = resolveToOSS(url)
+  if (gltfResolvedCache.has(ossUrl)) {
+    return Promise.resolve(gltfResolvedCache.get(ossUrl) as GLTF)
   }
-  if (gltfPromiseCache.has(url)) {
-    return gltfPromiseCache.get(url) as Promise<GLTF>
+  if (gltfPromiseCache.has(ossUrl)) {
+    return gltfPromiseCache.get(ossUrl) as Promise<GLTF>
   }
   const loader = getLoader()
-  const p = loader.loadAsync(url).then((gltf) => {
-    gltfResolvedCache.set(url, gltf)
+  const p = loader.loadAsync(ossUrl).then((gltf) => {
+    gltfResolvedCache.set(ossUrl, gltf)
     return gltf
   })
-  gltfPromiseCache.set(url, p)
+  gltfPromiseCache.set(ossUrl, p)
   return p
 }
 

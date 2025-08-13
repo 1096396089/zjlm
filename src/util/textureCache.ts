@@ -10,6 +10,34 @@ type TextureConfig = {
   setSRGB?: boolean
 }
 
+// Global OSS base for static textures/models
+const OSS_BASE = import.meta.env.PROD
+  ? 'https://steppy-dev.oss-cn-guangzhou.aliyuncs.com/'
+  : '/oss/'
+
+// Normalize any project-relative path to the OSS CDN
+const resolveToOSS = (url: string): string => {
+  if (!url) return url
+  const trimmed = url.trim()
+  if (/^https?:\/\//i.test(trimmed)) return trimmed
+
+  // In dev, allow '/oss/...' to pass-through without duplication
+  if (!import.meta.env.PROD && trimmed.startsWith('/oss/')) return trimmed
+
+  // Remove leading './' or '/'
+  const withoutLeading = trimmed.replace(/^\.\/+/, '').replace(/^\/+/, '')
+
+  // If the path contains 'tietu/', keep from there to preserve folder structure
+  const idx = withoutLeading.indexOf('tietu/')
+  const relative = idx >= 0 ? withoutLeading.slice(idx) : withoutLeading
+
+  if (!import.meta.env.PROD && relative.startsWith('oss/')) {
+    return '/' + relative
+  }
+
+  return OSS_BASE + relative
+}
+
 const defaultConfig: Required<TextureConfig> = {
   flipY: false,
   minFilter: THREE.LinearMipmapLinearFilter as THREE.MinificationTextureFilter,
@@ -43,21 +71,22 @@ const applyTextureConfig = (texture: THREE.Texture, cfg?: TextureConfig) => {
 export const loadTextureCached = (url: string, cfg?: TextureConfig): Promise<THREE.Texture> => {
   // 空 URL 直接拒绝，避免 404 泛滥
   if (!url) return Promise.reject(new Error('Empty texture url'))
-  if (textureResolvedCache.has(url)) {
-    const t = textureResolvedCache.get(url) as THREE.Texture
+  const ossUrl = resolveToOSS(url)
+  if (textureResolvedCache.has(ossUrl)) {
+    const t = textureResolvedCache.get(ossUrl) as THREE.Texture
     applyTextureConfig(t, cfg)
     return Promise.resolve(t)
   }
-  if (texturePromiseCache.has(url)) {
-    return texturePromiseCache.get(url) as Promise<THREE.Texture>
+  if (texturePromiseCache.has(ossUrl)) {
+    return texturePromiseCache.get(ossUrl) as Promise<THREE.Texture>
   }
   const loader = getLoader()
-  const p = loader.loadAsync(url).then((tex) => {
+  const p = loader.loadAsync(ossUrl).then((tex) => {
     applyTextureConfig(tex, cfg)
-    textureResolvedCache.set(url, tex)
+    textureResolvedCache.set(ossUrl, tex)
     return tex
   })
-  texturePromiseCache.set(url, p)
+  texturePromiseCache.set(ossUrl, p)
   return p
 }
 

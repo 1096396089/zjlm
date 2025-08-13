@@ -44,7 +44,10 @@ const getTexturePath = (area: 'A' | 'B', filename: string): string => {
   }
   // 确保带扩展名
   const finalName = filename.toLowerCase().endsWith('.png') ? filename : `${filename}.png`
-  return `/tietu/${area}/${finalName}`
+  const base = import.meta.env.PROD
+    ? 'https://steppy-dev.oss-cn-guangzhou.aliyuncs.com'
+    : '/oss'
+  return `${base}/tietu/${area}/${finalName}`
 }
 
 const applyTextureToArea = (area: 'A' | 'B', filename: string) => {
@@ -123,7 +126,7 @@ const init = () => {
   scene.add(dir)
 
   // 加载模型（使用缓存）
-  getClonedGLTF('/xie1.gltf')
+  getClonedGLTF('xie.gltf')
     .then(({ scene: clonedScene }) => {
       shoeModel = clonedScene
       shoeModel.scale.set(11, 11, 11)
