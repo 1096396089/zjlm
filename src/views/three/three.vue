@@ -199,7 +199,7 @@
               </svg>
 
             </div>
-            <div class="grid grid-cols-6 gap-x-4 gap-y-3 justify-items-center" style="transform: rotate(2deg);">
+            <div class="  px-12  flex justify-between items-center" style="transform: rotate(2deg);">
               <div v-for="texture in aTextureNames" :key="texture" class="flex flex-col items-center">
                 <button type="button" @click="switchToATexture(texture)" :class="[
                   'w-12 h-12  rounded-[9px] border border-gray-200 shadow-sm transition-transform duration-200',
@@ -219,7 +219,7 @@
 
         <!-- 区域2 颜色选择 -->
 
-        <div class="relative z-20 w-full -top-[18rem] bg-[#e7d2ba] py-6 rounded-lg  px-6 pb-52 -mt-12"
+        <div class="relative z-20 w-full -top-[18rem] bg-[#e7d2ba] py-6 rounded-lg  px-6 pb-56 -mt-12"
           style="transform: rotate(2deg); ">
 
           <div class="  absolute z-40  flex items-end w-full justify-end pr-10  -top-[1rem]">
@@ -253,7 +253,7 @@
           </div>
 
 
-          <div class="grid grid-cols-6 gap-x-4 gap-y-3 justify-items-center" style="transform: rotate(-2deg);">
+          <div class=" px-12  flex justify-between items-center" style="transform: rotate(-2deg);">
             <div v-for="texture in bTextureNames" :key="texture" class="flex flex-col items-center">
               <button type="button" @click="switchToBTexture(texture)" :class="[
                 'w-12 h-12  rounded-[9px] border border-gray-200 shadow-sm transition-transform duration-200 overflow-hidden',
@@ -1186,20 +1186,6 @@ const completeCustomization = () => {
   console.log('当前灯光强度:', lightingIntensity.value)
   console.log('当前动画状态:', isAnimating.value)
 
-}
-
-const onConfirm = () => {
-  showConfirm.value = false
-  completeCustomization()
-}
-
-// 再玩一次：恢复默认贴图与视角
-const onReplay = () => {
-  showConfirm.value = false
-  selectedATexture.value = 'A2.png'
-  selectedBTexture.value = 'B3.png'
-  applyInitialDefaultTextures()
-  resetView()
 }
 
 
