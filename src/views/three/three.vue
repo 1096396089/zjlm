@@ -308,7 +308,8 @@
       <!-- 居中内容容器 -->
       <div class="absolute inset-0 flex items-center justify-center p-6">
         <div class="relative w-full max-w-md" @click.stop>
-          <div
+<div
+            ref="confirmCardRef"
             class="zaodian bg-[#deccb7] rounded-xl px-6 pt-14 pb-16 shadow-[0_12px_30px_rgba(0,0,0,0.35)] text-center">
             <div class="text-black text-xl">确认定制？</div>
           </div>
@@ -327,7 +328,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, nextTick } from 'vue'
+import { ref, onMounted, onUnmounted, nextTick, watch } from 'vue'
 import * as THREE from 'three'
 import { getClonedGLTF } from '@/util/gltfCache'
 import { loadTextureFromCandidates } from '@/util/textureCache'
@@ -360,6 +361,7 @@ const showControlPanel = ref(false)
 const cameraPosition = ref({ x: 0, y: 0, z: 5 })
 // 确认弹窗
 const showConfirm = ref(false)
+const confirmCardRef = ref<HTMLElement | null>(null)
 
 // A和B贴图文件名数组
 const aTextureNames = ['A1.png', 'A2.png', 'A3.png', 'A4.png', 'A5.png', 'A6.png',]
@@ -1225,6 +1227,24 @@ function generateNoise(opacity: number = 0.06, size: number = 100): string {
 }
 
 
+// 将噪点应用到确认弹窗卡片
+const applyNoiseToConfirmCard = () => {
+  const el = confirmCardRef.value
+  if (!el) return
+  const noiseURL = generateNoise(0.08, 1000)
+  el.style.backgroundImage = `url(${noiseURL})`
+  el.style.backgroundBlendMode = 'multiply'
+  el.style.backgroundRepeat = 'repeat'
+}
+
+// 监听弹窗显示，等 DOM 渲染后再设置噪点背景
+watch(showConfirm, async (visible) => {
+  if (visible) {
+    await nextTick()
+    applyNoiseToConfirmCard()
+  }
+})
+
 // 生命周期
 onMounted(async () => {
   await nextTick()
@@ -1242,13 +1262,8 @@ onMounted(async () => {
     ; (window as any).dumpMeshNames = (limit?: number) => logMeshNames(limit)
 
 
-  const targetDiv = document.querySelector('div.zaodian') as HTMLElement | null;
-  if (targetDiv) {
-    const noiseURL = generateNoise(0.08, 1000); // 不透明度 & 噪点尺寸
-    targetDiv.style.backgroundImage = `url(${noiseURL})`;
-    targetDiv.style.backgroundBlendMode = 'multiply';
-    targetDiv.style.backgroundRepeat = 'repeat';
-  }
+  // 若进入页面时弹窗已显示（极少见），也补一次
+  if (showConfirm.value) applyNoiseToConfirmCard()
 
 })
 
