@@ -58,7 +58,7 @@
 
       <div class=" z-20 absolute left-5   pb-[52rem]  -top-[1.25rem] w-[88%] h-full bg-cover bg-center  rounded-lg "
       :style="{ backgroundColor: layerColors[1] }">
-        <div class=" absolute -right-[27px] top-[3.5rem]">
+        <div class=" absolute -right-[27px] top-[7.5rem]">
           <svg width="27" height="116" viewBox="0 0 27 116" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path
               d="M0.214844 115.901V0.960938L17.3419 3.66448C22.5987 3.66448 26.858 11.2088 26.858 17.1856V99.673C26.858 105.65 22.5987 113.194 17.3419 113.194L0.214844 115.901Z"
@@ -79,7 +79,7 @@
 
         </div>
 
-        <div class=" absolute -right-[27px] top-[10.5rem]">
+        <div class=" absolute -right-[27px] top-[14.5rem]">
           <svg width="27" height="116" viewBox="0 0 27 116" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path
               d="M0.214844 115.65V0.726562L17.3419 3.43011C22.5987 3.43011 26.858 10.9745 26.858 16.9513V99.4248C26.858 105.402 22.5987 112.946 17.3419 112.946L0.214844 115.65Z"
@@ -101,7 +101,7 @@
 
         </div>
 
-        <div class=" absolute -right-[27px] top-[17.5rem]">
+        <div class=" absolute -right-[27px] top-[21.5rem]">
           <svg width="27" height="116" viewBox="0 0 27 116" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path
               d="M0.214844 115.235V0.3125L17.3419 3.01603C22.5987 3.01603 26.858 10.5604 26.858 16.5372V99.0107C26.858 104.988 22.5987 112.532 17.3419 112.532L0.214844 115.235Z"
