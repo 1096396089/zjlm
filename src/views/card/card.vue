@@ -56,7 +56,6 @@
 
 
 
-
       <div class=" z-20 absolute left-5   pb-[52rem]  -top-[1.25rem] w-[88%] h-full bg-cover bg-center  rounded-lg "
       :style="{ backgroundColor: layerColors[1] }">
         <div class=" absolute -right-[27px] top-[3.5rem]">
