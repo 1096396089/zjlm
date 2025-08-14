@@ -57,7 +57,7 @@
     </div>
 
     <!-- Three.js 渲染容器 -->
-    <div ref="containerRef" class="w-full h-[55%] relative" style="background: transparent;"></div>
+    <div ref="containerRef" class="w-full h-[55%] pt-10 relative" style="background: transparent;"></div>
 
     <!-- 字体 -->
     <div class="absolute z-10 left-1/2 top-[30%] transform -translate-x-1/2">
