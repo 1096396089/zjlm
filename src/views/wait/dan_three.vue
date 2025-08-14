@@ -1,6 +1,6 @@
 <template>
   <div class="">
-    <div ref="containerRef" class="w-full h-[45%]"></div>
+    <div ref="containerRef" class="w-full h-[60%]"></div>
   </div>
 </template>
 
