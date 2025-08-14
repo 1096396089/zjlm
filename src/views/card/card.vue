@@ -18,31 +18,31 @@
               <c_one_title v-else />
             </div>
 
-            <div class=" absolute left-[8rem] top-[14rem]" style="transform: rotate(2deg)">
+            <div class=" absolute left-[6rem] top-[14rem]" style="transform: rotate(2deg)">
               <a_one_q v-if="stage === 0" />
               <b_one_q v-else-if="stage === 1" />
               <c_one_q v-else />
             </div>
 
-            <div class=" absolute left-[4.5rem] top-[18rem]" style="transform: rotate(2deg)">
+            <div class=" absolute left-[2.5rem] top-[18rem]" style="transform: rotate(2deg)">
               <a_tow_q v-if="stage === 0" />
               <b_tow_q v-else-if="stage === 1" />
               <c_tow_q v-else />
             </div>
 
-            <div class=" absolute left-[8rem] top-[22rem]" style="transform: rotate(2deg)">
+            <div class=" absolute left-[6rem] top-[22rem]" style="transform: rotate(2deg)">
               <a_three_q v-if="stage === 0" />
               <b_three_q v-else-if="stage === 1" />
               <c_three_q v-else />
             </div>
 
-            <div class="absolute left-[4.5rem] top-[26rem]" style=" transform: rotate(2deg)">
+            <div class="absolute left-[2.5rem] top-[26rem]" style=" transform: rotate(2deg)">
               <a_four_q v-if="stage === 0" />
               <b_four_q v-else-if="stage === 1" />
               <c_four_q v-else />
             </div>
 
-            <div class=" absolute left-[8rem] top-[30rem]" style="transform: rotate(2deg)">
+            <div class=" absolute left-[6rem] top-[30rem]" style="transform: rotate(2deg)">
               <a_five_q v-if="stage === 0" />
               <b_five_q v-else-if="stage === 1" />
               <c_five_q v-else />
