@@ -18,31 +18,31 @@
               <c_one_title v-else />
             </div>
 
-            <div class=" absolute left-[9rem] top-[14rem]" style="transform: rotate(2deg)">
+            <div class=" absolute left-[8rem] top-[14rem]" style="transform: rotate(2deg)">
               <a_one_q v-if="stage === 0" />
               <b_one_q v-else-if="stage === 1" />
               <c_one_q v-else />
             </div>
 
-            <div class=" absolute left-[5.5rem] top-[18rem]" style="transform: rotate(2deg)">
+            <div class=" absolute left-[4.5rem] top-[18rem]" style="transform: rotate(2deg)">
               <a_tow_q v-if="stage === 0" />
               <b_tow_q v-else-if="stage === 1" />
               <c_tow_q v-else />
             </div>
 
-            <div class=" absolute left-[9rem] top-[22rem]" style="transform: rotate(2deg)">
+            <div class=" absolute left-[8rem] top-[22rem]" style="transform: rotate(2deg)">
               <a_three_q v-if="stage === 0" />
               <b_three_q v-else-if="stage === 1" />
               <c_three_q v-else />
             </div>
 
-            <div class="absolute left-[5.5rem] top-[26rem]" style=" transform: rotate(2deg)">
+            <div class="absolute left-[4.5rem] top-[26rem]" style=" transform: rotate(2deg)">
               <a_four_q v-if="stage === 0" />
               <b_four_q v-else-if="stage === 1" />
               <c_four_q v-else />
             </div>
 
-            <div class=" absolute left-[9rem] top-[30rem]" style="transform: rotate(2deg)">
+            <div class=" absolute left-[8rem] top-[30rem]" style="transform: rotate(2deg)">
               <a_five_q v-if="stage === 0" />
               <b_five_q v-else-if="stage === 1" />
               <c_five_q v-else />
@@ -57,9 +57,9 @@
 
 
 
-      <div class=" z-20 absolute left-5   pb-[52rem]  -top-[1.25rem] w-[89%] h-full bg-cover bg-center  rounded-lg "
+      <div class=" z-20 absolute left-5   pb-[52rem]  -top-[1.25rem] w-[88%] h-full bg-cover bg-center  rounded-lg "
       :style="{ backgroundColor: layerColors[1] }">
-        <div class=" absolute -right-[27px] top-[1.5rem]">
+        <div class=" absolute -right-[27px] top-[3.5rem]">
           <svg width="27" height="116" viewBox="0 0 27 116" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path
               d="M0.214844 115.901V0.960938L17.3419 3.66448C22.5987 3.66448 26.858 11.2088 26.858 17.1856V99.673C26.858 105.65 22.5987 113.194 17.3419 113.194L0.214844 115.901Z"
@@ -80,7 +80,7 @@
 
         </div>
 
-        <div class=" absolute -right-[27px] top-[8.5rem]">
+        <div class=" absolute -right-[27px] top-[10.5rem]">
           <svg width="27" height="116" viewBox="0 0 27 116" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path
               d="M0.214844 115.65V0.726562L17.3419 3.43011C22.5987 3.43011 26.858 10.9745 26.858 16.9513V99.4248C26.858 105.402 22.5987 112.946 17.3419 112.946L0.214844 115.65Z"
@@ -102,7 +102,7 @@
 
         </div>
 
-        <div class=" absolute -right-[27px] top-[15.5rem]">
+        <div class=" absolute -right-[27px] top-[17.5rem]">
           <svg width="27" height="116" viewBox="0 0 27 116" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path
               d="M0.214844 115.235V0.3125L17.3419 3.01603C22.5987 3.01603 26.858 10.5604 26.858 16.5372V99.0107C26.858 104.988 22.5987 112.532 17.3419 112.532L0.214844 115.235Z"
