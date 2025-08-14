@@ -1,48 +1,48 @@
 <template>
   <div class=" relative flex flex-col  h-dvh ios-safe">
-    <div class="p-14">
+    <div class="py-10 px-14">
       <Title />
     </div>
 
     <div class=" relative  w-full flex-1 "
       @click="handleClick">
 
-      <div class=" zaodian relative  z-30   -left-[1.25rem] w-[90%] h-full bg-cover bg-center  rounded-lg "
+      <div class=" zaodian relative  z-30 pb-[52rem]   -left-[1.25rem] w-[95%] h-full bg-cover bg-center  rounded-lg "
         :style="{ backgroundColor: layerColors[0] }"
         style="transform: rotate(-2deg);  ">
         <transition name="dissolve" mode="out-in">
           <div :key="`stage-${stage}`" class="dissolve-wrap">
-            <div class="  absolute left-[19.87%] top-[6.1%] bg-cover bg-center p-4" style="transform: rotate(2deg)">
-              <a_one_title v-if="stage === 0" />
+            <div class=" mt-6  ml-2 absolute left-[16%] top-[6.1%] bg-cover bg-center p-4" style="transform: rotate(2deg)">
+              <a_one_title v-if="stage === 0"  />
               <b_one_title v-else-if="stage === 1" />
               <c_one_title v-else />
             </div>
 
-            <div class=" absolute left-[9.5rem] top-[12rem]" style="transform: rotate(2deg)">
+            <div class=" absolute left-[9rem] top-[14rem]" style="transform: rotate(2deg)">
               <a_one_q v-if="stage === 0" />
               <b_one_q v-else-if="stage === 1" />
               <c_one_q v-else />
             </div>
 
-            <div class=" absolute left-[6rem] top-[16rem]" style="transform: rotate(2deg)">
+            <div class=" absolute left-[5.5rem] top-[18rem]" style="transform: rotate(2deg)">
               <a_tow_q v-if="stage === 0" />
               <b_tow_q v-else-if="stage === 1" />
               <c_tow_q v-else />
             </div>
 
-            <div class=" absolute left-[9.5rem] top-[20rem]" style="transform: rotate(2deg)">
+            <div class=" absolute left-[9rem] top-[22rem]" style="transform: rotate(2deg)">
               <a_three_q v-if="stage === 0" />
               <b_three_q v-else-if="stage === 1" />
               <c_three_q v-else />
             </div>
 
-            <div class="absolute left-[6rem] top-[24rem]" style=" transform: rotate(2deg)">
+            <div class="absolute left-[5.5rem] top-[26rem]" style=" transform: rotate(2deg)">
               <a_four_q v-if="stage === 0" />
               <b_four_q v-else-if="stage === 1" />
               <c_four_q v-else />
             </div>
 
-            <div class=" absolute left-[9.5rem] top-[28rem]" style="transform: rotate(2deg)">
+            <div class=" absolute left-[9rem] top-[30rem]" style="transform: rotate(2deg)">
               <a_five_q v-if="stage === 0" />
               <b_five_q v-else-if="stage === 1" />
               <c_five_q v-else />
@@ -57,7 +57,7 @@
 
 
 
-      <div class=" z-20 absolute left-5 -top-[1.25rem] w-[85%] h-full bg-cover bg-center  rounded-lg "
+      <div class=" z-20 absolute left-5   pb-[52rem]  -top-[1.25rem] w-[89%] h-full bg-cover bg-center  rounded-lg "
       :style="{ backgroundColor: layerColors[1] }">
         <div class=" absolute -right-[27px] top-[1.5rem]">
           <svg width="27" height="116" viewBox="0 0 27 116" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -127,7 +127,7 @@
 
       </div>
 
-      <div class=" z-10  absolute  -bottom-2 left-[0.4rem]  w-[90%] h-full bg-cover bg-center  rounded-lg "
+      <div class=" z-10  absolute   pb-[52rem]   -bottom-2 left-[0.4rem]  w-[94%] h-full bg-cover bg-center  rounded-lg "
       :style="{ backgroundColor: layerColors[2] }">
 
       </div>
