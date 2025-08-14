@@ -1,8 +1,13 @@
 <template>
   <div class="w-screen h-screen bg-[#F4EFE7] flex flex-col">
     <!-- 顶部标题 -->
-    <div class="pt-6 flex justify-center px-32">
-      <Title />
+  <div class="pt-6 flex justify-center px-32">
+      <div class="relative inline-block">
+        <Title></Title>
+        <div class="absolute top-0 -translate-y-1 translate-x-[9rem] ">
+          <Logo />
+        </div>
+      </div>
     </div>
 
     <!-- 奖品卡片区域 -->
@@ -157,6 +162,7 @@
 import { computed, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import Title from './title.vue'
+import Logo from './logo.vue'
 
 const route = useRoute()
 const level = computed(() => {

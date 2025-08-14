@@ -332,6 +332,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, nextTick, watch } from 'vue'
+import { useRoute } from 'vue-router'
 import * as THREE from 'three'
 import { getClonedGLTF } from '@/util/gltfCache'
 import { loadTextureFromCandidates } from '@/util/textureCache'
@@ -348,8 +349,13 @@ const withBase = (path: string): string => {
 
 // 贴图路径（A/B）
 const getTexturePath = (folder: 'A' | 'B', filename: string): string => {
-  const base = 'https://steppy-dev.oss-cn-guangzhou.aliyuncs.com'
-  return `${base}/tietu/${folder}/${filename}`
+  if (!filename) return ''
+  // 已是绝对或显式相对路径则直接返回
+  if (filename.startsWith('http') || filename.startsWith('/') || filename.startsWith('./')) {
+    return filename
+  }
+  const finalName = filename.toLowerCase().endsWith('.png') ? filename : `${filename}.png`
+  return withBase(`tietu/${folder}/${finalName}`)
 }
 
 // 响应式数据
@@ -365,6 +371,21 @@ const cameraPosition = ref({ x: 0, y: 0, z: 5 })
 // 确认弹窗
 const showConfirm = ref(false)
 const confirmCardRef = ref<HTMLElement | null>(null)
+
+// 路由参数（支持 params 与 query），默认 AC/BC，与 wait/dan_three.vue 保持一致
+const route = useRoute()
+const pickFirst = (v: unknown): string | undefined => {
+  if (typeof v === 'string') return v
+  if (Array.isArray(v) && v.length > 0 && typeof v[0] === 'string') return v[0]
+  return undefined
+}
+const resolveAreaParam = (key: 'a' | 'b', fallback: string): string => {
+  const fromParams = pickFirst((route.params as any)[key])
+  const fromQuery = pickFirst(route.query[key])
+  return (fromParams || fromQuery || fallback) as string
+}
+const aParam = ref<string>(resolveAreaParam('a', 'AC.png'))
+const bParam = ref<string>(resolveAreaParam('b', 'BC.png'))
 
 // A和B贴图文件名数组
 const aTextureNames = ['A1.png', 'A2.png', 'A3.png', 'A4.png', 'A5.png', 'A6.png',]
@@ -976,9 +997,13 @@ const removeMaterialFromMesh = (keywords: string[]) => {
 
 // 应用默认贴图：AB + public 根目录的 xiedai/xiedi/xiedian
 const applyInitialDefaultTextures = () => {
-  // A/B 默认
-  applyTextureToMeshA(getTexturePath('A', selectedATexture.value))
-  applyTextureToMeshB(getTexturePath('B', selectedBTexture.value))
+  // A/B 默认：优先使用路由参数
+  applyTextureToMeshA(getTexturePath('A', aParam.value))
+  applyTextureToMeshB(getTexturePath('B', bParam.value))
+
+  // 若路由传入的是我们的颜色列表之一，同步高亮
+  if (aTextureNames.includes(aParam.value)) selectedATexture.value = aParam.value
+  if (bTextureNames.includes(bParam.value)) selectedBTexture.value = bParam.value
 
   // public 根目录（Vite 会以站点根路径提供）
   const publicDefaults: Array<{ keywords: string[]; path: string }> = [
@@ -1255,6 +1280,24 @@ onMounted(async () => {
   if (showConfirm.value) applyNoiseToConfirmCard()
 
 })
+
+// 监听路由变化，实时切换 A/B 纹理
+watch(
+  () => route.fullPath,
+  () => {
+    const nextA = resolveAreaParam('a', aParam.value)
+    const nextB = resolveAreaParam('b', bParam.value)
+    aParam.value = nextA
+    bParam.value = nextB
+    if (shoeModel) {
+      applyTextureToMeshA(getTexturePath('A', aParam.value))
+      applyTextureToMeshB(getTexturePath('B', bParam.value))
+    }
+    // 同步 UI 选中状态（若命中我们列表）
+    if (aTextureNames.includes(nextA)) selectedATexture.value = nextA
+    if (bTextureNames.includes(nextB)) selectedBTexture.value = nextB
+  }
+)
 
 onUnmounted(() => {
   if (animationId) {

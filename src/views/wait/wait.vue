@@ -162,7 +162,7 @@
 
     </div>
 
-    <div class="pb-10 px-8 z-10  flex items-center justify-center" @click="$router.push('/model')" v-show="showThree">
+    <div class="pb-10 px-8 z-10  flex items-center justify-center" @click="goToModel" v-show="showThree">
 
       <svg width="148" height="30" viewBox="0 0 148 30" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path
@@ -212,6 +212,7 @@
 import Three from './dan_three.vue'
 import TitleCom from './title.vue'
 import { onMounted, onUnmounted, ref, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import lottie from 'lottie-web'
 import type { AnimationItem } from 'lottie-web'
 import jiazaiData from '../../assets/jiazai.json'
@@ -274,6 +275,21 @@ function onThreeLoaded() {
       showTimer = null
     }, remain)
   }
+}
+
+// 跳转到 /model 时透传当前 a/b 与 openId，确保 three.vue 可按路由加载纹理
+const route = useRoute()
+const router = useRouter()
+const pickFirst = (v: unknown): string | undefined => {
+  if (typeof v === 'string') return v
+  if (Array.isArray(v) && v.length > 0 && typeof v[0] === 'string') return v[0]
+  return undefined
+}
+const goToModel = () => {
+  const a = pickFirst((route.params as any).a) || pickFirst(route.query.a) || 'AC.png'
+  const b = pickFirst((route.params as any).b) || pickFirst(route.query.b) || 'BC.png'
+  const openId = pickFirst(route.query.openId)
+  router.push({ path: `/model/${a}/${b}` , query: { ...(openId ? { openId } : {}) } })
 }
 </script>
 

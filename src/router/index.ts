@@ -16,7 +16,7 @@ const routes: Array<RouteRecordRaw> = [
  
   },
   {
-    path: '/model',
+    path: '/model/:a?/:b?',
     component: () => import('../views/three/three.vue'),
   },
   {
