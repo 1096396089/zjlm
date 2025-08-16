@@ -73,38 +73,30 @@
       <div class="absolute inset-0 bg-black/50"></div>
       <!-- Panel (Redesigned) -->
       <div class="relative z-10 w-[90%] max-w-sm">
-        <div class="relative rounded-2xl bg-[#E6D6C4] p-10 text-center shadow-xl">
-          <!-- close button -->
-          <button
-            type="button"
-            class="absolute right-2 top-2 rounded-md p-1 text-gray-500 hover:bg-black/5 hover:text-gray-700"
-            aria-label="关闭"
-            @click="closeDialog"
-          >
-            ✕
-          </button>
+        <div class="relative  text-center shadow-xl">
+          <!-- close button -->      
 
           <!-- Step: QR code -->
-          <template v-if="step === 'qrcode'">
-            <div class="mx-auto inline-block rounded-lg bg-white p-3 shadow">
+          <template v-if="step === 'qrcode'" class=" relative">
+            <div class=" rounded-2xl py-10 flex flex-col items-center bg-[#E6D6C4]">
               <img
                 class="h-40 w-40 object-contain"
                 src="https://steppy-dev.oss-cn-guangzhou.aliyuncs.com/qrcode.png"
                 alt="客服二维码"
               />
+              <div class="mt-4 space-y-1 text-sm leading-6 text-gray-800">
+                <p>长按图片保存蹀愫管家二维码</p>
+                <p>添加客服获取兑换奖品信息</p>
+                <p>超过7天不领取视为自动放弃奖品</p>
+              </div>
+              <button
+                type="button"
+                class=" rounded-md bg-[#50744E] px-6 py-2 text-white shadow cursor-pointer"
+                @click="toForm"
+              >
+             返回研究
+              </button>
             </div>
-            <div class="mt-4 space-y-1 text-sm leading-6 text-gray-800">
-              <p>长按图片保存蹀愫管家二维码</p>
-              <p>添加客服获取兑换奖品信息</p>
-              <p>超过7天不领取视为自动放弃奖品</p>
-            </div>
-            <button
-              type="button"
-              class="absolute left-1/2 -bottom-4 -translate-x-1/2 rounded-md bg-[#50744E] px-6 py-2 text-white shadow cursor-pointer"
-              @click="toForm"
-            >
-              已添加
-            </button>
           </template>
 
           <!-- Step: Form -->
