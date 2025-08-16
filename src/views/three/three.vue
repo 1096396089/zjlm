@@ -388,7 +388,7 @@ const aParam = ref<string>(resolveAreaParam('a', 'AC.png'))
 const bParam = ref<string>(resolveAreaParam('b', 'BC.png'))
 
 // A和B贴图文件名数组
-const aTextureNames = ['A1.png', 'A2.png', 'A3.png', 'A4.png', 'A5.png', 'A6.png',]
+const aTextureNames = ['A6.png', 'A2.png', 'A3.png', 'A4.png', 'A5.png', 'A1.png',]
 const bTextureNames = ['B2.png', 'B1.png', 'B3.png', 'B4.png', 'B5.png', 'B6.png',]
 
 // 当前选中的贴图
@@ -1162,12 +1162,12 @@ const setupResponsive = () => {
 // 颜色映射表
 const colorMapping: Record<string, { name: string, color: string }> = {
   // A区域颜色
-  'A1.png': { name: '雀茶', color: '#8B572A' },
+  'A1.png': { name: '古檀', color: '#2B1B12' },
   'A2.png': { name: '樱落', color: '#BA6A74' },
   'A3.png': { name: '裹柳', color: '#C4D69B' },
   'A4.png': { name: '盈盈', color: '#D9A1B3' },
   'A5.png': { name: '唐茶', color: '#A57A68' },
-  'A6.png': { name: '古檀', color: '#2B1B12' },
+  'A6.png': { name: '雀茶', color: '#8B572A' },
 
   // B区域颜色
   'B2.png': { name: '金豹', color: '#C49D4D' },
