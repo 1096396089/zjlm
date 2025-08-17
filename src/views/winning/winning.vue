@@ -72,19 +72,19 @@
       <!-- Overlay -->
       <div class="absolute inset-0 bg-black/50"></div>
       <!-- Panel (Redesigned) -->
-      <div class="relative z-10 w-[90%] max-w-sm">
-        <div class="relative  text-center shadow-xl">
+      <div class="relative z-10 w-[100%]">
+        <div class="relative  text-center ">
           <!-- close button -->      
 
           <!-- Step: QR code -->
-          <template v-if="step === 'qrcode'" class=" relative">
-            <div class=" rounded-2xl py-10 flex flex-col items-center bg-[#E6D6C4]">
+          <template v-if="step === 'qrcode'">
+            <div class=" rounded-2xl   py-16 flex flex-col items-center bg-cover bg-center bg-no-repeat " :style="{ backgroundImage: `url(${fangxing})` }">
               <img
                 class="h-40 w-40 object-contain"
                 src="https://steppy-dev.oss-cn-guangzhou.aliyuncs.com/qrcode.png"
                 alt="客服二维码"
               />
-              <div class="mt-4 space-y-1 text-sm leading-6 text-gray-800">
+              <div class="my-4  text-sm leading-6 text-gray-800">
                 <p>长按图片保存蹀愫管家二维码</p>
                 <p>添加客服获取兑换奖品信息</p>
                 <p>超过7天不领取视为自动放弃奖品</p>
@@ -101,7 +101,8 @@
 
           <!-- Step: Form -->
           <template v-else>
-            <div class="text-center text-[15px] font-semibold text-black">
+              <div class=" rounded-2xl  py-16 flex flex-col items-center bg-cover bg-center bg-no-repeat " :style="{ backgroundImage: `url(${changxing})` }">
+                <div class="text-center text-[15px] font-semibold text-black">
               <p>请仔细填写收件信息</p>
               <p class="mt-1">填写错误视为自动放弃奖品</p>
             </div>
@@ -137,10 +138,11 @@
             </div>
 
             <!-- button bar outside the card bottom -->
-            <div class="absolute inset-x-0 -bottom-4 flex justify-between px-8">
-              <button type="button" class="w-36 whitespace-nowrap rounded-md bg-[#9C7D5E] px-6 py-2 text-white shadow" @click="confirmForm">是，确认无误</button>
-              <button type="button" class="w-36 whitespace-nowrap rounded-md bg-[#50744E] px-6 py-2 text-white shadow" @click="closeDialog">否，需要修改</button>
+            <div class=" flex justify-between ">
+              <button type="button" class=" whitespace-nowrap mr-2 rounded-md bg-[#9C7D5E] px-2 py-2 text-white shadow" @click="confirmForm">是，确认无误</button>
+              <button type="button" class=" whitespace-nowrap ml-2 rounded-md bg-[#50744E] px-2 py-2 text-white shadow" @click="closeDialog">否，需要修改</button>
             </div>
+              </div>
           </template>
         </div>
       </div>
@@ -155,6 +157,9 @@ import { computed, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import Title from './title.vue'
 import Logo from './logo.vue'
+
+import fangxing from './fangxing.png'
+import changxing from './changxing.png'
 
 const route = useRoute()
 const level = computed(() => {
