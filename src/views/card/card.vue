@@ -4,8 +4,7 @@
       <Title />
     </div>
 
-    <div class=" relative  w-full flex-1 "
-      @click="handleClick">
+    <div class=" relative  w-full flex-1 ">
 
       <div class=" zaodian relative  z-30 pb-[52rem]   -left-[1.25rem] w-[95%] h-full bg-cover bg-center  rounded-lg "
         :style="{ backgroundColor: layerColors[0] }"
@@ -18,31 +17,31 @@
               <c_one_title v-else />
             </div>
 
-            <div class=" absolute left-[6rem] top-[14rem]" style="transform: rotate(2deg)">
+            <div class=" absolute left-[6rem] top-[14rem]" style="transform: rotate(2deg)" @click.stop="selectAnswer(1)">
               <a_one_q v-if="stage === 0" />
               <b_one_q v-else-if="stage === 1" />
               <c_one_q v-else />
             </div>
 
-            <div class=" absolute left-[2.5rem] top-[18rem]" style="transform: rotate(2deg)">
+            <div class=" absolute left-[2.5rem] top-[18rem]" style="transform: rotate(2deg)" @click.stop="selectAnswer(2)">
               <a_tow_q v-if="stage === 0" />
               <b_tow_q v-else-if="stage === 1" />
               <c_tow_q v-else />
             </div>
 
-            <div class=" absolute left-[6rem] top-[22rem]" style="transform: rotate(2deg)">
+            <div class=" absolute left-[6rem] top-[22rem]" style="transform: rotate(2deg)" @click.stop="selectAnswer(3)">
               <a_three_q v-if="stage === 0" />
               <b_three_q v-else-if="stage === 1" />
               <c_three_q v-else />
             </div>
 
-            <div class="absolute left-[2.5rem] top-[26rem]" style=" transform: rotate(2deg)">
+            <div class="absolute left-[2.5rem] top-[26rem]" style=" transform: rotate(2deg)" @click.stop="selectAnswer(4)">
               <a_four_q v-if="stage === 0" />
               <b_four_q v-else-if="stage === 1" />
               <c_four_q v-else />
             </div>
 
-            <div class=" absolute left-[6rem] top-[30rem]" style="transform: rotate(2deg)">
+            <div class=" absolute left-[6rem] top-[30rem]" style="transform: rotate(2deg)" @click.stop="selectAnswer(5)">
               <a_five_q v-if="stage === 0" />
               <b_five_q v-else-if="stage === 1" />
               <c_five_q v-else />
@@ -219,6 +218,50 @@ onMounted(() => {
     targetDiv.style.backgroundRepeat = 'repeat';
   }
 });
+
+// 记录答案与阶段推进
+type AnswerRecord = {
+  group: 'A' | 'B' | 'C';
+  index: number; // 1-5
+  timestamp: number;
+};
+
+const ANSWERS_STORAGE_KEY = 'card_answers';
+const answers = ref<AnswerRecord[]>([]);
+
+function persistAnswers() {
+  try {
+    localStorage.setItem(ANSWERS_STORAGE_KEY, JSON.stringify(answers.value));
+  } catch (_) {}
+}
+
+function loadAnswers() {
+  try {
+    const raw = localStorage.getItem(ANSWERS_STORAGE_KEY);
+    if (raw) answers.value = JSON.parse(raw);
+  } catch (_) {}
+}
+
+loadAnswers();
+
+function rotateLayerColors() {
+  const first = layerColors.value.shift();
+  if (first) layerColors.value.push(first);
+}
+
+function selectAnswer(idx: number) {
+  const group = stage.value === 0 ? 'A' : stage.value === 1 ? 'B' : 'C';
+  answers.value.push({ group, index: idx, timestamp: Date.now() });
+  console.log(answers.value)
+  persistAnswers();
+
+  if (stage.value < 2) {
+    stage.value += 1;
+    rotateLayerColors();
+  } else {
+    router.push({ path: `/wait/${selectedATexture.value}/${selectedBTexture.value}` });
+  }
+}
 
 </script>
 
