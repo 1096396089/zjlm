@@ -11,7 +11,7 @@
     </div>
 
     <!-- 奖品卡片区域 -->
-    <div class="flex-1 flex items-center justify-center p-16">
+    <div class=" mt-5 mb-6 flex items-center justify-center px-16">
       <img 
         :src="randomCard" 
         alt="" 
@@ -21,7 +21,7 @@
     </div>
 
 
-    <div class=" pb-32 flex justify-center px-28" role="button" tabindex="0" 
+    <div class=" pb-32 flex justify-center px-36" role="button" tabindex="0" 
       @click="openDialog" @keydown.enter.prevent="openDialog" @keydown.space.prevent="openDialog">
       <svg id="_鍥惧眰_1" data-name="鍥惧眰 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 341.15 83.29" >
         <g>
