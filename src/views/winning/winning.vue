@@ -51,7 +51,7 @@
             :style="{ backgroundImage: `url(${fangxing})` }">
             <img class="h-24 w-24 object-contain" src="https://steppy-dev.oss-cn-guangzhou.aliyuncs.com/qrcode.png"
               alt="客服二维码" />
-            <div class="my-2  text-[9px] leading-6 text-gray-800">
+            <div class="my-2 flex flex-col items-center  text-[9px] leading-6 text-gray-800">
               <p>长按图片保存蹀愫管家二维码</p>
               <p>添加客服获取兑换奖品信息</p>
               <p>超过7天不领取视为自动放弃奖品</p>
