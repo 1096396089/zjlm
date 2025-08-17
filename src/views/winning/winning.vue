@@ -36,7 +36,7 @@
     </div>
 
     <!-- Dialog Modal -->
-    <div v-if="showDialog" class="fixed inset-0 z-50 flex items-center justify-center" aria-modal="true" role="dialog"
+    <div v-show="showDialog" class="fixed inset-0 z-50 flex items-center justify-center" aria-modal="true" role="dialog"
       @click.self="closeDialog">
       <!-- Overlay -->
       <div class="absolute inset-0 bg-black/50"></div>
@@ -46,62 +46,58 @@
           <!-- close button -->
 
           <!-- Step: QR code -->
-          <template v-if="step === 'qrcode'">
-            <div
-              class=" rounded-2xl  w-[21rem]  h-[21rem]  py-16 flex flex-col items-center bg-cover bg-center bg-no-repeat "
-              :style="{ backgroundImage: `url(${fangxing})` }">
-              <img class="h-24 w-24 object-contain" src="https://steppy-dev.oss-cn-guangzhou.aliyuncs.com/qrcode.png"
-                alt="客服二维码" />
-              <div class="my-2  text-[9px] leading-6 text-gray-800">
-                <p>长按图片保存蹀愫管家二维码</p>
-                <p>添加客服获取兑换奖品信息</p>
-                <p>超过7天不领取视为自动放弃奖品</p>
-              </div>
-              <button type="button" class=" rounded-md bg-[#50744E] text-xs px-4 py-1 text-white shadow cursor-pointer"
-                @click="toForm">
-                返回研究
-              </button>
+          <div v-show="step === 'qrcode'"
+            class=" rounded-2xl  w-[21rem]  h-[21rem]  py-16 flex flex-col items-center bg-cover bg-center bg-no-repeat "
+            :style="{ backgroundImage: `url(${fangxing})` }">
+            <img class="h-24 w-24 object-contain" src="https://steppy-dev.oss-cn-guangzhou.aliyuncs.com/qrcode.png"
+              alt="客服二维码" />
+            <div class="my-2  text-[9px] leading-6 text-gray-800">
+              <p>长按图片保存蹀愫管家二维码</p>
+              <p>添加客服获取兑换奖品信息</p>
+              <p>超过7天不领取视为自动放弃奖品</p>
             </div>
-          </template>
+            <button type="button" class=" rounded-md bg-[#50744E] text-xs px-4 py-1 text-white shadow cursor-pointer"
+              @click="toForm">
+              返回研究
+            </button>
+          </div>
 
           <!-- Step: Form -->
-          <template v-else>
-            <div class=" rounded-2xl w-[332px] h-[367px] flex flex-col items-center bg-cover bg-center bg-no-repeat "
-              :style="{ backgroundImage: `url(${changxing})` }">
-              <div class="text-center text-[12px] mt-8 font-semibold text-black">
-                <p>请仔细填写收件信息</p>
-                <p class="">填写错误视为自动放弃奖品</p>
-              </div>
+          <div v-show="step === 'form'" class=" rounded-2xl w-[332px] h-[367px] flex flex-col items-center bg-cover bg-center bg-no-repeat "
+            :style="{ backgroundImage: `url(${changxing})` }">
+            <div class="text-center text-[12px] mt-8 font-semibold text-black">
+              <p>请仔细填写收件信息</p>
+              <p class="">填写错误视为自动放弃奖品</p>
+            </div>
 
-              <div class="mt-5 space-y-4">
-                <div>
-                  <input v-model.trim="form.name" type="text" placeholder="请输入收件人"
-                    class="w-full rounded-xl border border-black/70 bg-transparent px-5 py-1.5 text-xs placeholder:text-xs placeholder:text-gray-400 focus:outline-none" />
-                  <p v-if="errors.name" class="mt-1 text-left text-xs text-red-600">{{ errors.name }}</p>
-                </div>
-                <div>
-                  <input v-model.trim="form.phone" type="tel" placeholder="请输入手机号码"
-                    class="w-full rounded-xl border border-black/70 bg-transparent px-5 py-1.5 text-xs placeholder:text-xs placeholder:text-gray-400 focus:outline-none" />
-                  <p v-if="errors.phone" class="mt-1 text-left text-xs text-red-600">{{ errors.phone }}</p>
-                </div>
-                <div>
-                  <textarea v-model.trim="form.address" rows="3" placeholder="请输入收件地址"
-                    class="w-full resize-none rounded-xl border border-black/70 bg-transparent px-5 py-1.5 text-xs placeholder:text-xs placeholder:text-gray-400 focus:outline-none"></textarea>
-                  <p v-if="errors.address" class="mt-1 text-left text-xs text-red-600">{{ errors.address }}</p>
-                </div>
+            <div class="mt-5 space-y-4">
+              <div>
+                <input v-model.trim="form.name" type="text" placeholder="请输入收件人"
+                  class="w-full rounded-xl border border-black/70 bg-transparent px-5 py-1.5 text-xs placeholder:text-xs placeholder:text-gray-400 focus:outline-none" />
+                <p v-if="errors.name" class="mt-1 text-left text-xs text-red-600">{{ errors.name }}</p>
               </div>
-
-              <!-- button bar outside the card bottom -->
-              <div class=" flex justify-between  mt-4">
-                <button type="button"
-                  class=" whitespace-nowrap mr-2 rounded-md bg-[#9C7D5E] text-xs px-2 py-1.5 text-white shadow"
-                  @click="confirmForm">是，确认无误</button>
-                <button type="button"
-                  class=" whitespace-nowrap ml-2 rounded-md bg-[#50744E] text-xs px-2 py-1.5 text-white shadow"
-                  @click="closeDialog">否，需要修改</button>
+              <div>
+                <input v-model.trim="form.phone" type="tel" placeholder="请输入手机号码"
+                  class="w-full rounded-xl border border-black/70 bg-transparent px-5 py-1.5 text-xs placeholder:text-xs placeholder:text-gray-400 focus:outline-none" />
+                <p v-if="errors.phone" class="mt-1 text-left text-xs text-red-600">{{ errors.phone }}</p>
+              </div>
+              <div>
+                <textarea v-model.trim="form.address" rows="3" placeholder="请输入收件地址"
+                  class="w-full resize-none rounded-xl border border-black/70 bg-transparent px-5 py-1.5 text-xs placeholder:text-xs placeholder:text-gray-400 focus:outline-none"></textarea>
+                <p v-if="errors.address" class="mt-1 text-left text-xs text-red-600">{{ errors.address }}</p>
               </div>
             </div>
-          </template>
+
+            <!-- button bar outside the card bottom -->
+            <div class=" flex justify-between  mt-4">
+              <button type="button"
+                class=" whitespace-nowrap mr-2 rounded-md bg-[#9C7D5E] text-xs px-2 py-1.5 text-white shadow"
+                @click="confirmForm">是，确认无误</button>
+              <button type="button"
+                class=" whitespace-nowrap ml-2 rounded-md bg-[#50744E] text-xs px-2 py-1.5 text-white shadow"
+                @click="closeDialog">否，需要修改</button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
