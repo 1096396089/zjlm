@@ -272,7 +272,7 @@
         </div>
 
         <!-- 定制完成按钮 -->
-        <div class="absolute z-40 bottom-10 left-1/2 transform -translate-x-1/2 flex justify-center mt-8"
+        <div class="absolute z-40 bottom-8 left-1/2 transform -translate-x-1/2 flex justify-center mt-8"
           @click="showConfirm = true">
           <svg width="164" height="61" viewBox="0 0 124 31" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path
