@@ -12,27 +12,7 @@
 
     <!-- 奖品卡片区域 -->
     <div class="flex-1 flex items-center justify-center px-14">
-      <div class="relative w-[293px] h-[490px] zaodian">
-        <!-- 卡片主体 -->
-        <div class="absolute inset-0 rounded-xl bg-[#DDCAB5]"></div>
-
-        <!-- 顶部标签 -->
-        <div class="absolute -top-4 left-1/2 -translate-x-1/2">
-          <div class="inline-flex items-center rounded-md bg-[#9C7D5E] px-4 py-1 text-white text-xs">
-            <span class="whitespace-nowrap">{{ level }}</span>
-          </div>
-        </div>
-
-        <!-- 中部内容（可展示奖品描述） -->
-        <div class="absolute inset-x-6 top-16 bottom-16 flex items-center justify-center text-center">
-          <p class="text-sm leading-6 text-black/70">{{ desc }}</p>
-        </div>
-
-        <!-- 底部按钮（名称占位） -->
-        <div class="absolute left-1/2 -bottom-3 -translate-x-1/2">
-          <button type="button" class="min-w-[180px] rounded-md bg-[#50744E] px-6 py-2 text-white shadow">名称待确认</button>
-        </div>
-      </div>
+      <img :src="te" alt="" srcset="">
 
     </div>
 
@@ -138,6 +118,10 @@ import Logo from './logo.vue'
 
 import fangxing from './fangxing.png'
 import changxing from './changxing.png'
+
+import one from './one.png'
+import tow from './tow.png'
+import te from  './te.png'
 
 const route = useRoute()
 const level = computed(() => {
