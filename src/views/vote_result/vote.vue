@@ -20,7 +20,7 @@
         >
           <div :style="getFillStyle(item.defaultPercents, item.bubblecolors)" class="progress-fill"></div>
           <img :src="item.url" alt="shoe" class="relative z-10 w-full h-full object-contain" />
-          <div class="absolute bottom-2 left-3 z-20 text-white text-xs font-bold drop-shadow">{{ item.defaultPercents }}%</div>
+          <!-- <div class="absolute bottom-2 left-3 z-20 text-white text-xs font-bold drop-shadow">{{ item.defaultPercents }}%</div> -->
         </div>
       </div>
     </div>

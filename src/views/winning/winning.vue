@@ -58,7 +58,7 @@
             </div>
             <button type="button" class=" rounded-md bg-[#50744E] text-xs px-4 py-1 text-white shadow cursor-pointer"
               @click="toForm">
-              返回研究
+             已添加
             </button>
           </div>
 
