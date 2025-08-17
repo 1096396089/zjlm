@@ -1,6 +1,6 @@
 <template>
-  <div class="w-screen h-screen flex flex-col">
-    <div ref="containerRef" class="w-full h-[45%]"></div>
+  <div class="">
+    <div ref="containerRef" class="w-full h-[60%]"></div>
   </div>
 </template>
 
@@ -11,8 +11,10 @@ import * as THREE from 'three'
 import { getClonedGLTF } from '@/util/gltfCache'
 import { loadTextureFromCandidates } from '@/util/textureCache'
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js'
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 
 const containerRef = ref<HTMLElement | null>(null)
+const emit = defineEmits<{ (e: 'loaded'): void }>()
 
 let scene: THREE.Scene
 let camera: THREE.PerspectiveCamera
@@ -22,10 +24,11 @@ let shoeModel: THREE.Group | null = null
 const textureCache: Record<string, THREE.Texture> = {}
 let pmremGenerator: THREE.PMREMGenerator | null = null
 let roomEnvironment: RoomEnvironment | null = null
+let controls: OrbitControls | null = null
 
 
 const rotX = ref(0)
-const rotY = ref(1.9)
+const rotY = ref(2.3)
 const rotZ = ref(0)
 
 // 基础路径适配（支持子路径部署，与 three.vue 保持一致）
@@ -117,7 +120,7 @@ const applyTextureToArea = (area: 'A' | 'B', filename: string) => {
       if (key) textureCache[key] = texture
       tryApply(texture)
     })
-    .catch(() => {})
+    .catch(() => { })
 }
 
 // 关键词匹配贴图（用于 logo/xiedi/xian/xian2/xiedian 等初始贴图）
@@ -186,7 +189,7 @@ const applyTextureToMeshesByKeywords = (keywords: string[], texturePath: string)
       if (key) textureCache[key] = texture
       tryApply(texture)
     })
-    .catch(() => {})
+    .catch(() => { })
 }
 
 // 应用默认贴图：AB + public 根目录的 xiedai/xiedi/xian/xian2/xiedian
@@ -214,23 +217,33 @@ const applyInitialDefaultTextures = () => {
 const init = () => {
   if (!containerRef.value) return
 
-    scene = new THREE.Scene()
+  scene = new THREE.Scene()
 
-    const container = containerRef.value
-  camera = new THREE.PerspectiveCamera(50, container.clientWidth / container.clientHeight, 0.1, 1000)
+  const container = containerRef.value
+  camera = new THREE.PerspectiveCamera(20, container.clientWidth / container.clientHeight, 0.1, 1000)
   camera.position.set(0, 0, 5)
 
   renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true })
   const initialWidth = container.clientWidth || window.innerWidth
   const initialHeight = container.clientHeight || Math.max(1, Math.round(window.innerHeight * 0.45))
   renderer.setSize(initialWidth, initialHeight)
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-    renderer.outputColorSpace = THREE.SRGBColorSpace
-    renderer.toneMapping = THREE.ACESFilmicToneMapping
-    renderer.toneMappingExposure = 1.35
-    ;(renderer as any).physicallyCorrectLights = true
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+  renderer.outputColorSpace = THREE.SRGBColorSpace
+  renderer.toneMapping = THREE.ACESFilmicToneMapping
+  renderer.toneMappingExposure = 1.35
+    ; (renderer as any).physicallyCorrectLights = true
   renderer.setClearColor(0x000000, 0)
-    container.appendChild(renderer.domElement)
+  container.appendChild(renderer.domElement)
+    // 避免浏览器默认触控行为影响自定义捏合缩放
+    ; (renderer.domElement.style as any).touchAction = 'none'
+
+  // 相机手势控制：开启缩放（包括双指捏合），关闭旋转/平移
+  controls = new OrbitControls(camera, renderer.domElement)
+  controls.enableZoom = false
+  controls.enableRotate = false
+  controls.enablePan = false
+  controls.enableDamping = false
+  controls.dampingFactor = 1.4
 
   // 环境贴图（提升整体亮度与金属/塑料质感）
   pmremGenerator = new THREE.PMREMGenerator(renderer)
@@ -252,7 +265,7 @@ const init = () => {
   fill.position.set(-4, 3, -3)
   scene.add(fill)
 
-    // 加载模型（使用缓存）
+  // 加载模型（使用缓存）
   getClonedGLTF(withBase('xie.gltf'))
     .then(({ scene: clonedScene }) => {
       shoeModel = clonedScene
@@ -281,9 +294,23 @@ const init = () => {
         const maxDim = Math.max(size.x, size.y, size.z)
         const fov = (camera.fov * Math.PI) / 180
         const dist = (maxDim / 2) / Math.tan(fov / 2)
-        camera.position.set(center.x, center.y, center.z + dist * 1.4)
+        camera.position.set(center.x, center.y, center.z + dist * 1.1)
         camera.lookAt(center)
         camera.updateProjectionMatrix()
+        if (controls) {
+          controls.target.copy(center)
+          controls.minDistance = dist * 0.6
+          controls.maxDistance = dist * 2.0
+          controls.update()
+        }
+        // 使用调整焦段(视场角)方式实现“拉近”效果，而非移动相机距离
+        const setFov = (nf: number) => {
+          const minFov = 20
+          const maxFov = 70
+          camera.fov = Math.min(maxFov, Math.max(minFov, nf))
+          camera.updateProjectionMatrix()
+        }
+        setFov(20)
       } catch (e) {
         console.warn('无法自动框选模型:', e)
       }
@@ -291,6 +318,8 @@ const init = () => {
       // 初始贴图：A/B + logo/xiedi/xian/xiedian 等
       applyInitialDefaultTextures()
       console.log('模型已加载，已应用默认贴图 A:', aParam.value, 'B:', bParam.value)
+      // 通知父组件加载完成，用于隐藏“加载中”占位并显示画面
+      emit('loaded')
     })
     .catch((err) => {
       console.error('模型加载失败 xie.gltf:', err)
@@ -316,10 +345,55 @@ const init = () => {
     ro.observe(container)
   }
 
+  // 通过修改相机 FOV 实现滚轮与双指缩放
+  const dom = renderer.domElement
+  let pinchStartDistance = 0
+  let pinchStartFov = camera.fov
+  const clampFov = (nf: number) => Math.min(70, Math.max(20, nf))
+  const applyFov = (nf: number) => {
+    camera.fov = clampFov(nf)
+    camera.updateProjectionMatrix()
+  }
+
+  const onWheel = (e: WheelEvent) => {
+    e.preventDefault()
+    const sensitivity = 0.05
+    applyFov(camera.fov + e.deltaY * sensitivity)
+  }
+  const distanceBetweenTouches = (t1: Touch, t2: Touch) => {
+    const dx = t1.clientX - t2.clientX
+    const dy = t1.clientY - t2.clientY
+    return Math.hypot(dx, dy)
+  }
+  const onTouchStart = (e: TouchEvent) => {
+    if (e.touches.length === 2) {
+      pinchStartDistance = distanceBetweenTouches(e.touches[0], e.touches[1])
+      pinchStartFov = camera.fov
+    }
+  }
+  const onTouchMove = (e: TouchEvent) => {
+    if (e.touches.length === 2 && pinchStartDistance > 0) {
+      e.preventDefault()
+      const current = distanceBetweenTouches(e.touches[0], e.touches[1])
+      if (current > 0) {
+        const ratio = pinchStartDistance / current
+        applyFov(pinchStartFov * ratio)
+      }
+    }
+  }
+  const onTouchEnd = () => {
+    pinchStartDistance = 0
+  }
+  dom.addEventListener('wheel', onWheel, { passive: false })
+  dom.addEventListener('touchstart', onTouchStart, { passive: true })
+  dom.addEventListener('touchmove', onTouchMove, { passive: false })
+  dom.addEventListener('touchend', onTouchEnd, { passive: true })
+
   const renderLoop = () => {
     animationId = requestAnimationFrame(renderLoop)
-  renderer.render(scene, camera)
-}
+    if (controls) controls.update()
+    renderer.render(scene, camera)
+  }
   renderLoop()
 
   // 清理函数
@@ -332,10 +406,18 @@ const init = () => {
     // @ts-ignore
     if (scene) scene.environment = null
     if (ro) ro.disconnect()
+    if (renderer && renderer.domElement) {
+      const d = renderer.domElement
+      d.removeEventListener('wheel', onWheel as any)
+      d.removeEventListener('touchstart', onTouchStart as any)
+      d.removeEventListener('touchmove', onTouchMove as any)
+      d.removeEventListener('touchend', onTouchEnd as any)
+    }
+    if (controls) { controls.dispose(); controls = null }
   }
 }
 
-let cleanup: () => void = () => {}
+let cleanup: () => void = () => { }
 
 onMounted(async () => {
   // 等待一帧，确保 Tailwind 类已应用并参与布局
@@ -363,7 +445,4 @@ onUnmounted(() => {
 })
 </script>
 
-<style scoped>
-</style>
-
-
+<style scoped></style>

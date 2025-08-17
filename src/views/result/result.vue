@@ -205,16 +205,16 @@
                     </g>
                 </g>
             </svg>
-            <Three class=" absolute -left-6  top-[16rem]"></Three>
+            <Three class=" absolute -left-6  top-[13rem]"></Three>
 
 
         </div>
         <div class=" w-full absolute bottom-10 flex flex-col items-center justify-center">
 
-            <div class="px-32  pb-12">
-                <component :is="randomCard" class=" p-8" ></component>
+            <div class="">
+                <component :is="randomCard" class=" p-12" ></component>
             </div>
-            <div class="px-32 pb-5">
+            <div class="px-28 pb-8">
 
                 <svg id="_鍥惧眰_1" data-name="鍥惧眰 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 475.44 83.36"
                     width="100%" height="auto" @click="$router.push('/winning')">
