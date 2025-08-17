@@ -205,7 +205,7 @@
                     </g>
                 </g>
             </svg>
-            <Three class=" absolute -left-6  top-[14rem]"></Three>
+            <Three class=" absolute -left-6  top-[16rem]"></Three>
 
 
         </div>

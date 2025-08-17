@@ -61,7 +61,7 @@
         <!-- 加载中占位（显示到最少 2 秒） -->
         <transition name="fade" @after-leave="stopLottie">
           <div v-if="!showThree" class="absolute inset-0 flex flex-col items-center justify-center gap-4 text-black/70">
-            <div ref="lottieBoxRef" class="w-[420px] h-[420px]"></div>
+            <div ref="lottieBoxRef" class="w-[400px] h-[400px]"></div>
             <div>
 
               <svg width="100" height="55" viewBox="0 0 100 55" fill="none" xmlns="http://www.w3.org/2000/svg">
