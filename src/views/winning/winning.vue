@@ -51,16 +51,16 @@
 
           <!-- Step: QR code -->
           <div v-show="step === 'qrcode'"
-            class=" rounded-2xl  w-[21rem]  h-[21rem]  py-16 flex flex-col items-center bg-cover bg-center bg-no-repeat "
+            class=" rounded-2xl  w-[21rem]  h-[21rem]  py-16 flex flex-col  justify-center items-center bg-cover bg-center bg-no-repeat "
             :style="{ backgroundImage: `url(${fangxing})` }">
             <img class="h-24 w-24 object-contain" src="https://steppy-dev.oss-cn-guangzhou.aliyuncs.com/qrcode.png"
               alt="客服二维码" />
-            <div class="my-2 flex flex-col items-center  text-[9px] leading-6 text-gray-800">
+            <div class="my-2 flex flex-col items-center  -translate-x-1  justify-center text-[9px] leading-6 text-gray-800">
               <p>长按图片保存蹀愫管家二维码</p>
               <p>添加客服获取兑换奖品信息</p>
               <p>超过7天不领取视为自动放弃奖品</p>
             </div>
-            <button type="button" class=" rounded-md bg-[#50744E] text-xs px-4 py-1 text-white shadow cursor-pointer"
+            <button type="button" class=" rounded-md -translate-x-1 bg-[#50744E] text-xs px-4 py-1 text-white shadow cursor-pointer"
               @click="toForm">
              已添加
             </button>
