@@ -78,17 +78,17 @@
               <div>
                 <input v-model.trim="form.name" type="text" placeholder="请输入收件人"
                   class="w-full rounded-xl border border-black/70 bg-transparent px-5 py-1.5 text-xs placeholder:text-xs placeholder:text-gray-400 focus:outline-none" />
-                <p v-if="errors.name" class="mt-1 text-left text-xs text-red-600">{{ errors.name }}</p>
+                <!-- <p v-if="errors.name" class="mt-1 text-left text-xs text-red-600">{{ errors.name }}</p> -->
               </div>
               <div>
                 <input v-model.trim="form.phone" type="tel" placeholder="请输入手机号码"
                   class="w-full rounded-xl border border-black/70 bg-transparent px-5 py-1.5 text-xs placeholder:text-xs placeholder:text-gray-400 focus:outline-none" />
-                <p v-if="errors.phone" class="mt-1 text-left text-xs text-red-600">{{ errors.phone }}</p>
+                <!-- <p v-if="errors.phone" class="mt-1 text-left text-xs text-red-600">{{ errors.phone }}</p> -->
               </div>
               <div>
                 <textarea v-model.trim="form.address" rows="3" placeholder="请输入收件地址"
                   class="w-full resize-none rounded-xl border border-black/70 bg-transparent px-5 py-1.5 text-xs placeholder:text-xs placeholder:text-gray-400 focus:outline-none"></textarea>
-                <p v-if="errors.address" class="mt-1 text-left text-xs text-red-600">{{ errors.address }}</p>
+                <!-- <p v-if="errors.address" class="mt-1 text-left text-xs text-red-600">{{ errors.address }}</p> -->
               </div>
             </div>
 
@@ -271,7 +271,7 @@ const validateForm = (): boolean => {
 }
 
 const confirmForm = () => {
-  if (!validateForm()) return
+  // if (!validateForm()) return
   // TODO: 在此处提交表单到后端接口
   // 表单校验通过后，切换到二维码步骤，不关闭弹窗
   showSecondConfirm.value = true
