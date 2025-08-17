@@ -12,12 +12,12 @@
 
     <!-- 奖品卡片区域 -->
     <div class="flex-1 flex items-center justify-center px-14">
-      <img :src="te" alt="" srcset="">
+      <img :src="randomCard" alt="" srcset="">
 
     </div>
 
 
-    <div class="pb-10 flex justify-center px-36" role="button" tabindex="0" @click="openDialog"
+    <div class="pb-10 flex justify-center px-28" role="button" tabindex="0" @click="openDialog"
       @keydown.enter.prevent="openDialog" @keydown.space.prevent="openDialog">
       <svg id="_鍥惧眰_1" data-name="鍥惧眰 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 341.15 83.29">
         <g>
@@ -118,6 +118,10 @@ import changxing from './changxing.png'
 import one from './one.png'
 import tow from './tow.png'
 import te from  './te.png'
+
+
+const cards = [one, tow, te]
+const randomCard =cards[Math.floor(Math.random() * cards.length)]
 
 const route = useRoute()
 const level = computed(() => {
