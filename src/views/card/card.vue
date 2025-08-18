@@ -403,7 +403,9 @@ const layerColors = computed<string[]>(() => {
 
 function handleClick() {
   if (stage.value < 2) {
+   setTimeout(() =>{
     stage.value += 1
+   },750)
     return
   }
   // 最后一阶段直接跳转，不再变更颜色
