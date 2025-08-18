@@ -41,7 +41,7 @@
               </div>
               <div v-else>
                 <c_one_q @click="set_q('a', 'c')" />
-                <svg v-if="c_q == 'a'" class=" absolute  right-[6rem] top-4" width="13" height="9" viewBox="0 0 13 9"
+                <svg v-if="c_q == 'a'" class=" absolute  right-[5.5rem] top-4" width="13" height="9" viewBox="0 0 13 9"
                   fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M1.38525 4.77793L5.07725 8.46992L12.4612 1.08594" stroke="black" stroke-linecap="round"
                     stroke-linejoin="round" />
@@ -111,7 +111,7 @@
 
               <div v-else>
                 <c_three_q @click="set_q('c', 'c')" />
-                <svg v-if="c_q == 'c'" class=" absolute  right-[6rem] top-4" width="13" height="9" viewBox="0 0 13 9"
+                <svg v-if="c_q == 'c'" class=" absolute  right-[5.5rem] top-4" width="13" height="9" viewBox="0 0 13 9"
                   fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M1.38525 4.77793L5.07725 8.46992L12.4612 1.08594" stroke="black" stroke-linecap="round"
                     stroke-linejoin="round" />
@@ -405,7 +405,7 @@ function handleClick() {
   if (stage.value < 2) {
    setTimeout(() =>{
     stage.value += 1
-   },750)
+   },500)
     return
   }
   // 最后一阶段直接跳转，不再变更颜色
