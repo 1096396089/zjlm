@@ -92,8 +92,8 @@
                 class=" whitespace-nowrap mr-2 rounded-md bg-[#9C7D5E] text-xs px-2.5 py-2 text-white shadow"
                 @click="confirmForm">是，确认无误</button>
               <button type="button"
-                class=" whitespace-nowrap ml-2 rounded-md bg-[#50744E] text-xs px-2.5 py-2 text-white shadow"
-                @click="closeDialog">否，需要修改</button>
+                class=" whitespace-nowrap ml-2 rounded-md bg-[#50744E] text-xs px-[2.3rem] py-2 text-white shadow"
+                @click="closeDialog">返回</button>
             </div>
           </div>
         </div>
