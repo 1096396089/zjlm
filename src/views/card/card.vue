@@ -72,7 +72,7 @@
               <div v-else>
 
                 <c_tow_q @click="set_q('b', 'c')" />
-                <svg v-if="c_q == 'b'" class=" absolute  right-28 top-4" width="13" height="9" viewBox="0 0 13 9"
+                <svg v-if="c_q == 'b'" class=" absolute  right-[6rem] top-4" width="13" height="9" viewBox="0 0 13 9"
                   fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M1.38525 4.77793L5.07725 8.46992L12.4612 1.08594" stroke="black" stroke-linecap="round"
                     stroke-linejoin="round" />
