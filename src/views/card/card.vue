@@ -55,7 +55,7 @@
             <div class=" absolute left-[2.5rem] top-[18rem]" style="transform: rotate(2deg)">
               <div v-if="stage === 0">
                 <a_tow_q @click="set_q('b', 'a')" />
-                <svg v-if="a_q == 'b'" class=" absolute  right-28 top-4" width="13" height="9" viewBox="0 0 13 9"
+                <svg v-if="a_q == 'b'" class=" absolute  right-[5.5rem] top-4" width="13" height="9" viewBox="0 0 13 9"
                   fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M1.38525 4.77793L5.07725 8.46992L12.4612 1.08594" stroke="black" stroke-linecap="round"
                     stroke-linejoin="round" />
@@ -63,7 +63,7 @@
               </div>
               <div v-else-if="stage === 1">
                 <b_tow_q @click="set_q('b', 'b')" />
-                <svg v-if="b_q == 'b'" class=" absolute  right-[5.5rem] top-4" width="13" height="9" viewBox="0 0 13 9"
+                <svg v-if="b_q == 'b'" class=" absolute  right-[6rem] top-4" width="13" height="9" viewBox="0 0 13 9"
                   fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M1.38525 4.77793L5.07725 8.46992L12.4612 1.08594" stroke="black" stroke-linecap="round"
                     stroke-linejoin="round" />
