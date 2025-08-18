@@ -21,7 +21,7 @@
     </div>
 
 
-    <div class=" pb-32 flex justify-center px-36" role="button" tabindex="0" 
+    <div class=" pb-32 flex justify-center px-36" 
       @click="openDialog" @keydown.enter.prevent="openDialog" @keydown.space.prevent="openDialog">
       <svg id="_鍥惧眰_1" data-name="鍥惧眰 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 341.15 83.29" >
         <g>
