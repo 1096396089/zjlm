@@ -1,7 +1,7 @@
 <template>
   <div class="p-4  relative  h-screen  flex flex-col items-center">
     <transition name="fade">
-      <div v-if="isIntroPlaying" class="fixed inset-0 z-50 flex items-center justify-center bg-white">
+      <div v-if="isIntroPlaying" class="fixed inset-0 z-50 flex items-center justify-center bg-white" :style="{ opacity: overlayOpacity }">
         <div v-if="isLoadingIntro" ref="lottieRef" class="w-[400px] h-[400px]"></div>
         <canvas v-else ref="canvasRef" class="w-full h-full pointer-events-none select-none"></canvas>
       </div>
@@ -63,6 +63,8 @@ const fps = 24
 const frameDurationMs = 1000 / fps
 const devicePixelRatioClamp = 1 // keep pixel work low for smoothness
 const maxConcurrency = 6
+const fadeOutFrames = 10
+const fadeDurationMs = fadeOutFrames * frameDurationMs
 
 let animationHandle: number | null = null
 let lastTimestampMs = 0
@@ -72,6 +74,9 @@ let cw = 0
 let ch = 0
 let crop: { sx: number; sy: number; sw: number; sh: number } | null = null
 const bufferedBitmaps: Map<number, ImageBitmap> = new Map()
+const overlayOpacity = ref(1)
+let isFadingOut = false
+let fadeStartTimeMs = 0
 
 // simple carousel for header images
 const carouselImages = [
@@ -207,16 +212,28 @@ function startAnimation() {
     lastTimestampMs = now
     accumulatedMs += delta
 
-    while (accumulatedMs >= frameDurationMs) {
-      accumulatedMs -= frameDurationMs
-      currentFrameIndex += 1
-    }
+    if (!isFadingOut) {
+      while (accumulatedMs >= frameDurationMs) {
+        accumulatedMs -= frameDurationMs
+        currentFrameIndex += 1
+      }
 
-    if (currentFrameIndex >= totalFrames) {
-      isIntroPlaying.value = false
-      cancelAnimationFrameIfAny()
-      window.removeEventListener('resize', onResize)
-      return
+      // trigger fade-out near the end and freeze on the current (near-final) frame
+      if (currentFrameIndex >= totalFrames - fadeOutFrames) {
+        isFadingOut = true
+        fadeStartTimeMs = now
+        currentFrameIndex = Math.min(currentFrameIndex, totalFrames - 1)
+      }
+    } else {
+      // during fade-out, compute opacity based on time
+      const elapsed = now - fadeStartTimeMs
+      overlayOpacity.value = Math.max(0, Math.min(1, 1 - elapsed / fadeDurationMs))
+      if (overlayOpacity.value <= 0) {
+        isIntroPlaying.value = false
+        cancelAnimationFrameIfAny()
+        window.removeEventListener('resize', onResize)
+        return
+      }
     }
 
     // draw only when bitmap available, keep previous frame otherwise
