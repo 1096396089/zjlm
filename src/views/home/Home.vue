@@ -1,5 +1,5 @@
 <template>
-  <div class="p-4   h-screen  flex flex-col items-center justify-between">
+  <div class="p-4  relative  h-screen  flex flex-col items-center">
     <transition name="fade">
       <div v-if="isIntroPlaying" class="fixed inset-0 z-50 flex items-center justify-center bg-white">
         <div v-if="isLoadingIntro" ref="lottieRef" class="w-[400px] h-[400px]"></div>
@@ -19,7 +19,7 @@
         />
     </div>
 
-    <div class=" mb-20 pb-9 mt-6 flex flex-col items-center justify-between">
+    <div class="  absolute bottom-16  flex flex-col items-center justify-between">
       <Info class="mt-20"></Info>
       <div class=" mt-12" :class="['button-zoom', { 'is-animating': isButtonAnimating }]" @click="handleButtonClick">
         <svg width="159" height="60" viewBox="0 0 119 30" fill="none" xmlns="http://www.w3.org/2000/svg">
