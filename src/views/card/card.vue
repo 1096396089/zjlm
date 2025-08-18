@@ -25,24 +25,24 @@
               <div v-if="stage === 0">
                 <a_one_q @click="set_q('a', 'a')" />
 
-                <svg v-if="a_q =='a'" class=" absolute right-10 top-4" width="13" height="9" viewBox="0 0 13 9" fill="none"
-                  xmlns="http://www.w3.org/2000/svg">
+                <svg v-if="a_q == 'a'" class=" absolute right-10 top-4" width="13" height="9" viewBox="0 0 13 9"
+                  fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M1.38525 4.77793L5.07725 8.46992L12.4612 1.08594" stroke="black" stroke-linecap="round"
                     stroke-linejoin="round" />
                 </svg>
               </div>
               <div v-else-if="stage === 1">
                 <b_one_q @click="set_q('a', 'b')" />
-                <svg v-if="b_q =='a'" class=" absolute right-10 top-4" width="13" height="9" viewBox="0 0 13 9" fill="none"
-                  xmlns="http://www.w3.org/2000/svg">
+                <svg v-if="b_q == 'a'" class=" absolute right-10 top-4" width="13" height="9" viewBox="0 0 13 9"
+                  fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M1.38525 4.77793L5.07725 8.46992L12.4612 1.08594" stroke="black" stroke-linecap="round"
                     stroke-linejoin="round" />
                 </svg>
               </div>
               <div v-else>
-                <c_one_q  @click="set_q('a', 'c')" />
-                <svg v-if="c_q =='a'" class=" absolute right-10 top-4" width="13" height="9" viewBox="0 0 13 9" fill="none"
-                  xmlns="http://www.w3.org/2000/svg">
+                <c_one_q @click="set_q('a', 'c')" />
+                <svg v-if="c_q == 'a'" class=" absolute right-10 top-4" width="13" height="9" viewBox="0 0 13 9"
+                  fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M1.38525 4.77793L5.07725 8.46992L12.4612 1.08594" stroke="black" stroke-linecap="round"
                     stroke-linejoin="round" />
                 </svg>
@@ -55,16 +55,16 @@
             <div class=" absolute left-[2.5rem] top-[18rem]" style="transform: rotate(2deg)">
               <div v-if="stage === 0">
                 <a_tow_q @click="set_q('b', 'a')" />
-                <svg v-if="a_q =='b'" class=" absolute right-10 top-4" width="13" height="9" viewBox="0 0 13 9" fill="none"
-                  xmlns="http://www.w3.org/2000/svg">
+                <svg v-if="a_q == 'b'" class=" absolute right-10 top-4" width="13" height="9" viewBox="0 0 13 9"
+                  fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M1.38525 4.77793L5.07725 8.46992L12.4612 1.08594" stroke="black" stroke-linecap="round"
                     stroke-linejoin="round" />
                 </svg>
               </div>
               <div v-else-if="stage === 1">
                 <b_tow_q @click="set_q('b', 'b')" />
-                <svg v-if="b_q =='b'" class=" absolute right-10 top-4" width="13" height="9" viewBox="0 0 13 9" fill="none"
-                  xmlns="http://www.w3.org/2000/svg">
+                <svg v-if="b_q == 'b'" class=" absolute right-10 top-4" width="13" height="9" viewBox="0 0 13 9"
+                  fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M1.38525 4.77793L5.07725 8.46992L12.4612 1.08594" stroke="black" stroke-linecap="round"
                     stroke-linejoin="round" />
                 </svg>
@@ -72,8 +72,8 @@
               <div v-else>
 
                 <c_tow_q @click="set_q('b', 'c')" />
-                <svg v-if="c_q =='b'" class=" absolute right-10 top-4" width="13" height="9" viewBox="0 0 13 9" fill="none"
-                  xmlns="http://www.w3.org/2000/svg">
+                <svg v-if="c_q == 'b'" class=" absolute right-10 top-4" width="13" height="9" viewBox="0 0 13 9"
+                  fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M1.38525 4.77793L5.07725 8.46992L12.4612 1.08594" stroke="black" stroke-linecap="round"
                     stroke-linejoin="round" />
                 </svg>
@@ -91,8 +91,8 @@
 
                 <a_three_q @click="set_q('c', 'a')" />
 
-                <svg v-if="a_q =='c'" class=" absolute right-10 top-4" width="13" height="9" viewBox="0 0 13 9" fill="none"
-                  xmlns="http://www.w3.org/2000/svg">
+                <svg v-if="a_q == 'c'" class=" absolute right-10 top-4" width="13" height="9" viewBox="0 0 13 9"
+                  fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M1.38525 4.77793L5.07725 8.46992L12.4612 1.08594" stroke="black" stroke-linecap="round"
                     stroke-linejoin="round" />
                 </svg>
@@ -101,8 +101,8 @@
 
               <div v-else-if="stage === 1">
                 <b_three_q @click="set_q('c', 'b')" />
-                <svg v-if="b_q =='c'" class=" absolute right-10 top-4" width="13" height="9" viewBox="0 0 13 9" fill="none"
-                  xmlns="http://www.w3.org/2000/svg">
+                <svg v-if="b_q == 'c'" class=" absolute right-10 top-4" width="13" height="9" viewBox="0 0 13 9"
+                  fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M1.38525 4.77793L5.07725 8.46992L12.4612 1.08594" stroke="black" stroke-linecap="round"
                     stroke-linejoin="round" />
                 </svg>
@@ -111,8 +111,8 @@
 
               <div v-else>
                 <c_three_q @click="set_q('c', 'c')" />
-                <svg v-if="c_q =='c'" class=" absolute right-10 top-4" width="13" height="9" viewBox="0 0 13 9" fill="none"
-                  xmlns="http://www.w3.org/2000/svg">
+                <svg v-if="c_q == 'c'" class=" absolute right-10 top-4" width="13" height="9" viewBox="0 0 13 9"
+                  fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M1.38525 4.77793L5.07725 8.46992L12.4612 1.08594" stroke="black" stroke-linecap="round"
                     stroke-linejoin="round" />
                 </svg>
@@ -125,24 +125,24 @@
             <div class="absolute left-[2.5rem] top-[26rem]" style=" transform: rotate(2deg)">
               <div v-if="stage === 0">
                 <a_four_q @click="set_q('d', 'a')" />
-                <svg v-if="a_q =='d'" class=" absolute right-10 top-4" width="13" height="9" viewBox="0 0 13 9" fill="none"
-                  xmlns="http://www.w3.org/2000/svg">
+                <svg v-if="a_q == 'd'" class=" absolute right-10 top-4" width="13" height="9" viewBox="0 0 13 9"
+                  fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M1.38525 4.77793L5.07725 8.46992L12.4612 1.08594" stroke="black" stroke-linecap="round"
                     stroke-linejoin="round" />
                 </svg>
               </div>
               <div v-else-if="stage === 1">
                 <b_four_q @click="set_q('d', 'b')" />
-                <svg v-if="b_q =='d'" class=" absolute right-10 top-4" width="13" height="9" viewBox="0 0 13 9" fill="none"
-                  xmlns="http://www.w3.org/2000/svg">
+                <svg v-if="b_q == 'd'" class=" absolute right-10 top-4" width="13" height="9" viewBox="0 0 13 9"
+                  fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M1.38525 4.77793L5.07725 8.46992L12.4612 1.08594" stroke="black" stroke-linecap="round"
                     stroke-linejoin="round" />
                 </svg>
               </div>
               <div v-else>
                 <c_four_q @click="set_q('d', 'c')" />
-                <svg v-if="c_q =='d'" class=" absolute right-10 top-4" width="13" height="9" viewBox="0 0 13 9" fill="none"
-                  xmlns="http://www.w3.org/2000/svg">
+                <svg v-if="c_q == 'd'" class=" absolute right-10 top-4" width="13" height="9" viewBox="0 0 13 9"
+                  fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M1.38525 4.77793L5.07725 8.46992L12.4612 1.08594" stroke="black" stroke-linecap="round"
                     stroke-linejoin="round" />
                 </svg>
@@ -156,24 +156,24 @@
             <div class=" absolute left-[6rem] top-[30rem]" style="transform: rotate(2deg)">
               <div v-if="stage === 0">
                 <a_five_q @click="set_q('e', 'a')" />
-                <svg v-if="a_q =='e'" class=" absolute right-10 top-4" width="13" height="9" viewBox="0 0 13 9" fill="none"
-                  xmlns="http://www.w3.org/2000/svg">
+                <svg v-if="a_q == 'e'" class=" absolute right-10 top-4" width="13" height="9" viewBox="0 0 13 9"
+                  fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M1.38525 4.77793L5.07725 8.46992L12.4612 1.08594" stroke="black" stroke-linecap="round"
                     stroke-linejoin="round" />
                 </svg>
               </div>
               <div v-else-if="stage === 1">
                 <b_five_q @click="set_q('e', 'b')" />
-                <svg v-if="b_q =='e'" class=" absolute right-10 top-4" width="13" height="9" viewBox="0 0 13 9" fill="none"
-                  xmlns="http://www.w3.org/2000/svg">
+                <svg v-if="b_q == 'e'" class=" absolute right-10 top-4" width="13" height="9" viewBox="0 0 13 9"
+                  fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M1.38525 4.77793L5.07725 8.46992L12.4612 1.08594" stroke="black" stroke-linecap="round"
                     stroke-linejoin="round" />
                 </svg>
               </div>
               <div v-else>
                 <c_five_q @click="set_q('e', 'c')" />
-                <svg v-if="c_q =='e'" class=" absolute right-10 top-4" width="13" height="9" viewBox="0 0 13 9" fill="none"
-                  xmlns="http://www.w3.org/2000/svg">
+                <svg v-if="c_q == 'e'" class=" absolute right-10 top-4" width="13" height="9" viewBox="0 0 13 9"
+                  fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M1.38525 4.77793L5.07725 8.46992L12.4612 1.08594" stroke="black" stroke-linecap="round"
                     stroke-linejoin="round" />
                 </svg>
@@ -194,7 +194,8 @@
       <div class=" z-20 absolute left-5   pb-[52rem]  -top-[1.25rem] w-[88%] h-full bg-cover bg-center  rounded-lg "
         :style="{ backgroundColor: layerColors[1] }">
         <div class=" absolute -right-[27px] top-[7.5rem]">
-          <svg width="27" height="116" viewBox="0 0 27 116" fill="none" xmlns="http://www.w3.org/2000/svg" @click="stage =0">
+          <svg width="27" height="116" viewBox="0 0 27 116" fill="none" xmlns="http://www.w3.org/2000/svg"
+            @click="stage = 0">
             <path
               d="M0.214844 115.901V0.960938L17.3419 3.66448C22.5987 3.66448 26.858 11.2088 26.858 17.1856V99.673C26.858 105.65 22.5987 113.194 17.3419 113.194L0.214844 115.901Z"
               fill="#CCAE8F" />
@@ -223,7 +224,8 @@
         </div>
 
         <div class=" absolute -right-[27px] top-[14.5rem]">
-          <svg width="27" height="116" viewBox="0 0 27 116" fill="none" xmlns="http://www.w3.org/2000/svg"  @click="stage =1">
+          <svg width="27" height="116" viewBox="0 0 27 116" fill="none" xmlns="http://www.w3.org/2000/svg"
+            @click="stage = 1">
             <path
               d="M0.214844 115.65V0.726562L17.3419 3.43011C22.5987 3.43011 26.858 10.9745 26.858 16.9513V99.4248C26.858 105.402 22.5987 112.946 17.3419 112.946L0.214844 115.65Z"
               fill="#746C61" />
@@ -253,7 +255,8 @@
         </div>
 
         <div class=" absolute -right-[27px] top-[21.5rem]">
-          <svg width="27" height="115" viewBox="0 0 27 115" fill="none" xmlns="http://www.w3.org/2000/svg" @click="stage =2">
+          <svg width="27" height="115" viewBox="0 0 27 115" fill="none" xmlns="http://www.w3.org/2000/svg"
+            @click="stage = 2">
             <path
               d="M0.101562 114.963V0.078125L17.2286 2.78075C22.4855 2.78075 26.7448 10.3226 26.7414 16.2974V98.7433C26.7414 104.718 22.4855 112.26 17.2286 112.26L0.101562 114.963Z"
               fill="#937091" />
@@ -294,12 +297,44 @@
       </div>
 
     </div>
+    <div v-if="a_q != '' && b_q != '' && c_q != ''" class="  absolute bottom-0 right-0 z-40"
+      @click="router.push({ path: `/wait/${selectedATexture}/${selectedBTexture}` })">
+      <svg width="118" height="104" viewBox="0 0 118 104" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <mask id="mask0_1112_305" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="118"
+          height="104">
+          <rect x="0.211426" y="0.445312" width="117.644" height="103.273" fill="#D9D9D9" />
+        </mask>
+        <g mask="url(#mask0_1112_305)">
+          <path
+            d="M8.88436 126.962L15.5393 29.8406C15.6439 28.0619 17.1629 26.7201 18.9378 26.8278L137.526 34.1909C139.301 34.2986 140.642 35.8231 140.537 37.6018L133.882 134.723C133.778 136.502 132.259 137.843 130.484 137.736L11.896 130.372C10.121 130.265 8.77976 128.74 8.88436 126.962Z"
+            fill="#50744E" />
+        </g>
+        <path
+          d="M35.8364 66.4101L35.9368 67.7089C34.0936 68.2399 32.1596 68.7933 30.6714 69.2107L30.4268 67.8134C31.7719 67.5044 33.8331 66.945 35.8364 66.4101ZM36.2945 61.9511L36.2104 63.271L30.9119 62.9332L30.996 61.6132L36.2945 61.9511ZM34.6069 58.0508L33.6165 73.586C33.5672 74.3583 33.3839 74.7272 32.9393 74.9198C32.4946 75.1123 31.8311 75.1264 30.7367 75.0426C30.6931 74.5908 30.5952 74.1458 30.4452 73.7175C31.2035 73.7658 31.8728 73.8085 32.0834 73.8219C32.2941 73.8353 32.3878 73.7661 32.4048 73.4993L33.3949 57.9689L34.6069 58.0508ZM38.5339 68.6969C37.9853 71.7731 36.9386 74.0375 35.2829 75.4593C34.9994 75.1338 34.6921 74.8298 34.3633 74.55C35.9977 73.3148 36.9248 71.2308 37.3689 68.4675L38.5339 68.6969ZM46.3428 66.9577L46.2673 68.142L36.2741 67.5048L36.3496 66.3206L46.3428 66.9577ZM45.8866 59.3715L45.4935 65.536L37.2275 65.009L37.6205 58.8445L45.8866 59.3715ZM43.0477 74.4129C43.4783 74.4403 45.8233 74.5898 46.4318 74.6286C46.2119 75.0167 46.052 75.4359 45.9578 75.872L42.8966 75.6768C39.9853 75.4912 38.0261 74.6708 37.2168 70.7795L38.0384 70.4982C38.726 73.6438 40.5904 74.2562 43.0196 74.4111L43.0477 74.4129ZM38.6315 61.4891L44.4402 61.8594L44.5342 60.3851L38.7255 60.0147L38.6315 61.4891ZM38.4716 63.998L44.2803 64.3683L44.3761 62.8658L38.5674 62.4955L38.4716 63.998ZM41.789 67.2501L41.2984 74.9451L40.1067 74.324L40.5621 67.1813L41.789 67.2501ZM45.2515 70.2907L45.1769 71.4609L41.1515 71.2042L41.2255 70.0434L45.2515 70.2907Z"
+          fill="#F4F1E8" />
+        <path
+          d="M61.6 67.9338C59.3976 72.9913 55.3766 75.3197 49.9965 76.4101C49.8028 75.9427 49.5603 75.4972 49.2729 75.0809C54.5863 74.226 58.3953 72.0532 60.3156 67.4383L61.6 67.9338ZM65.5074 62.595L65.4197 63.9712L50.3948 63.0132L50.4825 61.637L65.5074 62.595ZM55.9589 64.4912C54.5577 66.0851 52.929 67.4635 51.1253 68.582C50.8326 68.1857 50.5108 67.8118 50.1627 67.4632C51.8891 66.5577 53.4351 65.3437 54.7242 63.8814L55.9589 64.4912ZM65.0996 75.9209C64.7439 76.2892 64.4407 76.7048 64.1984 77.1558C58.8027 75.6886 55.4509 72.5328 53.8987 67.5415L55.0945 67.2135C56.4462 71.6657 59.8417 74.6504 65.1136 75.9217L65.0996 75.9209ZM57.9891 59.3335C58.4445 60.1404 58.8216 60.989 59.1152 61.8679L57.7978 62.3337C57.5289 61.4301 57.1706 60.5556 56.7282 59.723L57.9891 59.3335ZM60.9638 64.2745C62.5362 65.5633 63.9596 67.0239 65.2073 68.6291L64.057 69.4957C62.8579 67.8377 61.4571 66.3355 59.8868 65.0236L60.9638 64.2745Z"
+          fill="#F4F1E8" />
+        <path
+          d="M69.403 65.4995C70.3761 66.1122 71.3002 66.7996 72.1669 67.5555L71.3276 68.6299C70.4721 67.8388 69.5585 67.1129 68.5946 66.4583L69.403 65.4995ZM71.053 70.6521L72.0491 71.4675C71.2869 73.3975 70.2782 75.6549 69.4323 77.3492L68.3102 76.521C69.3262 74.6144 70.2402 72.6553 71.0483 70.6518L71.053 70.6521ZM70.5125 60.4804C71.4797 61.1054 72.3876 61.8177 73.2248 62.6084L72.347 63.6991C71.534 62.8551 70.6377 62.0957 69.6717 61.4325L70.5125 60.4804ZM76.8536 64.2214L76.428 70.896C76.2681 73.4048 75.6176 76.2349 72.3636 77.7382C72.2076 77.4095 72.0109 77.1016 71.7782 76.8219C74.786 75.4205 75.2781 73.0833 75.4226 70.8179L75.8472 64.1572L76.8536 64.2214ZM79.541 61.9489L78.7913 73.7068L77.7335 73.6393L78.4142 62.9627L74.6697 62.724L73.986 73.4473L72.9563 73.3817L73.7092 61.5724L79.541 61.9489ZM76.7307 74.2568C77.5753 75.2418 78.3289 76.3012 78.9821 77.4222L78.0943 78.0048C77.4702 76.8536 76.737 75.765 75.9048 74.754L76.7307 74.2568ZM81.9452 62.7179L81.2263 73.9936L80.1872 73.9274L80.9061 62.6516L81.9452 62.7179ZM84.4535 61.4114L83.4687 76.8576C83.4192 77.6346 83.2277 77.9843 82.7743 78.1669C82.3209 78.3495 81.5705 78.3251 80.3497 78.2332C80.2913 77.8214 80.1911 77.4166 80.0508 77.0251C80.9869 77.0848 81.7779 77.1352 82.026 77.151C82.2741 77.1669 82.3783 77.0795 82.3962 76.7987L83.381 61.3525L84.4535 61.4114Z"
+          fill="#F4F1E8" />
+        <path
+          d="M90.0102 67.4782L89.9234 68.8402L86.8482 68.6441L86.935 67.2821L90.0102 67.4782ZM89.3713 61.8729C90.2512 62.7465 91.0495 63.6988 91.7559 64.7179L90.7571 65.6412C90.0777 64.5778 89.2958 63.5835 88.4226 62.6725L89.3713 61.8729ZM87.885 77.0757C88.149 76.9169 88.3712 76.6975 88.5334 76.4357C88.6956 76.1739 88.793 75.8771 88.8176 75.5701L89.3362 67.4352L90.5766 67.5143L89.9797 76.8756C89.9797 76.8756 88.5099 77.8158 88.4759 78.3494C88.3439 77.8934 88.1451 77.4594 87.8859 77.0616L87.885 77.0757ZM88.3549 77.0774L88.7903 76.513L92.0854 74.5143C92.1433 74.926 92.2337 75.3325 92.3556 75.7299C89.2543 77.7129 88.7694 78.0204 88.4759 78.3494L88.3549 77.0774ZM102.859 66.3L102.773 67.6573L92.1147 66.9778L92.2012 65.6205L102.859 66.3ZM97.2381 75.1483L97.3363 76.4094L92.0401 77.7307L91.7644 76.3784C93.1273 76.0846 95.1975 75.6057 97.2296 75.1337L97.2381 75.1483ZM97.1634 70.0538L97.0802 71.3597L92.3995 71.0613L92.4828 69.7554L97.1634 70.0538ZM95.478 70.6889L95.1131 76.4133L93.9006 76.4864L94.2751 70.6122L95.478 70.6889ZM99.4098 62.2405C98.9346 70.5051 99.2248 77.5261 100.591 77.6931C100.905 77.7131 101.183 76.6733 101.407 74.8454C101.695 75.171 102.029 75.4535 102.397 75.684C101.849 78.8261 101.105 79.5869 100.446 79.5308C97.8101 79.297 97.6364 71.9967 98.0899 62.1563L99.4098 62.2405ZM100.806 62.4611C101.496 63.3099 102.088 64.2335 102.571 65.2148L101.567 65.8557C101.116 64.8435 100.546 63.8889 99.8682 63.0122L100.806 62.4611Z"
+          fill="#F4F1E8" />
+        <path
+          d="M48.2122 95.9372C48.1672 95.9536 48.1283 95.9852 48.105 96.0277C48.0816 96.0701 48.0754 96.1195 48.088 96.1656C48.1006 96.2117 48.1311 96.2511 48.1728 96.2757C48.2146 96.3003 48.2641 96.3078 48.3112 96.2989C48.8107 96.2055 49.3192 96.1199 49.8315 96.0414C51.8591 95.7342 53.8994 95.5318 55.9419 95.3699C63.0756 94.873 70.4206 95.2822 77.1974 97.7109C77.6766 97.8899 78.1559 98.0842 78.621 98.29C78.6658 98.3099 78.7169 98.3121 78.7633 98.2953C78.8096 98.2786 78.8475 98.2444 78.8685 98.2001C78.8896 98.1558 78.8922 98.1048 78.8759 98.0583C78.8597 98.0118 78.8257 97.9736 78.782 97.9513C78.3215 97.717 77.8451 97.4946 77.3675 97.2883C70.6012 94.4735 63.1206 93.8657 55.8635 94.373C53.7842 94.5375 51.7094 94.8795 49.7027 95.4554C49.1957 95.601 48.6965 95.7615 48.2122 95.9372Z"
+          fill="#F4F1E8" />
+        <path
+          d="M73.896 91.8449C73.8617 91.8112 73.8162 91.79 73.7676 91.7876C73.7191 91.7851 73.6718 91.8013 73.6358 91.833C73.5998 91.8647 73.5777 91.9095 73.574 91.958C73.5703 92.0065 73.5855 92.0543 73.6146 92.0926C73.7887 92.322 73.9636 92.5506 74.1392 92.7785C75.7204 94.83 77.3648 96.8257 79.0726 98.7656C79.0875 98.7825 79.1024 98.7995 79.1173 98.8164L79.3743 98.0002C76.8853 98.6075 74.416 99.2953 71.9662 100.064C71.6916 100.15 71.4173 100.237 71.1432 100.325C71.0974 100.34 71.0575 100.37 71.0328 100.412C71.008 100.454 71.0005 100.503 71.0118 100.55C71.0231 100.597 71.0526 100.637 71.0938 100.663C71.1349 100.689 71.1844 100.697 71.2318 100.689C71.5158 100.642 71.7995 100.593 72.083 100.543C74.6118 100.1 77.1211 99.5763 79.6108 98.9718C80.0205 98.8719 80.1467 98.4721 79.8678 98.1556C79.8529 98.1387 79.838 98.1218 79.8231 98.1049C78.1154 96.1649 76.3443 94.2807 74.5099 92.4523C74.306 92.2491 74.1014 92.0466 73.896 91.8449Z"
+          fill="#F4F1E8" />
+      </svg>
 
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import Title from './title.vue'
 import a_one_title from './one/title.vue'
@@ -339,7 +374,7 @@ const b_q = ref('')
 const c_q = ref('')
 
 
-const set_q = (set, QU) => {
+const set_q = (set: 'a' | 'b' | 'c' | 'd' | 'e', QU: 'a' | 'b' | 'c') => {
   if (QU == 'a') {
     a_q.value = set
     console.log(a_q.value)
@@ -354,19 +389,21 @@ const set_q = (set, QU) => {
 }
 
 const colors = ref(['#ead1bc', '#a48260', '#b884af'])
-// 三层颜色栈，随阶段循环（出栈入栈）
-const layerColors = ref<string[]>([...colors.value])
 
 // 0: A, 1: B, 2: C
 const stage = ref(0)
 const router = useRouter()
 
+// 基于阶段的颜色序列（不再手动旋转）
+const layerColors = computed<string[]>(() => {
+  const base = colors.value
+  const s = stage.value % base.length
+  return [base[s], base[(s + 1) % base.length], base[(s + 2) % base.length]]
+})
+
 function handleClick() {
   if (stage.value < 2) {
     stage.value += 1
-    // 颜色栈旋转：仅在阶段推进时旋转
-    const first = layerColors.value.shift()
-    if (first) layerColors.value.push(first)
     return
   }
   // 最后一阶段直接跳转，不再变更颜色
@@ -436,11 +473,6 @@ function loadAnswers() {
 
 loadAnswers();
 
-function rotateLayerColors() {
-  const first = layerColors.value.shift();
-  if (first) layerColors.value.push(first);
-}
-
 function selectAnswer(idx: number) {
   const group = stage.value === 0 ? 'A' : stage.value === 1 ? 'B' : 'C';
   answers.value.push({ group, index: idx, timestamp: Date.now() });
@@ -449,7 +481,6 @@ function selectAnswer(idx: number) {
 
   if (stage.value < 2) {
     stage.value += 1;
-    rotateLayerColors();
   } else {
     router.push({ path: `/wait/${selectedATexture.value}/${selectedBTexture.value}` });
   }
