@@ -14,7 +14,7 @@ export const useOpenIdStore = defineStore('openIdStore', {
 				localStorage.setItem(OPEN_ID_STORAGE_KEY, normalized)
 			} else {
 				localStorage.removeItem(OPEN_ID_STORAGE_KEY)
-			}
+			}	
 		},
 		initializeFromUrlOrStorage(initial?: string | null) {
 			const fromParam = (initial ?? new URLSearchParams(window.location.search).get('openId')) || ''
@@ -26,7 +26,7 @@ export const useOpenIdStore = defineStore('openIdStore', {
 			if (stored) {
 				this.openId = stored
 			}
-			return this.openId
+			return this.openId	
 		},
 	},
 })

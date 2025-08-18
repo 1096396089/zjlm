@@ -368,7 +368,7 @@
             fill="black" />
           <path
             d="M146.172 227.836H53.0274C50.7363 227.836 48.8789 229.693 48.8789 231.984V256.872C48.8789 259.163 50.7363 261.021 53.0274 261.021H146.172C148.463 261.021 150.321 259.163 150.321 256.872V231.984C150.321 229.693 148.463 227.836 146.172 227.836Z"
-            fill="#9C7D5E" @click=" $router.push({ path: `/result/${selectedATexture}/${selectedBTexture}`})" />
+            fill="#9C7D5E" @click=" sendData()" />
           <path
             d="M77.9527 246.244C77.7902 249.379 77.1886 250.983 73.8491 251.754C73.7313 251.437 73.5567 251.144 73.334 250.89C76.3901 250.25 76.8326 248.964 76.9743 246.244H77.9527ZM84.8669 245.618V246.6H73.493V245.618H84.8669ZM84.5212 240.543V243.63H83.5255V241.556H74.7756V243.63H73.8145V240.557L84.5212 240.543ZM82.6578 243.032V244.014H75.6779V243.049L82.6578 243.032ZM79.1454 238.828C79.5073 239.451 79.8083 240.108 80.0442 240.788L79.0071 241.134C78.7908 240.442 78.5071 239.773 78.1601 239.136L79.1454 238.828ZM81.154 246.209V250.084C81.154 250.492 81.2438 250.558 81.7762 250.558H83.5705C84.0545 250.558 84.134 250.32 84.1755 248.712C84.4442 248.901 84.7435 249.043 85.0604 249.13C84.9464 251.042 84.6733 251.53 83.6465 251.53H81.676C80.4902 251.53 80.186 251.211 80.186 250.091V246.209H81.154Z"
             fill="white" />
@@ -500,7 +500,12 @@ import { getClonedGLTF } from '@/util/gltfCache'
 import { loadTextureFromCandidates } from '@/util/textureCache'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js'
+import { useOpenIdStore } from '@/stores/openId'
 
+const router = useRouter()
+const openIdStore = useOpenIdStore()
+import { http } from '@/util/http'
+import { useRouter } from 'vue-router'
 
 // 基础路径适配（改为使用 OSS 加速）
 const withBase = (path: string): string => {
@@ -683,6 +688,18 @@ const switchToBTexture = (textureName: string) => {
   const texturePath = getTexturePath('B', textureName)
   applyTextureToMeshB(texturePath)
 }
+
+
+const sendData = async () => {
+  const data = {
+    openId: openIdStore.openId,
+    areaA: selectedATexture.value,
+    areaB: selectedBTexture.value,
+  }
+  await http.post('/save-shoe-color', data)
+  router.push({ path: `/result/${selectedATexture.value}/${selectedBTexture.value}` })
+}
+
 
 // 应用贴图到A mesh
 const applyTextureToMeshA = (texturePath: string) => {
@@ -1120,42 +1137,7 @@ const applyTextureToMeshesByKeywords = (keywords: string[], texturePath: string)
     })
 }
 
-// 移除指定网格的材质
-const removeMaterialFromMesh = (keywords: string[]) => {
-  if (!shoeModel) return
 
-  const lowers = keywords.map(k => k.trim().toLowerCase()).filter(Boolean)
-  let removedCount = 0
-
-  shoeModel.traverse((child) => {
-    if (child instanceof THREE.Mesh) {
-      const meshName = (child.name || '').trim()
-      const meshLower = meshName.toLowerCase()
-
-      const parentNames: string[] = []
-      let p: any = child.parent
-      while (p && p !== shoeModel && parentNames.length < 4) {
-        if (p.name) parentNames.push(String(p.name).toLowerCase())
-        p = p.parent
-      }
-
-      const matched = lowers.some(k =>
-        meshLower.includes(k) || parentNames.some(n => n.includes(k))
-      )
-
-      if (matched) {
-        child.material = new THREE.MeshBasicMaterial({ visible: false })
-        removedCount++
-      }
-    }
-  })
-
-  if (removedCount > 0) {
-    console.info('[材质已移除]', keywords, '数量：', removedCount)
-  } else {
-    console.warn('[材质移除失败] 未找到匹配的 Mesh：', keywords)
-  }
-}
 
 // 应用默认贴图：AB + public 根目录的 xiedai/xiedi/xiedian
 const applyInitialDefaultTextures = () => {
@@ -1246,38 +1228,8 @@ const changeEnvironment = () => {
   scene.background = new THREE.Color(environments[selectedEnvironment.value])
 }
 
-// 切换动画
-const toggleAnimation = () => {
-  isAnimating.value = !isAnimating.value
-}
 
-// 重置视角
-const resetView = () => {
-  cameraPosition.value = { x: 0, y: 0, z: 5 }
-  updateCameraPosition()
-  controls.reset()
-  if (shoeModel) {
-    shoeModel.rotation.set(0, 0, 0)
-  }
 
-  // 重置灯光强度
-  lightingIntensity.value = {
-    ambient: 3.0,
-    directional: 3.0,
-    fill: 2.0,
-    additional: 1.5
-  }
-  updateLightingIntensity()
-}
-
-// 截图
-const takeScreenshot = () => {
-  const canvas = renderer.domElement
-  const link = document.createElement('a')
-  link.download = 'shoe-screenshot.png'
-  link.href = canvas.toDataURL()
-  link.click()
-}
 
 // 全屏
 const toggleFullscreen = () => {
