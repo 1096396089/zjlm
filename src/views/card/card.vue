@@ -23,7 +23,7 @@
 
             <div 
             class=" absolute top-[14rem]"
-            :class=" getOS() == 'iOS' ? 'left-[6rem]' : 'left-[8rem]'"
+            :class=" getOS() == 'iOS' ? 'left-[6rem]' : 'left-[9rem]'"
              style="transform: rotate(2deg)">
               <div v-if="stage === 0">
                 <a_one_q @click="set_q('a', 'a')" />
@@ -44,7 +44,7 @@
             </div>
 
             <div class=" absolute  top-[18rem]" style="transform: rotate(2deg)"
-            :class=" getOS() == 'iOS' ? 'left-[2.5rem]' : 'left-[4.5rem]'"
+            :class=" getOS() == 'iOS' ? 'left-[2.5rem]' : 'left-[5.5rem]'"
             >
               <div v-if="stage === 0">
                 <a_tow_q @click="set_q('b', 'a')" />
@@ -67,7 +67,7 @@
             </div>
 
             <div class=" absolute top-[22rem]"
-             :class=" getOS() == 'iOS' ? 'left-[6rem]' : 'left-[8rem]'"
+             :class=" getOS() == 'iOS' ? 'left-[6rem]' : 'left-[9rem]'"
              style="transform: rotate(2deg)">
               
               <div v-if="stage === 0">
@@ -93,7 +93,7 @@
             </div>
 
             <div class="absolute  top-[26rem]"
-             :class=" getOS() == 'iOS' ? 'left-[2.5rem]' : 'left-[4.5rem]'"
+             :class=" getOS() == 'iOS' ? 'left-[2.5rem]' : 'left-[5.5rem]'"
             style=" transform: rotate(2deg)">
               <div v-if="stage === 0">
                 <a_four_q @click="set_q('d', 'a')" />
@@ -114,7 +114,7 @@
             </div>
 
             <div class=" absolute left-[6rem] top-[30rem]"
-             :class=" getOS() == 'iOS' ? 'left-[6rem]' : 'left-[8rem]'"
+             :class=" getOS() == 'iOS' ? 'left-[6rem]' : 'left-[9rem]'"
             
             style="transform: rotate(2deg)">
               <div v-if="stage === 0">
