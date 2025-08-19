@@ -68,7 +68,7 @@ const getTexturePath = (area: 'A' | 'B', filename: string): string => {
   return withBase(`tietu/${area}/${finalName}`)
 }
 
-const applyTextureToArea = (area: 'A' | 'B', filename: string) => {
+const applyTextureToArea = async (area: 'A' | 'B', filename: string) => {
   if (!shoeModel || !filename) return
 
   const path = getTexturePath(area, filename)
@@ -114,17 +114,18 @@ const applyTextureToArea = (area: 'A' | 'B', filename: string) => {
     './' + path.replace(/^\//, ''),
   ]))
 
-  loadTextureFromCandidates(candidates)
-    .then((texture) => {
-      const key = candidates[0]
-      if (key) textureCache[key] = texture
-      tryApply(texture)
-    })
-    .catch(() => { })
+  try {
+    const texture = await loadTextureFromCandidates(candidates)
+    const key = candidates[0]
+    if (key) textureCache[key] = texture
+    tryApply(texture)
+  } catch {
+    // 忽略单张贴图失败，避免阻塞整体
+  }
 }
 
 // 关键词匹配贴图（用于 logo/xiedi/xian/xian2/xiedian 等初始贴图）
-const applyTextureToMeshesByKeywords = (keywords: string[], texturePath: string) => {
+const applyTextureToMeshesByKeywords = async (keywords: string[], texturePath: string) => {
   if (!shoeModel) return
   const tryApply = (texture: THREE.Texture) => {
     // @ts-ignore
@@ -183,20 +184,23 @@ const applyTextureToMeshesByKeywords = (keywords: string[], texturePath: string)
     './' + normalized,
   ]))
 
-  loadTextureFromCandidates(candidates)
-    .then((texture) => {
-      const key = candidates[0]
-      if (key) textureCache[key] = texture
-      tryApply(texture)
-    })
-    .catch(() => { })
+  try {
+    const texture = await loadTextureFromCandidates(candidates)
+    const key = candidates[0]
+    if (key) textureCache[key] = texture
+    tryApply(texture)
+  } catch {
+    // 忽略，继续其它贴图
+  }
 }
 
 // 应用默认贴图：AB + public 根目录的 xiedai/xiedi/xian/xian2/xiedian
-const applyInitialDefaultTextures = () => {
+const applyInitialDefaultTextures = async () => {
+  const tasks: Promise<void>[] = []
+
   // 根据当前参数应用 A/B 默认
-  applyTextureToArea('A', aParam.value)
-  applyTextureToArea('B', bParam.value)
+  tasks.push(applyTextureToArea('A', aParam.value))
+  tasks.push(applyTextureToArea('B', bParam.value))
 
   const publicDefaults: Array<{ keywords: string[]; path: string }> = [
     { path: withBase('tietu/xiedai.png'), keywords: ['xiedai'] },
@@ -206,12 +210,16 @@ const applyInitialDefaultTextures = () => {
     { path: withBase('tietu/xiedian.png'), keywords: ['xiedian'] },
   ]
 
-  publicDefaults.forEach(({ keywords, path }) => applyTextureToMeshesByKeywords(keywords, path))
+  publicDefaults.forEach(({ keywords, path }) => {
+    tasks.push(applyTextureToMeshesByKeywords(keywords, path))
+  })
 
   // 兜底精确名称
-  applyTextureToMeshesByKeywords(['xiedai'], withBase('tietu/xiedai.png'))
-  applyTextureToMeshesByKeywords(['xian'], withBase('tietu/xian.png'))
-  applyTextureToMeshesByKeywords(['xiedian'], withBase('tietu/xiedian.png'))
+  tasks.push(applyTextureToMeshesByKeywords(['xiedai'], withBase('tietu/xiedai.png')))
+  tasks.push(applyTextureToMeshesByKeywords(['xian'], withBase('tietu/xian.png')))
+  tasks.push(applyTextureToMeshesByKeywords(['xiedian'], withBase('tietu/xiedian.png')))
+
+  await Promise.all(tasks)
 }
 
 const init = () => {
@@ -267,7 +275,7 @@ const init = () => {
 
   // 加载模型（使用缓存）
   getClonedGLTF(withBase('xie.gltf'))
-    .then(({ scene: clonedScene }) => {
+    .then(async ({ scene: clonedScene }) => {
       shoeModel = clonedScene
       shoeModel.scale.set(11, 11, 11)
       shoeModel.rotation.set(rotX.value, rotY.value, rotZ.value)
@@ -315,9 +323,9 @@ const init = () => {
         console.warn('无法自动框选模型:', e)
       }
 
-      // 初始贴图：A/B + logo/xiedi/xian/xiedian 等
-      applyInitialDefaultTextures()
-      console.log('模型已加载，已应用默认贴图 A:', aParam.value, 'B:', bParam.value)
+      // 初始贴图：A/B + logo/xiedi/xian/xiedian 等（等待贴图加载完成后再展示）
+      await applyInitialDefaultTextures()
+      console.log('模型已加载，默认贴图已全部应用 A:', aParam.value, 'B:', bParam.value)
       // 通知父组件加载完成，用于隐藏“加载中”占位并显示画面
       emit('loaded')
     })

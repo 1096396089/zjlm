@@ -247,7 +247,7 @@
             class=" rounded-2xl  w-[21rem]  h-[21rem]  py-16 flex flex-col  justify-center items-center bg-cover bg-center bg-no-repeat "
             :style="{ backgroundImage: `url(${fangxing})` }">
             <div>
-              口令发送至各平台客服领取优惠
+              口令发送至电商渠道客服领取优惠
             </div>
             <div
               class="my-2 flex flex-col items-center  -translate-x-1  justify-center text-[12px] leading-6 text-gray-800">
