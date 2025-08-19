@@ -21,62 +21,43 @@
 
             </div>
 
-            <div class=" absolute left-[6rem] top-[14rem]" style="transform: rotate(2deg)">
+            <div 
+            class=" absolute top-[14rem]"
+            :class=" getOS() == 'iOS' ? 'left-[6rem]' : 'left-[8rem]'"
+             style="transform: rotate(2deg)">
               <div v-if="stage === 0">
                 <a_one_q @click="set_q('a', 'a')" />
 
-                <svg v-if="a_q == 'a'" class=" absolute  right-[6rem] top-4" width="13" height="9" viewBox="0 0 13 9"
-                  fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M1.38525 4.77793L5.07725 8.46992L12.4612 1.08594" stroke="black" stroke-linecap="round"
-                    stroke-linejoin="round" />
-                </svg>
+
               </div>
               <div v-else-if="stage === 1">
                 <b_one_q @click="set_q('a', 'b')" />
-                <svg v-if="b_q == 'a'" class=" absolute  right-[5.5rem] top-4" width="13" height="9" viewBox="0 0 13 9"
-                  fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M1.38525 4.77793L5.07725 8.46992L12.4612 1.08594" stroke="black" stroke-linecap="round"
-                    stroke-linejoin="round" />
-                </svg>
+
               </div>
               <div v-else>
                 <c_one_q @click="set_q('a', 'c')" />
-                <svg v-if="c_q == 'a'" class=" absolute  right-[5.5rem] top-4" width="13" height="9" viewBox="0 0 13 9"
-                  fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M1.38525 4.77793L5.07725 8.46992L12.4612 1.08594" stroke="black" stroke-linecap="round"
-                    stroke-linejoin="round" />
-                </svg>
+
               </div>
 
 
 
             </div>
 
-            <div class=" absolute left-[2.5rem] top-[18rem]" style="transform: rotate(2deg)">
+            <div class=" absolute  top-[18rem]" style="transform: rotate(2deg)"
+            :class=" getOS() == 'iOS' ? 'left-[2.5rem]' : 'left-[4.5rem]'"
+            >
               <div v-if="stage === 0">
                 <a_tow_q @click="set_q('b', 'a')" />
-                <svg v-if="a_q == 'b'" class=" absolute  right-[6.5rem] top-4" width="13" height="9" viewBox="0 0 13 9"
-                  fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M1.38525 4.77793L5.07725 8.46992L12.4612 1.08594" stroke="black" stroke-linecap="round"
-                    stroke-linejoin="round" />
-                </svg>
+
               </div>
               <div v-else-if="stage === 1">
                 <b_tow_q @click="set_q('b', 'b')" />
-                <svg v-if="b_q == 'b'" class=" absolute  right-[6rem] top-4" width="13" height="9" viewBox="0 0 13 9"
-                  fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M1.38525 4.77793L5.07725 8.46992L12.4612 1.08594" stroke="black" stroke-linecap="round"
-                    stroke-linejoin="round" />
-                </svg>
+
               </div>
               <div v-else>
 
                 <c_tow_q @click="set_q('b', 'c')" />
-                <svg v-if="c_q == 'b'" class=" absolute  right-[6rem] top-4" width="13" height="9" viewBox="0 0 13 9"
-                  fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M1.38525 4.77793L5.07725 8.46992L12.4612 1.08594" stroke="black" stroke-linecap="round"
-                    stroke-linejoin="round" />
-                </svg>
+
               </div>
 
 
@@ -85,67 +66,46 @@
 
             </div>
 
-            <div class=" absolute left-[6rem] top-[22rem]" style="transform: rotate(2deg)">
-
+            <div class=" absolute top-[22rem]"
+             :class=" getOS() == 'iOS' ? 'left-[6rem]' : 'left-[8rem]'"
+             style="transform: rotate(2deg)">
+              
               <div v-if="stage === 0">
 
                 <a_three_q @click="set_q('c', 'a')" />
 
-                <svg v-if="a_q == 'c'" class=" absolute  right-[5.5rem] top-4" width="13" height="9" viewBox="0 0 13 9"
-                  fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M1.38525 4.77793L5.07725 8.46992L12.4612 1.08594" stroke="black" stroke-linecap="round"
-                    stroke-linejoin="round" />
-                </svg>
+
 
               </div>
 
               <div v-else-if="stage === 1">
                 <b_three_q @click="set_q('c', 'b')" />
-                <svg v-if="b_q == 'c'" class=" absolute  right-[5.5rem] top-4" width="13" height="9" viewBox="0 0 13 9"
-                  fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M1.38525 4.77793L5.07725 8.46992L12.4612 1.08594" stroke="black" stroke-linecap="round"
-                    stroke-linejoin="round" />
-                </svg>
+
 
               </div>
 
               <div v-else>
                 <c_three_q @click="set_q('c', 'c')" />
-                <svg v-if="c_q == 'c'" class=" absolute  right-[5.5rem] top-4" width="13" height="9" viewBox="0 0 13 9"
-                  fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M1.38525 4.77793L5.07725 8.46992L12.4612 1.08594" stroke="black" stroke-linecap="round"
-                    stroke-linejoin="round" />
-                </svg>
 
               </div>
 
 
             </div>
 
-            <div class="absolute left-[2.5rem] top-[26rem]" style=" transform: rotate(2deg)">
+            <div class="absolute  top-[26rem]"
+             :class=" getOS() == 'iOS' ? 'left-[2.5rem]' : 'left-[4.5rem]'"
+            style=" transform: rotate(2deg)">
               <div v-if="stage === 0">
                 <a_four_q @click="set_q('d', 'a')" />
-                <svg v-if="a_q == 'd'" class=" absolute   right-[6rem] top-4" width="13" height="9" viewBox="0 0 13 9"
-                  fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M1.38525 4.77793L5.07725 8.46992L12.4612 1.08594" stroke="black" stroke-linecap="round"
-                    stroke-linejoin="round" />
-                </svg>
+
               </div>
               <div v-else-if="stage === 1">
                 <b_four_q @click="set_q('d', 'b')" />
-                <svg v-if="b_q == 'd'" class=" absolute   right-[6rem] top-4" width="13" height="9" viewBox="0 0 13 9"
-                  fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M1.38525 4.77793L5.07725 8.46992L12.4612 1.08594" stroke="black" stroke-linecap="round"
-                    stroke-linejoin="round" />
-                </svg>
+
               </div>
               <div v-else>
                 <c_four_q @click="set_q('d', 'c')" />
-                <svg v-if="c_q == 'd'" class=" absolute  right-[6rem] top-4" width="13" height="9" viewBox="0 0 13 9"
-                  fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M1.38525 4.77793L5.07725 8.46992L12.4612 1.08594" stroke="black" stroke-linecap="round"
-                    stroke-linejoin="round" />
-                </svg>
+
               </div>
 
 
@@ -153,30 +113,21 @@
 
             </div>
 
-            <div class=" absolute left-[6rem] top-[30rem]" style="transform: rotate(2deg)">
+            <div class=" absolute left-[6rem] top-[30rem]"
+             :class=" getOS() == 'iOS' ? 'left-[6rem]' : 'left-[8rem]'"
+            
+            style="transform: rotate(2deg)">
               <div v-if="stage === 0">
                 <a_five_q @click="set_q('e', 'a')" />
-                <svg v-if="a_q == 'e'" class=" absolute   right-[5rem] top-4" width="13" height="9" viewBox="0 0 13 9"
-                  fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M1.38525 4.77793L5.07725 8.46992L12.4612 1.08594" stroke="black" stroke-linecap="round"
-                    stroke-linejoin="round" />
-                </svg>
+
               </div>
               <div v-else-if="stage === 1">
                 <b_five_q @click="set_q('e', 'b')" />
-                <svg v-if="b_q == 'e'" class=" absolute  right-[5rem] top-4" width="13" height="9" viewBox="0 0 13 9"
-                  fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M1.38525 4.77793L5.07725 8.46992L12.4612 1.08594" stroke="black" stroke-linecap="round"
-                    stroke-linejoin="round" />
-                </svg>
+
               </div>
               <div v-else>
                 <c_five_q @click="set_q('e', 'c')" />
-                <svg v-if="c_q == 'e'" class=" absolute  right-[5rem] top-4" width="13" height="9" viewBox="0 0 13 9"
-                  fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M1.38525 4.77793L5.07725 8.46992L12.4612 1.08594" stroke="black" stroke-linecap="round"
-                    stroke-linejoin="round" />
-                </svg>
+
               </div>
 
 
@@ -212,14 +163,26 @@
               d="M7.77452 89.4845C6.89435 89.961 6.39386 90.0266 6.17295 89.7987C5.48262 89.16 6.12808 88.0447 6.73212 87.4336C8.89284 85.2341 12.096 84.4607 15.8445 84.219V77.4412L16.2725 77.3203V84.1914C17.308 84.1361 18.4021 84.1085 19.5204 84.1085L19.2857 86.2527C19.0924 86.2251 18.9164 86.1042 18.8577 85.7658C17.9914 85.7658 17.1319 85.7659 16.2725 85.7935V87.3403L17.094 87.9791C17.1107 87.8576 17.1506 87.7404 17.2113 87.6338C17.8925 87.3368 18.4961 86.8866 18.9751 86.3183L19.0924 86.4115C19.2408 88.9528 17.7566 89.1738 17.2423 88.5592C16.9628 88.9044 16.4623 89.5087 16.0791 89.9403C16.0014 89.9107 15.936 89.8557 15.8934 89.7843C15.8508 89.7129 15.8336 89.6291 15.8445 89.5467V85.8073C12.7587 85.9834 9.97665 86.6083 8.45103 88.3865C8.24738 88.5764 8.24738 88.6835 8.4959 88.8078C9.082 89.1223 9.6859 89.4025 10.3046 89.6468L10.2735 89.7987L7.77452 89.4845ZM8.83415 81.7744C9.02399 82.6825 9.23111 83.6596 9.45201 84.6506L9.2587 84.692C8.56837 83.4283 7.6882 81.5845 6.49739 78.8016C6.41212 78.7756 6.33359 78.7313 6.26738 78.6716C6.20116 78.6119 6.14889 78.5384 6.11426 78.4563L7.98161 77.4204C8.07135 78.0074 8.26119 78.9846 8.4959 80.1654H12.876V77.9211L13.2902 77.8141V81.9574L14.4776 82.8137C14.4776 82.8137 13.6699 83.7632 13.0969 84.3467C13.0218 84.3219 12.9575 84.272 12.9147 84.2054C12.872 84.1387 12.8535 84.0594 12.8622 83.9808V81.7813L8.83415 81.7744Z"
               fill="white" />
           </svg>
-          <svg v-if="a_q" class=" absolute bottom-2 right-[0.4rem]" width="15" height="15" viewBox="0 0 15 15"
-            fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path
-              d="M0.707031 7.27539C0.707031 9.09888 1.44616 10.7498 2.64117 11.9448C3.83617 13.1398 5.48705 13.8789 7.31055 13.8789C9.13404 13.8789 10.7849 13.1398 11.9799 11.9448C13.1749 10.7498 13.9141 9.09889 13.9141 7.27539C13.9141 5.4519 13.1749 3.80102 11.9799 2.606C10.7849 1.411 9.13404 0.671875 7.31055 0.671875C5.48705 0.671875 3.83617 1.411 2.64117 2.606C1.44616 3.80102 0.707031 5.4519 0.707031 7.27539Z"
-              stroke="white" stroke-linejoin="round" />
-            <path d="M7.31045 4.64062L5.32939 6.62168L9.2915 10.5838" stroke="white" stroke-linecap="round"
-              stroke-linejoin="round" />
-          </svg>
+          <div class=" absolute bottom-2 right-[0.4rem]">
+
+            <svg v-if="stage == 0" width="15" height="15" viewBox="0 0 15 15" fill="none"
+              xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M0.783203 7.27539C0.783203 9.09888 1.52233 10.7498 2.71734 11.9448C3.91234 13.1398 5.56322 13.8789 7.38672 13.8789C9.21021 13.8789 10.8611 13.1398 12.0561 11.9448C13.2511 10.7498 13.9902 9.09889 13.9902 7.27539C13.9902 5.4519 13.2511 3.80102 12.0561 2.606C10.8611 1.411 9.21021 0.671875 7.38672 0.671875C5.56322 0.671875 3.91234 1.411 2.71734 2.606C1.52233 3.80102 0.783203 5.4519 0.783203 7.27539Z"
+                fill="#50453B" stroke="#50453B" stroke-linejoin="round" />
+              <path d="M7.38662 4.64062L5.40557 6.62168L9.36768 10.5838" stroke="white" stroke-linecap="round"
+                stroke-linejoin="round" />
+            </svg>
+
+
+            <svg v-else width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M0.707031 7.27539C0.707031 9.09888 1.44616 10.7498 2.64117 11.9448C3.83617 13.1398 5.48705 13.8789 7.31055 13.8789C9.13404 13.8789 10.7849 13.1398 11.9799 11.9448C13.1749 10.7498 13.9141 9.09889 13.9141 7.27539C13.9141 5.4519 13.1749 3.80102 11.9799 2.606C10.7849 1.411 9.13404 0.671875 7.31055 0.671875C5.48705 0.671875 3.83617 1.411 2.64117 2.606C1.44616 3.80102 0.707031 5.4519 0.707031 7.27539Z"
+                stroke="white" stroke-linejoin="round" />
+              <path d="M7.31045 4.64062L5.32939 6.62168L9.2915 10.5838" stroke="white" stroke-linecap="round"
+                stroke-linejoin="round" />
+            </svg>
+          </div>
 
         </div>
 
@@ -243,14 +206,25 @@
               fill="white" />
           </svg>
 
-          <svg v-if="b_q" class=" absolute bottom-2 right-[0.4rem]" width="15" height="15" viewBox="0 0 15 15"
-            fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path
-              d="M0.707031 7.27539C0.707031 9.09888 1.44616 10.7498 2.64117 11.9448C3.83617 13.1398 5.48705 13.8789 7.31055 13.8789C9.13404 13.8789 10.7849 13.1398 11.9799 11.9448C13.1749 10.7498 13.9141 9.09889 13.9141 7.27539C13.9141 5.4519 13.1749 3.80102 11.9799 2.606C10.7849 1.411 9.13404 0.671875 7.31055 0.671875C5.48705 0.671875 3.83617 1.411 2.64117 2.606C1.44616 3.80102 0.707031 5.4519 0.707031 7.27539Z"
-              stroke="white" stroke-linejoin="round" />
-            <path d="M7.31045 4.64062L5.32939 6.62168L9.2915 10.5838" stroke="white" stroke-linecap="round"
-              stroke-linejoin="round" />
-          </svg>
+          <div class=" absolute bottom-2 right-[0.4rem]">
+            <svg v-if="stage == 1" width="15" height="15" viewBox="0 0 15 15" fill="none"
+              xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M0.783203 7.27539C0.783203 9.09888 1.52233 10.7498 2.71734 11.9448C3.91234 13.1398 5.56322 13.8789 7.38672 13.8789C9.21021 13.8789 10.8611 13.1398 12.0561 11.9448C13.2511 10.7498 13.9902 9.09889 13.9902 7.27539C13.9902 5.4519 13.2511 3.80102 12.0561 2.606C10.8611 1.411 9.21021 0.671875 7.38672 0.671875C5.56322 0.671875 3.91234 1.411 2.71734 2.606C1.52233 3.80102 0.783203 5.4519 0.783203 7.27539Z"
+                fill="#50453B" stroke="#50453B" stroke-linejoin="round" />
+              <path d="M7.38662 4.64062L5.40557 6.62168L9.36768 10.5838" stroke="white" stroke-linecap="round"
+                stroke-linejoin="round" />
+            </svg>
+
+
+            <svg v-else width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M0.707031 7.27539C0.707031 9.09888 1.44616 10.7498 2.64117 11.9448C3.83617 13.1398 5.48705 13.8789 7.31055 13.8789C9.13404 13.8789 10.7849 13.1398 11.9799 11.9448C13.1749 10.7498 13.9141 9.09889 13.9141 7.27539C13.9141 5.4519 13.1749 3.80102 11.9799 2.606C10.7849 1.411 9.13404 0.671875 7.31055 0.671875C5.48705 0.671875 3.83617 1.411 2.64117 2.606C1.44616 3.80102 0.707031 5.4519 0.707031 7.27539Z"
+                stroke="white" stroke-linejoin="round" />
+              <path d="M7.31045 4.64062L5.32939 6.62168L9.2915 10.5838" stroke="white" stroke-linecap="round"
+                stroke-linejoin="round" />
+            </svg>
+          </div>
 
         </div>
 
@@ -275,14 +249,25 @@
           </svg>
 
 
-          <svg v-if="c_q" class=" absolute bottom-2 right-[0.4rem]" width="15" height="15" viewBox="0 0 15 15"
-            fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path
-              d="M0.707031 7.27539C0.707031 9.09888 1.44616 10.7498 2.64117 11.9448C3.83617 13.1398 5.48705 13.8789 7.31055 13.8789C9.13404 13.8789 10.7849 13.1398 11.9799 11.9448C13.1749 10.7498 13.9141 9.09889 13.9141 7.27539C13.9141 5.4519 13.1749 3.80102 11.9799 2.606C10.7849 1.411 9.13404 0.671875 7.31055 0.671875C5.48705 0.671875 3.83617 1.411 2.64117 2.606C1.44616 3.80102 0.707031 5.4519 0.707031 7.27539Z"
-              stroke="white" stroke-linejoin="round" />
-            <path d="M7.31045 4.64062L5.32939 6.62168L9.2915 10.5838" stroke="white" stroke-linecap="round"
-              stroke-linejoin="round" />
-          </svg>
+          <div class=" absolute bottom-2 right-[0.4rem]">
+            <svg v-if="stage == 2" width="15" height="15" viewBox="0 0 15 15" fill="none"
+              xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M0.783203 7.27539C0.783203 9.09888 1.52233 10.7498 2.71734 11.9448C3.91234 13.1398 5.56322 13.8789 7.38672 13.8789C9.21021 13.8789 10.8611 13.1398 12.0561 11.9448C13.2511 10.7498 13.9902 9.09889 13.9902 7.27539C13.9902 5.4519 13.2511 3.80102 12.0561 2.606C10.8611 1.411 9.21021 0.671875 7.38672 0.671875C5.56322 0.671875 3.91234 1.411 2.71734 2.606C1.52233 3.80102 0.783203 5.4519 0.783203 7.27539Z"
+                fill="#50453B" stroke="#50453B" stroke-linejoin="round" />
+              <path d="M7.38662 4.64062L5.40557 6.62168L9.36768 10.5838" stroke="white" stroke-linecap="round"
+                stroke-linejoin="round" />
+            </svg>
+
+
+            <svg v-else width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M0.707031 7.27539C0.707031 9.09888 1.44616 10.7498 2.64117 11.9448C3.83617 13.1398 5.48705 13.8789 7.31055 13.8789C9.13404 13.8789 10.7849 13.1398 11.9799 11.9448C13.1749 10.7498 13.9141 9.09889 13.9141 7.27539C13.9141 5.4519 13.1749 3.80102 11.9799 2.606C10.7849 1.411 9.13404 0.671875 7.31055 0.671875C5.48705 0.671875 3.83617 1.411 2.64117 2.606C1.44616 3.80102 0.707031 5.4519 0.707031 7.27539Z"
+                stroke="white" stroke-linejoin="round" />
+              <path d="M7.31045 4.64062L5.32939 6.62168L9.2915 10.5838" stroke="white" stroke-linecap="round"
+                stroke-linejoin="round" />
+            </svg>
+          </div>
 
 
         </div>
@@ -403,9 +388,9 @@ const layerColors = computed<string[]>(() => {
 
 function handleClick() {
   if (stage.value < 2) {
-   setTimeout(() =>{
-    stage.value += 1
-   },500)
+    setTimeout(() => {
+      stage.value += 1
+    }, 500)
     return
   }
   // 最后一阶段直接跳转，不再变更颜色
@@ -413,7 +398,18 @@ function handleClick() {
 }
 
 
-
+const getOS = () => {
+  const ua = navigator.userAgent || ''
+  if (/iPhone|iPad|iPod/i.test(ua)) {
+    return 'iOS'
+  }
+  if (/Android/i.test(ua)) {
+    return 'Android'
+  }
+  return 'Other'
+}
+const os = getOS()
+console.log('当前系统:', os) // iOS / Android / Other
 // 生成噪点图片的工具函数
 function generateNoise(opacity: number = 0.06, size: number = 100): string {
   const canvas = document.createElement('canvas');
