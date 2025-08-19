@@ -691,12 +691,12 @@ const switchToBTexture = (textureName: string) => {
 
 
 const sendData = async () => {
-  // const data = {
-  //   openId: openIdStore.openId,
-  //   areaA: selectedATexture.value,
-  //   areaB: selectedBTexture.value,
-  // }
-  // await http.post('/save-shoe-color', data)
+  const data = {
+    openId: openIdStore.openId,
+    areaA: selectedATexture.value,
+    areaB: selectedBTexture.value,
+  }
+  await http.post('/save-shoe-color', data)
   router.push({ path: `/result/${selectedATexture.value}/${selectedBTexture.value}` })
 }
 
