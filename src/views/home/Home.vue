@@ -10,7 +10,7 @@
       <Title />
     </div>
 
-    <div class=" w-full  pt-[4rem] flex justify-center items-center">
+    <div class=" w-full  pt-[2rem] flex justify-center items-center">
         <img
           class=" w-[90%] block select-none img-smooth"
           :src="carouselImages[currentCarouselIndex]"
