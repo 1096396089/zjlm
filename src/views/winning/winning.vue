@@ -73,7 +73,7 @@
           <!-- Step: QR code -->
           <div v-show="step === 'qrcode'"
             class=" rounded-2xl  w-[21rem]  h-[21rem]  py-16 flex flex-col  justify-center items-center bg-cover bg-center bg-no-repeat "
-            :style="{ backgroundImage: `url(${fangxing})` }">
+            :style="{ backgroundImage: `url(https://steppy-dev.oss-cn-guangzhou.aliyuncs.com/lotter/winning/fangxing.png)` }">
             <img class="h-24 w-24 -translate-x-1 object-contain" src="./qr_code.jpg" alt="客服二维码" />
             <div
               class="my-2 flex flex-col items-center  -translate-x-1  justify-center text-[9px] leading-6 text-gray-800">
@@ -93,7 +93,7 @@
           <!-- Step: Form -->
           <div v-show="step === 'form' && !showSecondConfirm"
             class=" rounded-2xl w-[332px] h-[367px] flex flex-col items-center bg-cover bg-center bg-no-repeat "
-            :style="{ backgroundImage: `url(${changxing})` }">
+            :style="{ backgroundImage: `url(https://steppy-dev.oss-cn-guangzhou.aliyuncs.com/lotter/winning/changxing.png)` }">
             <div class="text-center text-[12px] mt-12 font-semibold text-black">
               <p>请仔细填写收件信息</p>
               <p class="">填写错误视为自动放弃奖品</p>
@@ -291,7 +291,7 @@ import tow from './tow.png'
 import te from './te.png'
 
 
-const cards = [te, one, tow]
+const cards = ['https://steppy-dev.oss-cn-guangzhou.aliyuncs.com/lotter/winning/te.png', 'https://steppy-dev.oss-cn-guangzhou.aliyuncs.com/lotter/winning/one.png', 'https://steppy-dev.oss-cn-guangzhou.aliyuncs.com/lotter/winning/tow.png']
 
 
 

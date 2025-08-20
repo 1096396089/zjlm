@@ -81,11 +81,11 @@ let fadeStartTimeMs = 0
 
 // simple carousel for header images
 const carouselImages = [
-  'https://steppy-dev.oss-cn-guangzhou.aliyuncs.com/xiezipng/1.png',
-  'https://steppy-dev.oss-cn-guangzhou.aliyuncs.com/xiezipng/2.png',
-  'https://steppy-dev.oss-cn-guangzhou.aliyuncs.com/xiezipng/3.png',
-  'https://steppy-dev.oss-cn-guangzhou.aliyuncs.com/xiezipng/4.png',
-  'https://steppy-dev.oss-cn-guangzhou.aliyuncs.com/xiezipng/5.png'
+  'https://steppy-dev.oss-cn-guangzhou.aliyuncs.com/lotter/xiezi/1.png',
+  'https://steppy-dev.oss-cn-guangzhou.aliyuncs.com/lotter/xiezi/2.png',
+  'https://steppy-dev.oss-cn-guangzhou.aliyuncs.com/lotter/xiezi/3.png',
+  'https://steppy-dev.oss-cn-guangzhou.aliyuncs.com/lotter/xiezi/4.png',
+  'https://steppy-dev.oss-cn-guangzhou.aliyuncs.com/lotter/xiezi/5.png'
 ]
 const currentCarouselIndex = ref(0)
 let carouselTimer: number | null = null
