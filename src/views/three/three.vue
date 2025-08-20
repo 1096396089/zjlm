@@ -651,10 +651,37 @@ const sendData = async () => {
     openId: openIdStore.openId,
     areaA: selectedATexture.value,
     areaB: selectedBTexture.value,
+  };
+
+  // 保证 baseURL 末尾无 /，路径前面有 /
+  const base = (import.meta.env.VITE_APP_API_URL || '').replace(/\/$/, '');
+  const url = `${base}/save-shoe-color`;
+
+  try {
+    const res = await fetch('https://api.liming.chat/api/save-shoe-color', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+      mode: 'cors',         // 默认也是 cors，加上更直观
+      redirect: 'follow',
+    });
+
+    if (!res.ok) {
+      const msg = await res.text().catch(() => '');
+      throw new Error(`HTTP ${res.status} ${res.statusText} ${msg}`);
+    }
+
+    // 如果后端返回 JSON：
+    // const result = await res.json();
+
+    router.push({ path: `/result/${selectedATexture.value}/${selectedBTexture.value}` });
+  } catch (err) {
+    console.error(err);
+    // 可选：用你项目里的消息组件提示
+    // ElMessage.error('网络异常或服务器开小差了');
   }
-  await http.post('/save-shoe-color', data)
-  router.push({ path: `/result/${selectedATexture.value}/${selectedBTexture.value}` })
-}
+};
+
 
 
 // 应用贴图到A mesh
