@@ -356,7 +356,7 @@ const confirmForm = () => {
 }
 
 const confirmSecond = async () => {
-  // await lotteryConfirm()
+  await lotteryConfirm()
   showSecondConfirm.value = false
   step.value = 'qrcode'
 }
@@ -429,7 +429,7 @@ const draw = async () => {
 
 const lotteryConfirm = async () => {
   const res = await http.post('/lottery/confirm', model.value)
-  console.log(res);
+  ElMessage.success('提交成功')
 
 }
 
