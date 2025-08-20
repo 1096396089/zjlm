@@ -103,7 +103,7 @@ function handleButtonClick() {
 
 function frameUrl(index: number): string {
   const frameStr = String(index).padStart(5, '0')
-  return `https://steppy-dev.oss-cn-guangzhou.aliyuncs.com/animition/%E5%BC%80%E5%A4%B4%E5%8A%A8%E7%94%BB_${frameStr}.png`
+  return `https://steppy-dev.oss-cn-guangzhou.aliyuncs.com/lotter/animtion/%E5%BC%80%E5%A4%B4%E5%8A%A8%E7%94%BB/%E5%BC%80%E5%A4%B4%E5%8A%A8%E7%94%BB_${frameStr}.png`
 }
 
 function resizeCanvasToWindow(canvas: HTMLCanvasElement) {
