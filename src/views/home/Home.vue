@@ -6,9 +6,8 @@
         <canvas v-else ref="canvasRef" class="w-full h-full pointer-events-none select-none"></canvas>
       </div>
     </transition>
-    <div class="mt-5 flex  justify-center items-center">
+    <div class="mt-5 flex justify-center items-center">
       <Title />
-      {{ openIdStore.openId }}
     </div>
 
     <div class=" w-full  pt-[2rem] flex justify-center items-center">
@@ -52,10 +51,6 @@ import Title from './title.vue'
 import Info from './info.vue'
 
 
-import { useOpenIdStore } from '@/stores/openId'
-
-const openIdStore = useOpenIdStore()
-
 import jiazaiData from '../../assets/jiazai.json'
 
 const isIntroPlaying = ref(true)
@@ -82,8 +77,6 @@ const bufferedBitmaps: Map<number, ImageBitmap> = new Map()
 const overlayOpacity = ref(1)
 let isFadingOut = false
 let fadeStartTimeMs = 0
-
-
 
 
 // simple carousel for header images
