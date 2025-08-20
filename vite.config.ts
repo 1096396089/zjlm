@@ -42,6 +42,4 @@ export default defineConfig({
     copyPublicDir: true
   },
   // 静态资源处理
-  assetsInclude: ['**/*.png', '**/*.jpg', '**/*.jpeg', '**/*.gif', '**/*.svg', '**/*.gltf', '**/*.glb'],
-  publicDir: 'public'
 })

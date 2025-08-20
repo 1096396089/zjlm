@@ -5,7 +5,6 @@ import { RouterView } from 'vue-router'
 <template>
   <div class="app-container">
 
-
     <!-- 内容区域 -->
     <div class="content-wrapper ">
       <RouterView v-slot="{ Component }">
