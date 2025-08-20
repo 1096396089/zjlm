@@ -61,7 +61,7 @@
         <!-- 加载中占位（显示到最少 2 秒） -->
         <transition name="fade" @after-leave="stopLottie">
           <div v-if="!showThree" class="absolute inset-0 flex flex-col items-center justify-center gap-4 text-black/70">
-            <div ref="lottieBoxRef" class="w-[400px] h-[400px]"></div>
+            <div ref="lottieBoxRef" class="w-[380px] h-[380px]"></div>
             <div>
 
               <svg width="100" height="55" viewBox="0 0 100 55" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -129,7 +129,7 @@
         </transition>
         <!-- 模型：只挂载一个实例，用 v-show 控制可见性（仍可提前触发 loaded） -->
         <transition name="fade">
-          <Three class=" -ml-10" v-show="showThree" @loaded="onThreeLoaded" />
+          <Three class="-ml-10" v-show="showThree" @loaded="onThreeLoaded" />
         </transition>
       </div>
     </div>
@@ -165,7 +165,7 @@
     <div class="pb-10 px-8 z-10  flex items-center justify-center" @click="goToModel" v-show="showThree">
 
       <svg width="178" height="60" viewBox="0 0 148 30" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path
+        <path 
           d="M16.9521 20.2395V11.0884H19.0321C19.798 11.0622 20.5562 11.2485 21.2231 11.6267C21.8156 11.9912 22.2789 12.533 22.5473 13.1756C22.8647 13.9529 23.017 14.7879 22.9945 15.6275C23.0146 16.4747 22.8624 17.3171 22.5473 18.1036C22.2833 18.7558 21.8244 19.3102 21.2335 19.6908C20.5815 20.0755 19.8334 20.2659 19.0772 20.2395H16.9521ZM17.9159 19.3782H18.9559C19.5567 19.4004 20.1508 19.2459 20.6649 18.9337C21.1304 18.6197 21.4847 18.1663 21.6772 17.6383C21.9189 16.9961 22.0365 16.3137 22.0239 15.6275C22.0379 14.9479 21.9202 14.2721 21.6772 13.6375C21.4792 13.1218 21.1253 12.681 20.6649 12.3768C20.1491 12.0693 19.5557 11.9173 18.9559 11.9392H17.9159V19.3782Z"
           fill="black" />
         <path d="M26.0283 20.2371V11.0859H26.9886V20.2371H26.0283Z" fill="black" />

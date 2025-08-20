@@ -24,7 +24,7 @@
             <div class=" absolute top-[16rem]" :class="getOS() == 'iOS' ? 'left-[6rem]' : 'left-[9rem]'"
               style="transform: rotate(2deg)">
               <div v-if="stage === 0">
-                <a_one_q @click="set_q('a', 'a')" />
+                <a_one_q @click="set_q('a', 'a')"  style=" background-color: #fff;"/>
 
 
               </div>

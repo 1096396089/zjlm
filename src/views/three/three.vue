@@ -274,7 +274,7 @@
         <!-- 定制完成按钮 -->
         <div class="absolute z-40 bottom-10 left-1/2 transform -translate-x-1/2 flex justify-center mt-8"
           @click="showConfirm = true">
-          <svg width="164" height="31" viewBox="0 0 124 31" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <svg width="144" height="auto" viewBox="0 0 124 31" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path
               d="M119.806 0.375H4.8047C2.50279 0.375 0.636719 2.24107 0.636719 4.54299V26.0046C0.636719 28.3066 2.50279 30.1726 4.8047 30.1726H119.806C122.108 30.1726 123.974 28.3066 123.974 26.0046V4.54299C123.974 2.24107 122.108 0.375 119.806 0.375Z"
               fill="#F4F1E9" />
