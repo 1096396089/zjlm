@@ -502,8 +502,8 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js'
 import { useOpenIdStore } from '@/stores/openId'
 
-const router = useRouter()
 const openIdStore = useOpenIdStore()
+const router = useRouter()
 import { http } from '@/util/http'
 import { useRouter } from 'vue-router'
 
@@ -692,7 +692,6 @@ const switchToBTexture = (textureName: string) => {
 
 const sendData = async () => {
   const data = {
-    openId: openIdStore.openId,
     areaA: selectedATexture.value,
     areaB: selectedBTexture.value,
   }
