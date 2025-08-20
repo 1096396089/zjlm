@@ -282,7 +282,7 @@
       </div>
 
     </div>
-    <div v-if="a_q != '' && b_q != '' && c_q != ''" class=" absolute bottom-0 right-0 z-40"
+    <div v-if="a_q != '' && b_q != '' && c_q != ''" class=" absolute  right-0 z-40"
     :class="os == 'iOS' ? '-right-[5rem]' : 'bottom-0'"
       @click="router.push({ path: `/wait/${selectedATexture}/${selectedBTexture}` })">
       <svg width="118" height="104" viewBox="0 0 118 104" fill="none" xmlns="http://www.w3.org/2000/svg">
