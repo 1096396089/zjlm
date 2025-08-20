@@ -19,7 +19,7 @@
         />
     </div>
 
-    <div class="  absolute bottom-18  flex flex-col items-center justify-between">
+    <div class="  absolute bottom-20  flex flex-col items-center justify-between">
       <Info class="mt-10"></Info>
       <div class=" mt-8" :class="['button-zoom', { 'is-animating': isButtonAnimating }]" @click="handleButtonClick">
         <svg width="159" height="60" viewBox="0 0 119 30" fill="none" xmlns="http://www.w3.org/2000/svg">
