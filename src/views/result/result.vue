@@ -1,5 +1,5 @@
 <template>
-    <div class=" relative overflow-hidden h-dvh">
+    <div class=" relative overflow-hidden h-screen pt-10">
 
         <div class="px-20 py-8 relative ">
 
