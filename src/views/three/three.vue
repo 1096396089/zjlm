@@ -651,10 +651,21 @@ const sendData = async () => {
     openId: openIdStore.openId,
     areaA: selectedATexture.value,
     areaB: selectedBTexture.value,
-  }
-  await http.post('/save-shoe-color', data)
-  router.push({ path: `/result/${selectedATexture.value}/${selectedBTexture.value}` })
-}
+  };
+
+  await http.post('/save-shoe-color', data, {
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'X-Requested-With': 'XMLHttpRequest', // 可选，小而常见
+      // 'Authorization': `Bearer ${token}`,  // 如需鉴权就打开
+    },
+    timeout: 60000,
+    // withCredentials: true, // 如需跨域携带 Cookie 再打开（同时后端要允许）
+  });
+
+  router.push({ path: `/result/${selectedATexture.value}/${selectedBTexture.value}` });
+};
 
 
 // 应用贴图到A mesh
