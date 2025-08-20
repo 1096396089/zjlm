@@ -1,12 +1,12 @@
 <template>
-  <div class=" relative flex flex-col  h-dvh ios-safe">
+  <div class=" relative flex flex-col  h-screen ios-safe">
     <div class="py-10 px-14">
       <Title />
     </div>
 
     <div class=" relative  w-full flex-1 ">
 
-      <div class=" zaodian relative  z-30 pb-[52rem]   -left-[1.25rem] w-[95%] h-full bg-cover bg-center  rounded-lg "
+        <div class=" zaodian relative  z-30 pb-[52rem]   -left-[1.25rem] w-[95%] h-full bg-cover bg-center  rounded-lg "
         :style="{ backgroundColor: layerColors[0] }" style="transform: rotate(-2deg);  ">
 
         <transition name="dissolve" mode="out-in">
@@ -21,10 +21,8 @@
 
             </div>
 
-            <div 
-            class=" absolute top-[16rem]"
-            :class=" getOS() == 'iOS' ? 'left-[6rem]' : 'left-[9rem]'"
-             style="transform: rotate(2deg)">
+            <div class=" absolute top-[16rem]" :class="getOS() == 'iOS' ? 'left-[6rem]' : 'left-[9rem]'"
+              style="transform: rotate(2deg)">
               <div v-if="stage === 0">
                 <a_one_q @click="set_q('a', 'a')" />
 
@@ -44,8 +42,7 @@
             </div>
 
             <div class=" absolute  top-[20rem]" style="transform: rotate(2deg)"
-            :class=" getOS() == 'iOS' ? 'left-[2.5rem]' : 'left-[5.5rem]'"
-            >
+              :class="getOS() == 'iOS' ? 'left-[2.5rem]' : 'left-[5.5rem]'">
               <div v-if="stage === 0">
                 <a_tow_q @click="set_q('b', 'a')" />
 
@@ -66,10 +63,9 @@
 
             </div>
 
-            <div class=" absolute top-[24rem]"
-             :class=" getOS() == 'iOS' ? 'left-[6rem]' : 'left-[9rem]'"
-             style="transform: rotate(2deg)">
-              
+            <div class=" absolute top-[24rem]" :class="getOS() == 'iOS' ? 'left-[6rem]' : 'left-[9rem]'"
+              style="transform: rotate(2deg)">
+
               <div v-if="stage === 0">
 
                 <a_three_q @click="set_q('c', 'a')" />
@@ -92,9 +88,8 @@
 
             </div>
 
-            <div class="absolute  top-[28rem]"
-             :class=" getOS() == 'iOS' ? 'left-[2.5rem]' : 'left-[5.5rem]'"
-            style=" transform: rotate(2deg)">
+            <div class="absolute  top-[28rem]" :class="getOS() == 'iOS' ? 'left-[2.5rem]' : 'left-[5.5rem]'"
+              style=" transform: rotate(2deg)">
               <div v-if="stage === 0">
                 <a_four_q @click="set_q('d', 'a')" />
 
@@ -113,10 +108,8 @@
 
             </div>
 
-            <div class=" absolute  top-[32rem]"
-             :class=" getOS() == 'iOS' ? 'left-[6rem]' : 'left-[9rem]'"
-            
-            style="transform: rotate(2deg)">
+            <div class=" absolute  top-[32rem]" :class="getOS() == 'iOS' ? 'left-[6rem]' : 'left-[9rem]'"
+              style="transform: rotate(2deg)">
               <div v-if="stage === 0">
                 <a_five_q @click="set_q('e', 'a')" />
 
@@ -282,8 +275,8 @@
       </div>
 
     </div>
-    <div v-if="a_q != '' && b_q != '' && c_q != ''" class=" absolute  right-0 z-40"
-    :class="os == 'iOS' ? '-bottom-[5rem]' : 'bottom-0'"
+    <div v-if="a_q != '' && b_q != '' && c_q != ''" class=" absolute  right-0 z-[200]"
+      :class="os == 'iOS' ? '-bottom-[5rem]' : 'bottom-0'"
       @click="router.push({ path: `/wait/${selectedATexture}/${selectedBTexture}` })">
       <svg width="118" height="104" viewBox="0 0 118 104" fill="none" xmlns="http://www.w3.org/2000/svg">
         <mask id="mask0_1112_305" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="118"
