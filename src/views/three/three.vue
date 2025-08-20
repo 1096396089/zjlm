@@ -651,7 +651,7 @@ const sendData = async () => {
     areaA: selectedATexture.value,
     areaB: selectedBTexture.value,
   }
-  // await http.post('/save-shoe-color', data)
+  await http.post('/save-shoe-color', data)
   router.push({ path: `/result/${selectedATexture.value}/${selectedBTexture.value}` })
 }
 
