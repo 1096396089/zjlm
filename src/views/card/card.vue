@@ -43,7 +43,7 @@
 
             </div>
 
-            <div class=" absolute  top-[18rem]" style="transform: rotate(2deg)"
+            <div class=" absolute  top-[20rem]" style="transform: rotate(2deg)"
             :class=" getOS() == 'iOS' ? 'left-[2.5rem]' : 'left-[5.5rem]'"
             >
               <div v-if="stage === 0">
@@ -66,7 +66,7 @@
 
             </div>
 
-            <div class=" absolute top-[22rem]"
+            <div class=" absolute top-[24rem]"
              :class=" getOS() == 'iOS' ? 'left-[6rem]' : 'left-[9rem]'"
              style="transform: rotate(2deg)">
               
@@ -92,7 +92,7 @@
 
             </div>
 
-            <div class="absolute  top-[26rem]"
+            <div class="absolute  top-[28rem]"
              :class=" getOS() == 'iOS' ? 'left-[2.5rem]' : 'left-[5.5rem]'"
             style=" transform: rotate(2deg)">
               <div v-if="stage === 0">
@@ -113,7 +113,7 @@
 
             </div>
 
-            <div class=" absolute left-[6rem] top-[30rem]"
+            <div class=" absolute  top-[32rem]"
              :class=" getOS() == 'iOS' ? 'left-[6rem]' : 'left-[9rem]'"
             
             style="transform: rotate(2deg)">
@@ -282,7 +282,7 @@
       </div>
 
     </div>
-    <div v-if="a_q != '' && b_q != '' && c_q != ''" class="  absolute bottom-0 right-0 z-40"
+    <div v-if="a_q != '' && b_q != '' && c_q != ''" class=" absolute bottom-0 right-0 z-40"
       @click="router.push({ path: `/wait/${selectedATexture}/${selectedBTexture}` })">
       <svg width="118" height="104" viewBox="0 0 118 104" fill="none" xmlns="http://www.w3.org/2000/svg">
         <mask id="mask0_1112_305" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="118"
