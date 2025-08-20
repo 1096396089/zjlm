@@ -8,7 +8,7 @@ const gltfPromiseCache: Map<string, Promise<GLTF>> = new Map()
 const gltfResolvedCache: Map<string, GLTF> = new Map()
 
 // Global OSS base for static textures/models
-const OSS_BASE = 'https://steppy-dev.oss-cn-guangzhou.aliyuncs.com/'
+const OSS_BASE = 'https://steppy-dev.oss-cn-guangzhou.aliyuncs.com/lotter/'
 
 // Normalize any project-relative path to the OSS CDN
 const resolveToOSS = (url: string): string => {

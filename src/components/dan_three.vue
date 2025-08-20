@@ -44,7 +44,7 @@ const getTexturePath = (area: 'A' | 'B', filename: string): string => {
   }
   // 确保带扩展名
   const finalName = filename.toLowerCase().endsWith('.png') ? filename : `${filename}.png`
-  const base = 'https://steppy-dev.oss-cn-guangzhou.aliyuncs.com'
+  const base = 'https://steppy-dev.oss-cn-guangzhou.aliyuncs.com/lotter'
   return `${base}/tietu/${area}/${finalName}`
 }
 

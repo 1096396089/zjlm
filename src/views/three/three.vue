@@ -465,7 +465,7 @@ import { useRouter } from 'vue-router'
 
 // 基础路径适配（改为使用 OSS 加速）
 const withBase = (path: string): string => {
-  const base = 'https://steppy-dev.oss-cn-guangzhou.aliyuncs.com'
+  const base = 'https://steppy-dev.oss-cn-guangzhou.aliyuncs.com/lotter'
   const cleaned = path.replace(/^\/+/, '')
   return `${base}/${cleaned}`
 }

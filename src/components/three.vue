@@ -298,7 +298,7 @@ import { getClonedGLTF } from '@/util/gltfCache'
   
   // 环境检测和路径适配工具
   const getTexturePath = (folder: 'A' | 'B', filename: string): string => {
-    const base = 'https://steppy-dev.oss-cn-guangzhou.aliyuncs.com'
+    const base = 'https://steppy-dev.oss-cn-guangzhou.aliyuncs.com/lotter'
     return `${base}/tietu/${folder}/${filename}`
   }
   

@@ -285,7 +285,7 @@
       </div>
 
     </div>
-    <div v-if="stage == 2" class=" absolute  bottom-0 right-0 z-[200]"
+    <div v-if=" a_q !='' && b_q !='' && c_q !=''" class=" absolute  bottom-0 right-0 z-[200]"
       @click="router.push({ path: `/wait/${selectedATexture}/${selectedBTexture}` })">
       <svg width="118" height="104" viewBox="0 0 118 104" fill="none" xmlns="http://www.w3.org/2000/svg">
         <mask id="mask0_1112_305" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="118"
