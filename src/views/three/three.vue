@@ -965,6 +965,8 @@ const loadShoeModel = async () => {
     // 设置模型属性 - 放大3倍
     shoeModel.scale.set(11, 11, 11)
     shoeModel.position.set(0, 0, 0)
+    // 初始Y轴旋转90°
+    shoeModel.rotation.y = Math.PI / 2
 
     // 遍历模型，设置材质和阴影
     let meshIndex = 0
