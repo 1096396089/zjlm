@@ -648,7 +648,6 @@ const switchToBTexture = (textureName: string) => {
 
 const sendData = async () => {
   const data = {
-    openId: openIdStore.openId,
     areaA: selectedATexture.value,
     areaB: selectedBTexture.value,
   }
