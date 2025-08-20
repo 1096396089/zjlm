@@ -22,7 +22,7 @@
             </div>
 
             <div 
-            class=" absolute top-[14rem]"
+            class=" absolute top-[16rem]"
             :class=" getOS() == 'iOS' ? 'left-[6rem]' : 'left-[9rem]'"
              style="transform: rotate(2deg)">
               <div v-if="stage === 0">
