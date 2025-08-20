@@ -2,7 +2,7 @@
   <div class="p-4  relative  h-screen  flex flex-col items-center">
     <transition name="fade">
       <div v-if="isIntroPlaying" class="fixed inset-0 z-50 flex items-center justify-center bg-white" :style="{ opacity: overlayOpacity }">
-        <div v-if="isLoadingIntro" ref="lottieRef" class="w-[380px] h-[380px]"></div>
+        <div v-if="isLoadingIntro" ref="lottieRef" class="w-[340px] h-[340px]"></div>
         <canvas v-else ref="canvasRef" class="w-full h-full pointer-events-none select-none"></canvas>
       </div>
     </transition>
