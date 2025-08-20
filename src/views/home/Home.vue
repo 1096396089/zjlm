@@ -10,7 +10,7 @@
       <Title />
     </div>
 
-    <div class=" w-full  pt-[5rem] flex justify-center items-center">
+    <div class=" w-full  pt-[4rem] flex justify-center items-center">
         <img
           class=" w-[90%] block select-none img-smooth"
           :src="carouselImages[currentCarouselIndex]"
@@ -19,7 +19,7 @@
         />
     </div>
 
-    <div class="  absolute bottom-16  flex flex-col items-center justify-between">
+    <div class="  absolute bottom-18  flex flex-col items-center justify-between">
       <Info class="mt-10"></Info>
       <div class=" mt-8" :class="['button-zoom', { 'is-animating': isButtonAnimating }]" @click="handleButtonClick">
         <svg width="159" height="60" viewBox="0 0 119 30" fill="none" xmlns="http://www.w3.org/2000/svg">
