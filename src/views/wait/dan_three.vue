@@ -125,7 +125,12 @@ const applyTextureToArea = async (area: 'A' | 'B', filename: string) => {
 }
 
 // 关键词匹配贴图（用于 logo/xiedi/xian/xian2/xiedian 等初始贴图）
-const applyTextureToMeshesByKeywords = async (keywords: string[], texturePath: string) => {
+// 默认使用“精确匹配”，避免例如“xiedi”误命中“xiedian”导致首屏贴图错乱
+const applyTextureToMeshesByKeywords = async (
+  keywords: string[],
+  texturePath: string,
+  opts: { match?: 'exact' | 'includes' } = {}
+) => {
   if (!shoeModel) return
   const tryApply = (texture: THREE.Texture) => {
     // @ts-ignore
@@ -137,6 +142,11 @@ const applyTextureToMeshesByKeywords = async (keywords: string[], texturePath: s
     texture.flipY = false
 
     const lowers = keywords.map(k => k.trim().toLowerCase()).filter(Boolean)
+    const matchMode = opts.match || 'exact'
+    const isMatch = (name: string, keyword: string) => {
+      if (!name || !keyword) return false
+      return matchMode === 'includes' ? name.includes(keyword) : name === keyword
+    }
     shoeModel!.traverse((child) => {
       if (child instanceof THREE.Mesh) {
         const meshName = (child.name || '').trim()
@@ -150,7 +160,7 @@ const applyTextureToMeshesByKeywords = async (keywords: string[], texturePath: s
         }
 
         const matched = lowers.some(k =>
-          meshLower.includes(k) || parentNames.some(n => n.includes(k))
+          isMatch(meshLower, k) || parentNames.some(n => isMatch(n, k))
         )
 
         if (matched) {
@@ -196,12 +206,14 @@ const applyTextureToMeshesByKeywords = async (keywords: string[], texturePath: s
 
 // 应用默认贴图：AB + public 根目录的 xiedai/xiedi/xian/xian2/xiedian
 const applyInitialDefaultTextures = async () => {
-  const tasks: Promise<void>[] = []
+  // A/B 可并行
+  await Promise.all([
+    applyTextureToArea('A', aParam.value),
+    applyTextureToArea('B', bParam.value),
+  ])
 
-  // 根据当前参数应用 A/B 默认
-  tasks.push(applyTextureToArea('A', aParam.value))
-  tasks.push(applyTextureToArea('B', bParam.value))
-
+  // 其它关键词贴图顺序化，避免首次加载时多个异步竞态“最后完成者覆盖”的不稳定现象
+  // 同时使用精确匹配，杜绝“xiedi”误命中“xiedian”
   const publicDefaults: Array<{ keywords: string[]; path: string }> = [
     { path: withBase('tietu/xiedai.png'), keywords: ['xiedai'] },
     { path: withBase('tietu/xiedi.png'), keywords: ['xiedi', 'logoai'] },
@@ -210,16 +222,14 @@ const applyInitialDefaultTextures = async () => {
     { path: withBase('tietu/xiedian.png'), keywords: ['xiedian'] },
   ]
 
-  publicDefaults.forEach(({ keywords, path }) => {
-    tasks.push(applyTextureToMeshesByKeywords(keywords, path))
-  })
+  for (const { keywords, path } of publicDefaults) {
+    await applyTextureToMeshesByKeywords(keywords, path, { match: 'exact' })
+  }
 
-  // 兜底精确名称
-  tasks.push(applyTextureToMeshesByKeywords(['xiedai'], withBase('tietu/xiedai.png')))
-  tasks.push(applyTextureToMeshesByKeywords(['xian'], withBase('tietu/xian.png')))
-  tasks.push(applyTextureToMeshesByKeywords(['xiedian'], withBase('tietu/xiedian.png')))
-
-  await Promise.all(tasks)
+  // 兜底精确名称（顺序同样固定）
+  await applyTextureToMeshesByKeywords(['xiedai'], withBase('tietu/xiedai.png'), { match: 'exact' })
+  await applyTextureToMeshesByKeywords(['xian'], withBase('tietu/xian.png'), { match: 'exact' })
+  await applyTextureToMeshesByKeywords(['xiedian'], withBase('tietu/xiedian.png'), { match: 'exact' })
 }
 
 const init = () => {
