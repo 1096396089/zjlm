@@ -209,7 +209,7 @@
 
 
         </div>
-        <div class=" w-full absolute bottom-6 flex flex-col items-center justify-center">
+        <div class=" w-full absolute bottom-2 flex flex-col items-center justify-center">
 
             <div class="">
                 <component :is="randomCard" class=" p-12" ></component>
