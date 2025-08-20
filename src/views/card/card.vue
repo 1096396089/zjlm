@@ -24,36 +24,37 @@
             <div class=" absolute top-[16rem]" :class="getOS() == 'iOS' ? 'left-[6rem]' : 'left-[9rem]'"
               style="transform: rotate(2deg)">
               <div v-if="stage === 0">
-                <a_one_q @click="set_q('a', 'a')"  style=" background-color: #fff;"/>
-
-
+                <a_one_q_a v-if="a_q =='a'" />
+                <a_one_q @click="set_q('a', 'a')" v-else />
               </div>
               <div v-else-if="stage === 1">
-                <b_one_q @click="set_q('a', 'b')" />
+                <b_one_q_a v-if="b_q =='a'" />
+                <b_one_q @click="set_q('a', 'b')" v-else />
 
               </div>
               <div v-else>
-                <c_one_q @click="set_q('a', 'c')" />
-
+                <c_one_q_a v-if="c_q =='a'" />
+                <c_one_q @click="set_q('a', 'c')" v-else />
               </div>
-
-
 
             </div>
 
             <div class=" absolute  top-[20rem]" style="transform: rotate(2deg)"
               :class="getOS() == 'iOS' ? 'left-[2.5rem]' : 'left-[5.5rem]'">
               <div v-if="stage === 0">
-                <a_tow_q @click="set_q('b', 'a')" />
+                <a_tow_q_a v-if="a_q =='b'" />
+                <a_tow_q @click="set_q('b', 'a')" v-else />
 
               </div>
               <div v-else-if="stage === 1">
-                <b_tow_q @click="set_q('b', 'b')" />
+                <b_tow_q_a v-if="b_q =='b'" />
+                <b_tow_q @click="set_q('b', 'b')" v-else />
 
               </div>
               <div v-else>
+                <c_tow_q_a v-if="c_q =='b'" />
+                <c_tow_q @click="set_q('b', 'c')" v-else />
 
-                <c_tow_q @click="set_q('b', 'c')" />
 
               </div>
 
@@ -68,20 +69,23 @@
 
               <div v-if="stage === 0">
 
-                <a_three_q @click="set_q('c', 'a')" />
+                <a_three_q_a v-if="a_q =='c'" />
+                <a_three_q @click="set_q('c', 'a')" v-else />
 
 
 
               </div>
 
               <div v-else-if="stage === 1">
-                <b_three_q @click="set_q('c', 'b')" />
+                <b_three_q_a v-if="b_q =='c'" />
+                <b_three_q @click="set_q('c', 'b')" v-else />
 
 
               </div>
 
               <div v-else>
-                <c_three_q @click="set_q('c', 'c')" />
+                <c_three_q_a v-if="c_q =='c'" />
+                <c_three_q @click="set_q('c', 'c')" v-else />
 
               </div>
 
@@ -91,15 +95,18 @@
             <div class="absolute  top-[28rem]" :class="getOS() == 'iOS' ? 'left-[2.5rem]' : 'left-[5.5rem]'"
               style=" transform: rotate(2deg)">
               <div v-if="stage === 0">
-                <a_four_q @click="set_q('d', 'a')" />
+                <a_four_q_a v-if="a_q =='d'" />
+                <a_four_q @click="set_q('d', 'a')" v-else />
 
               </div>
               <div v-else-if="stage === 1">
-                <b_four_q @click="set_q('d', 'b')" />
+                <b_four_q_a v-if="b_q =='d'" />
+                <b_four_q @click="set_q('d', 'b')" v-else />
 
               </div>
               <div v-else>
-                <c_four_q @click="set_q('d', 'c')" />
+                <c_four_q_a v-if="c_q =='d'" />
+                <c_four_q @click="set_q('d', 'c')" v-else />
 
               </div>
 
@@ -111,15 +118,18 @@
             <div class=" absolute  top-[32rem]" :class="getOS() == 'iOS' ? 'left-[6rem]' : 'left-[9rem]'"
               style="transform: rotate(2deg)">
               <div v-if="stage === 0">
-                <a_five_q @click="set_q('e', 'a')" />
+                <a_five_q_a v-if="a_q =='e'" />
+                <a_five_q @click="set_q('e', 'a')" v-else />
 
               </div>
               <div v-else-if="stage === 1">
-                <b_five_q @click="set_q('e', 'b')" />
+                <b_five_q_a v-if="b_q =='e'" />
+                <b_five_q @click="set_q('e', 'b')" v-else />
 
               </div>
               <div v-else>
-                <c_five_q @click="set_q('e', 'c')" />
+                  <c_five_q_a v-if="c_q =='e'" />
+                <c_five_q @click="set_q('e', 'c')" v-else />
 
               </div>
 
@@ -337,6 +347,34 @@ import c_tow_q from './three/two.vue'
 import c_three_q from './three/three.vue'
 import c_four_q from './three/four.vue'
 import c_five_q from './three/five.vue'
+
+
+
+import a_one_q_a from './one_a/one.vue'
+import a_tow_q_a from './one_a/two.vue'
+import a_three_q_a from './one_a/three.vue'
+import a_four_q_a from './one_a/four.vue'
+import a_five_q_a from './one_a/five.vue'
+
+
+import b_one_q_a from './tow_a/one.vue'
+import b_tow_q_a from './tow_a/two.vue'
+import b_three_q_a from './tow_a/three.vue'
+import b_four_q_a from './tow_a/four.vue'
+import b_five_q_a from './tow_a/five.vue'
+
+
+import c_one_q_a from './three_a/one.vue'
+import c_tow_q_a from './three_a/two.vue'
+import c_three_q_a from './three_a/three.vue'
+import c_four_q_a from './three_a/four.vue'
+import c_five_q_a from './three_a/five.vue'
+
+
+
+
+
+
 
 const aTextureNames = ['A1.png', 'A2.png', 'A3.png', 'A4.png', 'A5.png', 'A6.png']
 const bTextureNames = ['B2.png', 'B1.png', 'B3.png', 'B4.png', 'B5.png', 'B6.png']
