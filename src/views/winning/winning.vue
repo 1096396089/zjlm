@@ -17,7 +17,7 @@
     </div>
 
 
-    <div class=" pt-16 flex justify-center ">
+    <div class=" pt-5 flex justify-center ">
       <svg v-if="model.prizeLevel != 3" width="151" height="auto" viewBox="0 0 121 31" fill="none"
         xmlns="http://www.w3.org/2000/svg" @click="openDialog" @keydown.enter.prevent="openDialog"
         @keydown.space.prevent="openDialog">
