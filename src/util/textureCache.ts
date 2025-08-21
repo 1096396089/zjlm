@@ -10,28 +10,36 @@ type TextureConfig = {
   setSRGB?: boolean
 }
 
-// Global OSS base for static textures/models
-const OSS_BASE = 'https://steppy-dev.oss-cn-guangzhou.aliyuncs.com/lotter/'
+// Global OSS bases (new first, then fallback old)
+const NEW_OSS_BASE = 'https://tc-weshop.oss-cn-beijing.aliyuncs.com/lotter/'
+const OLD_OSS_BASE = 'https://steppy-dev.oss-cn-guangzhou.aliyuncs.com/lotter/'
 
-// Normalize any project-relative path to the OSS CDN
-const resolveToOSS = (url: string): string => {
-  if (!url) return url
+// Build candidate URLs for a given url or path, preferring the NEW domain and falling back to OLD
+const resolveOssCandidates = (url: string): string[] => {
+  if (!url) return []
   const trimmed = url.trim()
-  if (/^https?:\/\//i.test(trimmed)) return trimmed
 
-  // In dev, allow '/oss/...' to pass-through without duplication
-  // Always use OSS directly per requirement
+  // absolute url → return [new-equivalent, original-if-old]
+  if (/^https?:\/\//i.test(trimmed)) {
+    // if already new-domain, add old-domain fallback
+    if (trimmed.startsWith(NEW_OSS_BASE)) {
+      return [trimmed, trimmed.replace(NEW_OSS_BASE, OLD_OSS_BASE)]
+    }
+    // if old-domain absolute, prefer new first then old
+    if (trimmed.startsWith(OLD_OSS_BASE)) {
+      return [trimmed.replace(OLD_OSS_BASE, NEW_OSS_BASE), trimmed]
+    }
+    return [trimmed]
+  }
 
-  // Remove leading './' or '/'
+  // relative path → try new then old
   const withoutLeading = trimmed.replace(/^\.\/+/, '').replace(/^\/+/, '')
 
   // If the path contains 'tietu/', keep from there to preserve folder structure
   const idx = withoutLeading.indexOf('tietu/')
   const relative = idx >= 0 ? withoutLeading.slice(idx) : withoutLeading
 
-  // No dev proxy; keep absolute OSS only
-
-  return OSS_BASE + relative
+  return [NEW_OSS_BASE + relative, OLD_OSS_BASE + relative]
 }
 
 const defaultConfig: Required<TextureConfig> = {
@@ -45,7 +53,19 @@ const defaultConfig: Required<TextureConfig> = {
 
 let sharedTextureLoader: THREE.TextureLoader | null = null
 const getLoader = (): THREE.TextureLoader => {
-  if (!sharedTextureLoader) sharedTextureLoader = new THREE.TextureLoader()
+  if (!sharedTextureLoader) {
+    sharedTextureLoader = new THREE.TextureLoader()
+    // Ensure cross-origin images are allowed if server returns proper CORS headers
+    // @ts-ignore
+    if (typeof (sharedTextureLoader as any).setCrossOrigin === 'function') {
+      ;(sharedTextureLoader as any).setCrossOrigin('anonymous')
+    } else {
+      // Fallback: set on the loader's internal image element factory (best-effort)
+      try {
+        (THREE as any).LoaderUtils && ((THREE as any).LoaderUtils.crossOrigin = 'anonymous')
+      } catch {}
+    }
+  }
   return sharedTextureLoader
 }
 
@@ -67,22 +87,39 @@ const applyTextureConfig = (texture: THREE.Texture, cfg?: TextureConfig) => {
 export const loadTextureCached = (url: string, cfg?: TextureConfig): Promise<THREE.Texture> => {
   // 空 URL 直接拒绝，避免 404 泛滥
   if (!url) return Promise.reject(new Error('Empty texture url'))
-  const ossUrl = resolveToOSS(url)
-  if (textureResolvedCache.has(ossUrl)) {
-    const t = textureResolvedCache.get(ossUrl) as THREE.Texture
-    applyTextureConfig(t, cfg)
-    return Promise.resolve(t)
+  const candidates = resolveOssCandidates(url)
+
+  // return from cache if any candidate already cached
+  for (const c of candidates) {
+    if (textureResolvedCache.has(c)) {
+      const t = textureResolvedCache.get(c) as THREE.Texture
+      applyTextureConfig(t, cfg)
+      return Promise.resolve(t)
+    }
+    if (texturePromiseCache.has(c)) {
+      return texturePromiseCache.get(c) as Promise<THREE.Texture>
+    }
   }
-  if (texturePromiseCache.has(ossUrl)) {
-    return texturePromiseCache.get(ossUrl) as Promise<THREE.Texture>
-  }
+
   const loader = getLoader()
-  const p = loader.loadAsync(ossUrl).then((tex) => {
-    applyTextureConfig(tex, cfg)
-    textureResolvedCache.set(ossUrl, tex)
-    return tex
-  })
-  texturePromiseCache.set(ossUrl, p)
+  const attempt = async (): Promise<THREE.Texture> => {
+    let lastErr: unknown = null
+    for (const c of candidates) {
+      try {
+        const tex = await loader.loadAsync(c)
+        applyTextureConfig(tex, cfg)
+        textureResolvedCache.set(c, tex)
+        return tex
+      } catch (e) {
+        lastErr = e
+      }
+    }
+    throw lastErr || new Error('Failed to load texture from all candidates')
+  }
+
+  const key = candidates[0]
+  const p = attempt()
+  texturePromiseCache.set(key, p)
   return p
 }
 

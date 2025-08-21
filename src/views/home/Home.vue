@@ -79,14 +79,33 @@ let isFadingOut = false
 let fadeStartTimeMs = 0
 
 
-// simple carousel for header images
-const carouselImages = [
-  'https://steppy-dev.oss-cn-guangzhou.aliyuncs.com/lotter/xiezi/1.png',
-  'https://steppy-dev.oss-cn-guangzhou.aliyuncs.com/lotter/xiezi/2.png',
-  'https://steppy-dev.oss-cn-guangzhou.aliyuncs.com/lotter/xiezi/3.png',
-  'https://steppy-dev.oss-cn-guangzhou.aliyuncs.com/lotter/xiezi/4.png',
-  'https://steppy-dev.oss-cn-guangzhou.aliyuncs.com/lotter/xiezi/5.png'
-]
+// OSS base and helpers with fallback
+const NEW_OSS_BASE = 'https://tc-weshop.oss-cn-beijing.aliyuncs.com/lotter'
+const OLD_OSS_BASE = 'https://steppy-dev.oss-cn-guangzhou.aliyuncs.com/lotter'
+const buildOssCandidates = (relative: string): string[] => {
+  const clean = relative.replace(/^\/+/, '')
+  return [
+    `${NEW_OSS_BASE}/${clean}`,
+    `${OLD_OSS_BASE}/${clean}`,
+  ]
+}
+const pickFirstReachable = async (urls: string[]): Promise<string> => {
+  // Use Image probe to avoid CORS blocking fetch
+  const probe = (u: string) => new Promise<boolean>((resolve) => {
+    const img = new Image()
+    img.crossOrigin = 'anonymous'
+    img.onload = () => resolve(true)
+    img.onerror = () => resolve(false)
+    img.src = u
+  })
+  for (const u of urls) {
+    if (await probe(u)) return u
+  }
+  return urls[0]
+}
+
+// simple carousel for header images (resolved on mount)
+const carouselImages = ref<string[]>([])
 const currentCarouselIndex = ref(0)
 let carouselTimer: number | null = null
 
@@ -101,9 +120,16 @@ function handleButtonClick() {
   }, 200)
 }
 
-function frameUrl(index: number): string {
-  const frameStr = String(index).padStart(5, '0')
-  return `https://steppy-dev.oss-cn-guangzhou.aliyuncs.com/lotter/animtion/%E5%BC%80%E5%A4%B4%E5%8A%A8%E7%94%BB/%E5%BC%80%E5%A4%B4%E5%8A%A8%E7%94%BB_${frameStr}.png`
+function frameCandidates(index: number): string[] {
+  // 仅在 animtion 目录下，无中文路径/前缀；兼容 0 基和 1 基编号
+  const s0 = String(index).padStart(5, '0')
+  const s1 = String(index + 1).padStart(5, '0')
+  const relatives = [
+    `animtion/${s0}.png`,
+    `animtion/${s1}.png`,
+  ]
+  const urls = relatives.flatMap((r) => buildOssCandidates(r))
+  return Array.from(new Set(urls))
 }
 
 function resizeCanvasToWindow(canvas: HTMLCanvasElement) {
@@ -118,20 +144,28 @@ function resizeCanvasToWindow(canvas: HTMLCanvasElement) {
   canvas.style.height = height + 'px'
 }
 
-function loadImage(src: string): Promise<HTMLImageElement> {
+function loadImageFromCandidates(candidates: string[]): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
-    const image = new Image()
-    image.crossOrigin = 'anonymous'
-    image.src = src
-    const done = () => resolve(image)
-    image.onload = () => {
-      if (typeof (image as any).decode === 'function') {
-        ;(image as any).decode().then(done).catch(done)
-      } else {
-        done()
+    const tryNext = (idx: number) => {
+      if (idx >= candidates.length) {
+        reject(new Error('All image candidates failed'))
+        return
       }
+      const src = candidates[idx]
+      const image = new Image()
+      image.crossOrigin = 'anonymous'
+      image.src = src
+      const done = () => resolve(image)
+      image.onload = () => {
+        if (typeof (image as any).decode === 'function') {
+          ;(image as any).decode().then(done).catch(done)
+        } else {
+          done()
+        }
+      }
+      image.onerror = () => tryNext(idx + 1)
     }
-    image.onerror = reject
+    tryNext(0)
   })
 }
 
@@ -162,7 +196,7 @@ async function preloadAllFramesBitmaps() {
       while (inFlight < maxConcurrency && nextIndex < totalFrames) {
         const index = nextIndex++
         inFlight += 1
-        loadImage(frameUrl(index))
+        loadImageFromCandidates(frameCandidates(index))
           .then(async (img) => {
             if (!crop) {
               const iw = img.naturalWidth || img.width
@@ -275,11 +309,18 @@ onMounted(async () => {
     })
   }
 
-  // start carousel
+  // resolve carousel images with fallback, then start carousel
+  carouselImages.value = await Promise.all([
+    pickFirstReachable(buildOssCandidates('xiezi/1.png')),
+    pickFirstReachable(buildOssCandidates('xiezi/2.png')),
+    pickFirstReachable(buildOssCandidates('xiezi/3.png')),
+    pickFirstReachable(buildOssCandidates('xiezi/4.png')),
+    pickFirstReachable(buildOssCandidates('xiezi/5.png')),
+  ])
   if (!carouselTimer) {
     // Preload carousel images to avoid decode jank during swap (not awaited)
     ;(() => {
-      carouselImages.forEach((src) => {
+      carouselImages.value.forEach((src: string) => {
         const img = new Image()
         try {
           img.decoding = 'async'
@@ -289,7 +330,7 @@ onMounted(async () => {
       })
     })()
     carouselTimer = window.setInterval(() => {
-      currentCarouselIndex.value = (currentCarouselIndex.value + 1) % carouselImages.length
+      currentCarouselIndex.value = (currentCarouselIndex.value + 1) % carouselImages.value.length
     }, 2000)
   }
 

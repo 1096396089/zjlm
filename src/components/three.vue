@@ -297,9 +297,10 @@ import { getClonedGLTF } from '@/util/gltfCache'
   import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js'
   
   // 环境检测和路径适配工具
+  const NEW_OSS_BASE = 'https://tc-weshop.oss-cn-beijing.aliyuncs.com/lotter'
+  const OLD_OSS_BASE = 'https://steppy-dev.oss-cn-guangzhou.aliyuncs.com/lotter'
   const getTexturePath = (folder: 'A' | 'B', filename: string): string => {
-    const base = 'https://steppy-dev.oss-cn-guangzhou.aliyuncs.com/lotter'
-    return `${base}/tietu/${folder}/${filename}`
+    return `${NEW_OSS_BASE}/tietu/${folder}/${filename}`
   }
   
   // 响应式数据
@@ -581,10 +582,11 @@ import { getClonedGLTF } from '@/util/gltfCache'
     // 定义多个可能的路径
     const fileName = texturePath.split('/').pop()!
     const possiblePaths = [
-      texturePath, // 主路径
-      `/assets/tietu/A/${fileName}`, // 备用路径1
-      `./tietu/A/${fileName}`, // 备用路径2
-      `./src/assets/tietu/A/${fileName}` // 备用路径3
+      texturePath, // 新 OSS 主路径
+      `${texturePath}`.replace('tc-weshop.oss-cn-beijing.aliyuncs.com', 'steppy-dev.oss-cn-guangzhou.aliyuncs.com'), // 旧 OSS 兜底
+      `/assets/tietu/A/${fileName}`, // 本地资源兜底1
+      `./tietu/A/${fileName}`, // 本地资源兜底2
+      `./src/assets/tietu/A/${fileName}` // 本地资源兜底3
     ]
     
     const mainPath = possiblePaths.shift()!
@@ -685,10 +687,11 @@ import { getClonedGLTF } from '@/util/gltfCache'
     // 定义多个可能的路径
     const fileName = texturePath.split('/').pop()!
     const possiblePaths = [
-      texturePath, // 主路径
-      `/assets/tietu/B/${fileName}`, // 备用路径1
-      `./tietu/B/${fileName}`, // 备用路径2
-      `./src/assets/tietu/B/${fileName}` // 备用路径3
+      texturePath, // 新 OSS 主路径
+      `${texturePath}`.replace('tc-weshop.oss-cn-beijing.aliyuncs.com', 'steppy-dev.oss-cn-guangzhou.aliyuncs.com'), // 旧 OSS 兜底
+      `/assets/tietu/B/${fileName}`, // 本地资源兜底1
+      `./tietu/B/${fileName}`, // 本地资源兜底2
+      `./src/assets/tietu/B/${fileName}` // 本地资源兜底3
     ]
     
     const mainPath = possiblePaths.shift()!

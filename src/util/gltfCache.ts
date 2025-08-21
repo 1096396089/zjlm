@@ -7,24 +7,21 @@ import { clone as skeletonClone } from 'three/examples/jsm/utils/SkeletonUtils.j
 const gltfPromiseCache: Map<string, Promise<GLTF>> = new Map()
 const gltfResolvedCache: Map<string, GLTF> = new Map()
 
-// Global OSS base for static textures/models
-const OSS_BASE = 'https://steppy-dev.oss-cn-guangzhou.aliyuncs.com/lotter/'
+// Global OSS bases (new first, then fallback old)
+const NEW_OSS_BASE = 'https://tc-weshop.oss-cn-beijing.aliyuncs.com/lotter/'
+const OLD_OSS_BASE = 'https://steppy-dev.oss-cn-guangzhou.aliyuncs.com/lotter/'
 
-// Normalize any project-relative path to the OSS CDN
-const resolveToOSS = (url: string): string => {
-  if (!url) return url
+// Build candidate URLs for a given GLTF path/URL; prefer NEW domain then OLD
+const resolveOssCandidates = (url: string): string[] => {
+  if (!url) return []
   const trimmed = url.trim()
-  if (/^https?:\/\//i.test(trimmed)) return trimmed
-
-  // In dev, allow '/oss/...' to pass-through without duplication
-  // Always use OSS directly per requirement
-
-  // Remove leading './' or '/'
+  if (/^https?:\/\//i.test(trimmed)) {
+    if (trimmed.startsWith(NEW_OSS_BASE)) return [trimmed, trimmed.replace(NEW_OSS_BASE, OLD_OSS_BASE)]
+    if (trimmed.startsWith(OLD_OSS_BASE)) return [trimmed.replace(OLD_OSS_BASE, NEW_OSS_BASE), trimmed]
+    return [trimmed]
+  }
   const withoutLeading = trimmed.replace(/^\.\/+/, '').replace(/^\/+/, '')
-
-  // No dev proxy; keep absolute OSS only
-
-  return OSS_BASE + withoutLeading
+  return [NEW_OSS_BASE + withoutLeading, OLD_OSS_BASE + withoutLeading]
 }
 
 let sharedLoader: GLTFLoader | null = null
@@ -39,19 +36,28 @@ const getLoader = (): GLTFLoader => {
  * Load a GLTF once per URL. Subsequent calls return the same in-memory parsed result without re-fetching.
  */
 export const loadGLTFOnce = (url: string): Promise<GLTF> => {
-  const ossUrl = resolveToOSS(url)
-  if (gltfResolvedCache.has(ossUrl)) {
-    return Promise.resolve(gltfResolvedCache.get(ossUrl) as GLTF)
-  }
-  if (gltfPromiseCache.has(ossUrl)) {
-    return gltfPromiseCache.get(ossUrl) as Promise<GLTF>
+  const candidates = resolveOssCandidates(url)
+  for (const c of candidates) {
+    if (gltfResolvedCache.has(c)) return Promise.resolve(gltfResolvedCache.get(c) as GLTF)
+    if (gltfPromiseCache.has(c)) return gltfPromiseCache.get(c) as Promise<GLTF>
   }
   const loader = getLoader()
-  const p = loader.loadAsync(ossUrl).then((gltf) => {
-    gltfResolvedCache.set(ossUrl, gltf)
-    return gltf
-  })
-  gltfPromiseCache.set(ossUrl, p)
+  const attempt = async (): Promise<GLTF> => {
+    let lastErr: unknown = null
+    for (const c of candidates) {
+      try {
+        const gltf = await loader.loadAsync(c)
+        gltfResolvedCache.set(c, gltf)
+        return gltf
+      } catch (e) {
+        lastErr = e
+      }
+    }
+    throw lastErr || new Error('Failed to load GLTF from all candidates')
+  }
+  const key = candidates[0]
+  const p = attempt()
+  gltfPromiseCache.set(key, p)
   return p
 }
 

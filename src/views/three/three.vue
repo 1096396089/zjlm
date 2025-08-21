@@ -463,11 +463,19 @@ const router = useRouter()
 import { http } from '@/util/http'
 import { useRouter } from 'vue-router'
 
-// 基础路径适配（改为使用 OSS 加速）
+// 基础路径适配（优先新 OSS，失败回退旧 OSS）
+const NEW_OSS_BASE = 'https://tc-weshop.oss-cn-beijing.aliyuncs.com/lotter'
+const OLD_OSS_BASE = 'https://steppy-dev.oss-cn-guangzhou.aliyuncs.com/lotter'
 const withBase = (path: string): string => {
-  const base = 'https://steppy-dev.oss-cn-guangzhou.aliyuncs.com/lotter'
   const cleaned = path.replace(/^\/+/, '')
-  return `${base}/${cleaned}`
+  return `${NEW_OSS_BASE}/${cleaned}`
+}
+const withBaseCandidates = (path: string): string[] => {
+  const cleaned = path.replace(/^\/+/, '')
+  return [
+    `${NEW_OSS_BASE}/${cleaned}`,
+    `${OLD_OSS_BASE}/${cleaned}`,
+  ]
 }
 
 // 贴图路径（A/B）

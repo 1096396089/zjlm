@@ -15,7 +15,8 @@ export default defineConfig({
     proxy: {
       // 本地开发通过代理转发到 OSS，避免浏览器 CORS 限制
       '/oss/': {
-        target: 'https://steppy-dev.oss-cn-guangzhou.aliyuncs.com/',
+        // Prefer new bucket; browser fetches absolute anyway, proxy helps local testing
+        target: 'https://tc-weshop.oss-cn-beijing.aliyuncs.com/',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/oss\//, '/')
       }

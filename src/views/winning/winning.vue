@@ -73,7 +73,7 @@
           <!-- Step: QR code -->
           <div v-show="step === 'qrcode'"
             class=" rounded-2xl  w-[21rem]  h-[21rem]  py-16 flex flex-col  justify-center items-center bg-cover bg-center bg-no-repeat "
-            :style="{ backgroundImage: `url(https://steppy-dev.oss-cn-guangzhou.aliyuncs.com/lotter/winning/fangxing.png)` }">
+            :style="{ backgroundImage: `url(${fangxingBgUrl})` }">
             <img class="h-24 w-24 -translate-x-1 object-contain" src="./qr_code.jpg" alt="客服二维码" />
             <div
               class="my-2 flex flex-col items-center  -translate-x-1  justify-center text-[9px] leading-6 text-gray-800">
@@ -93,7 +93,7 @@
           <!-- Step: Form -->
           <div v-show="step === 'form' && !showSecondConfirm"
             class=" rounded-2xl w-[332px] h-[367px] flex flex-col items-center bg-cover bg-center bg-no-repeat "
-            :style="{ backgroundImage: `url(https://steppy-dev.oss-cn-guangzhou.aliyuncs.com/lotter/winning/changxing.png)` }">
+            :style="{ backgroundImage: `url(${changxingBgUrl})` }">
             <div class="text-center text-[12px] mt-12 font-semibold text-black">
               <p>请仔细填写收件信息</p>
               <p class="">填写错误视为自动放弃奖品</p>
@@ -246,7 +246,7 @@
             class=" rounded-2xl  w-[21rem]  h-[21rem]  py-16 flex flex-col  justify-center items-center bg-cover bg-center bg-no-repeat "
             :style="{ backgroundImage: `url(${fangxing})` }">
             <img class="h-24 w-24 -translate-x-1 object-contain"
-              src="https://steppy-dev.oss-cn-guangzhou.aliyuncs.com/qrcode.png" alt="客服二维码" />
+              src="https://steppy-dev.oss-cn-guangzhou.aliyuncs.com/qrcode.png" alt="客服二维码"/>
             <div
               class="my-2 flex flex-col items-center  -translate-x-1  justify-center text-[12px] leading-6 text-gray-800">
               <p>添加企微管家领取奖品</p>
@@ -291,7 +291,39 @@ import tow from './tow.png'
 import te from './te.png'
 
 
-const cards = ['https://steppy-dev.oss-cn-guangzhou.aliyuncs.com/lotter/winning/te.png', 'https://steppy-dev.oss-cn-guangzhou.aliyuncs.com/lotter/winning/one.png', 'https://steppy-dev.oss-cn-guangzhou.aliyuncs.com/lotter/winning/tow.png']
+// OSS bases
+const NEW_OSS_BASE = 'https://tc-weshop.oss-cn-beijing.aliyuncs.com/lotter'
+const OLD_OSS_BASE = 'https://steppy-dev.oss-cn-guangzhou.aliyuncs.com/lotter'
+
+const makeOssCandidates = (relative: string): string[] => {
+  const clean = relative.replace(/^\/+/, '')
+  return [
+    `${NEW_OSS_BASE}/${clean}`,
+    `${OLD_OSS_BASE}/${clean}`,
+  ]
+}
+
+const pickFirstReachable = async (urls: string[]): Promise<string> => {
+  // Use Image probe to avoid CORS restrictions
+  const probe = (u: string) => new Promise<boolean>((resolve) => {
+    const img = new Image()
+    img.crossOrigin = 'anonymous'
+    img.onload = () => resolve(true)
+    img.onerror = () => resolve(false)
+    img.src = u
+  })
+  for (const u of urls) {
+    if (await probe(u)) return u
+  }
+  return urls[0]
+}
+
+// dynamic URLs with fallback
+const fangxingBgUrl = ref('')
+const changxingBgUrl = ref('')
+const qrcodeRemoteUrl = ref('')
+
+const cards = ref<string[]>([])
 
 
 
@@ -435,6 +467,15 @@ const lotteryConfirm = async () => {
 
 onMounted(async () => {
   await draw()
+  // resolve backgrounds and card images with fallback
+  fangxingBgUrl.value = await pickFirstReachable(makeOssCandidates('winning/fangxing.png'))
+  changxingBgUrl.value = await pickFirstReachable(makeOssCandidates('winning/changxing.png'))
+
+  cards.value = await Promise.all([
+    pickFirstReachable(makeOssCandidates('winning/te.png')),
+    pickFirstReachable(makeOssCandidates('winning/one.png')),
+    pickFirstReachable(makeOssCandidates('winning/tow.png')),
+  ])
   const targetDiv = document.querySelector('div.zaodian') as HTMLElement | null;
   if (targetDiv) {
     const noiseURL = generateNoise(0.08, 1000); // 不透明度 & 噪点尺寸

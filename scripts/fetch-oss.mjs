@@ -10,7 +10,7 @@ const __dirname = path.dirname(__filename)
 const projectRoot = path.resolve(__dirname, '..')
 const workspaceRoot = path.resolve(__dirname, '..')
 
-const OSS_BASE = 'https://steppy-dev.oss-cn-guangzhou.aliyuncs.com/lotter'
+const OSS_BASE = 'https://tc-weshop.oss-cn-beijing.aliyuncs.com/lotter'
 const OUTPUT_DIR = path.resolve(workspaceRoot, 'oss_bundle')
 
 const SOURCE_DIRS = [
