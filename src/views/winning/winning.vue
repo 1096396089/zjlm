@@ -245,11 +245,14 @@
           <div
             class=" rounded-2xl  w-[21rem]  h-[21rem]  py-16 flex flex-col  justify-center items-center bg-cover bg-center bg-no-repeat "
             :style="{ backgroundImage: `url(${fangxing})` }">
-            <img class="h-24 w-24 -translate-x-1 object-contain"
-              src="https://steppy-dev.oss-cn-guangzhou.aliyuncs.com/qrcode.png" alt="客服二维码"/>
+            <!-- <img class="h-24 w-24 -translate-x-1 object-contain"
+              src="https://steppy-dev.oss-cn-guangzhou.aliyuncs.com/qrcode.png" alt="客服二维码"/> -->
+
+              <img class="h-24 w-24 -translate-x-1 object-contain"
+              src="./0.jpg" alt="客服二维码"/>
             <div
               class="my-2 flex flex-col items-center  -translate-x-1  justify-center text-[12px] leading-6 text-gray-800">
-              <p>添加企微管家领取奖品</p>
+              <p>扫码领取专属券包</p>
               <p>或复制口令发送至电商渠道客服领取奖品</p>
 
             </div>
