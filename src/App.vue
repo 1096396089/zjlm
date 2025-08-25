@@ -30,7 +30,7 @@ const pauseBgm = () => {
 
     <!-- 内容区域 -->
     <div class="content-wrapper  relative">
-      <div class="absolute top-2 left-2 z-40">
+      <div class="absolute top-4 left-6 z-40">
         <template v-if="!isPlaying">
           <svg width="24" height="22" viewBox="0 0 24 22" fill="none" xmlns="http://www.w3.org/2000/svg"  @click="playBgm" style="cursor: pointer;">
             <path
@@ -70,7 +70,7 @@ const pauseBgm = () => {
           <component :is="Component" />
         </transition>
       </RouterView>
-      <audio ref="audioEl" src="/tietu/1.mp3" preload="auto" loop playsinline></audio>
+      <audio ref="audioEl" src="https://tc-weshop.oss-cn-beijing.aliyuncs.com/lotter/assets/bgm.mp3" preload="auto" loop playsinline></audio>
     </div>
   </div>
 </template>

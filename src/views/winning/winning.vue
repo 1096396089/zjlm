@@ -249,7 +249,7 @@
               src="https://steppy-dev.oss-cn-guangzhou.aliyuncs.com/qrcode.png" alt="客服二维码"/> -->
 
               <img class="h-24 w-24 -translate-x-1 object-contain"
-              src="./0.jpg" alt="客服二维码"/>
+              src="https://tc-weshop.oss-cn-beijing.aliyuncs.com/lotter/assets/new_qrcode.jpg" alt="客服二维码"/>
             <div
               class="my-2 flex flex-col items-center  -translate-x-1  justify-center text-[12px] leading-6 text-gray-800">
               <p>扫码领取专属券包</p>
