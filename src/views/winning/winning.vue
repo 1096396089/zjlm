@@ -74,7 +74,7 @@
           <div v-show="step === 'qrcode'"
             class=" rounded-2xl  w-[21rem]  h-[21rem]  py-16 flex flex-col  justify-center items-center bg-cover bg-center bg-no-repeat "
             :style="{ backgroundImage: `url(${fangxingBgUrl})` }">
-            <img class="h-24 w-24 -translate-x-1 object-contain" src="./qr_code.jpg" alt="客服二维码" />
+            <img class="h-24 w-24 -translate-x-1 object-contain" src="./qr_code.png" alt="客服二维码" />
             <div
               class="my-2 flex flex-col items-center  -translate-x-1  justify-center text-[9px] leading-6 text-gray-800">
               <p>长按图片保存蹀愫管家二维码</p>
@@ -245,11 +245,11 @@
           <div
             class=" rounded-2xl  w-[21rem]  h-[21rem]  py-16 flex flex-col  justify-center items-center bg-cover bg-center bg-no-repeat "
             :style="{ backgroundImage: `url(${fangxing})` }">
-            <!-- <img class="h-24 w-24 -translate-x-1 object-contain"
-              src="https://steppy-dev.oss-cn-guangzhou.aliyuncs.com/qrcode.png" alt="客服二维码"/> -->
-
+            <img class="h-24 w-24 -translate-x-1 object-contain"
+              src="https://steppy-dev.oss-cn-guangzhou.aliyuncs.com/qrcode.png" alt="客服二维码"/>
+<!-- 
               <img class="h-24 w-24 -translate-x-1 object-contain"
-              src="https://tc-weshop.oss-cn-beijing.aliyuncs.com/lotter/assets/new_qrcode.jpg" alt="客服二维码"/>
+              src="https://tc-weshop.oss-cn-beijing.aliyuncs.com/lotter/assets/new_qrcode.jpg" alt="客服二维码"/> -->
             <div
               class="my-2 flex flex-col items-center  -translate-x-1  justify-center text-[12px] leading-6 text-gray-800">
               <p>扫码领取专属券包</p>
