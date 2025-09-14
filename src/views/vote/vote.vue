@@ -5,14 +5,22 @@
     </div>
     <div class="w-full p-2">
       <div class="grid grid-cols-2 gap-4">
-        <div v-for="(src, i) in imageList" :key="src" style="
+        <div
+          v-for="(src, i) in imageList"
+          :key="src"
+          class="relative cursor-pointer overflow-hidden"
+          :class="selectedImage === src ? 'ring-4 ring-black/50' : ''"
+          @click="selectImage(src, i)"
+          style="
                width: 177.49px;
                height: 133.12px;
-               background: radial-gradient(50% 50% at 50% 50%, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.3) 100%);
+               background: rgb(244, 241, 233);
                filter: drop-shadow(0px 0px 32.3px rgba(0, 0, 0, 0.03));
                border-radius: 45px;
-             ">
-          <img :src="src" alt="shoe" class="w-full h-full object-contain" />
+             "
+        >
+          <img :src="src" alt="shoe" class="w-full h-full object-contain transition-transform" :class="selectedImage === src ? 'scale-95' : ''" />
+          <div v-if="selectedImage === src" class="pointer-events-none absolute inset-0" style="border-radius: 45px; background: rgba(0,0,0,0.04);"></div>
         </div>
       </div>
     </div>
@@ -42,7 +50,7 @@
     </div>
 
     <div class=" mt-24 flex justify-center items-center">
-      <svg width="120" height="30" viewBox="0 0 120 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <svg width="120" height="30" viewBox="0 0 120 30" fill="none" xmlns="http://www.w3.org/2000/svg" @click="outputSelected">
         <path
           d="M37.9284 18.6104C37.5465 19.6498 36.9564 20.7932 36.3316 21.5208L35.5332 21.0704C36.158 20.4467 36.7481 19.3727 37.0953 18.3679L37.9284 18.6104ZM44.732 13.2401V17.571H36.9564V13.2401H44.732ZM37.7895 16.6009H43.8642V14.1756H37.7895V16.6009ZM39.8028 18.6451C39.9764 19.5113 40.0805 20.6199 40.1152 21.2782L39.2474 21.4169C39.2474 20.7239 39.1433 19.6152 39.0044 18.7144L39.8028 18.6451ZM41.1913 9.11719V13.7253H40.3235V9.11719H41.1913ZM45.5998 10.5377V11.5078H40.7054V10.5377H45.5998ZM42.1633 18.5411C42.5104 19.3727 42.8922 20.4467 43.0311 21.1397L42.198 21.3822C42.0591 20.6892 41.712 19.5806 41.3649 18.7491L42.1633 18.5411ZM44.5237 18.2986C45.1138 19.1302 45.7733 20.2735 46.051 21.0357L45.218 21.4515C44.9403 20.6892 44.3154 19.5113 43.7253 18.6451L44.5237 18.2986Z"
           fill="black" />
@@ -62,18 +70,74 @@
 
     </div>
 
-  </div>
+  <teleport to="body">
+    <div v-if="showConfirm" class="fixed inset-0 z-[100] flex items-center justify-center">
+      <div class="absolute inset-0 bg-black/40 backdrop-blur-[1px]" @click="cancelConfirm"></div>
+      <div class="relative z-10 w-[360px] max-w-[92vw] rounded-2xl bg-white shadow-2xl p-5">
+        <button class="absolute right-3 top-3 text-gray-400 hover:text-gray-600" aria-label="Close" @click="cancelConfirm">×</button>
+        <div class="text-[16px] font-semibold text-gray-900">确认选择</div>
+        <div class="mt-2 text-[14px] text-gray-600 text-center">你确定要选择这张图片吗？</div>
+        <div class="mt-3 flex justify-center">
+          <img :src="selectedImage || ''" alt="preview" class="max-h-44 object-contain" />
+        </div>
+        <div class="mt-6 flex justify-end gap-3">
+          <button class="h-9 rounded-lg px-4 border border-gray-300 text-gray-700 hover:bg-gray-50" @click="cancelConfirm">取消</button>
+          <button class="h-9 rounded-lg px-4 bg-blue-600 text-white hover:bg-blue-700" @click="confirmSelection">确定</button>
+        </div>
+      </div>
+    </div>
+  </teleport>
+</div>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import Title from './title.vue'
+import { ElMessage } from 'element-plus'
+import { http } from '@/util/http'
+import { useOpenIdStore } from '@/stores/openId'
+
+const openIdStore = useOpenIdStore()
+const router = useRouter()
+
 const imageList = ref<string[]>([])
 const modules = import.meta.glob('@/assets/images/*.{png,jpg,jpeg,gif,svg}', { eager: true, import: 'default' }) as Record<string, string>
 imageList.value = Object.entries(modules)
   .sort(([a], [b]) => a.localeCompare(b))
   .map(([, v]) => v)
+
+const selectedImage = ref<string | null>(null)
+const selectedIndex = ref<number | null>(null)
+
+function selectImage(src: string, index: number) {
+  selectedImage.value = src;
+  selectedIndex.value = index;
+}
+const showConfirm = ref(false)
+
+const outputSelected = () => {
+  if (selectedImage.value === null || selectedIndex.value === null) {
+    // @ts-ignore
+    ElMessage.warning('请先选择一张图片')
+    return
+  }
+  showConfirm.value = true
+}
+
+function cancelConfirm() {
+  showConfirm.value = false
+}
+
+const confirmSelection = async() => {
+  console.log('当前选择的图片:', selectedImage.value, '索引:', selectedIndex.value)
+  await http.post('/save-vote', {
+    openId: openIdStore.openId,
+    vote_value: selectedIndex.value
+  })
+  showConfirm.value = false
+  await router.push({ path: '/vote_result', query: { openId: openIdStore.openId } })
+}
 
 
 

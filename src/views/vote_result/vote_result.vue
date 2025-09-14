@@ -23,6 +23,7 @@
           <!-- <div class="absolute bottom-2 left-3 z-20 text-white text-xs font-bold drop-shadow">{{ item.defaultPercents }}%</div> -->
         </div>
       </div>
+      <div v-if="items.length === 0" class="mt-6 text-center text-gray-500 text-sm">暂无数据</div>
     </div>
 
     <div class=" flex mt-24 justify-center items-center">
@@ -61,9 +62,10 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import Title from './title.vue'
+import { http } from '@/util/http';
 interface ShoeItem { url: string; bubblecolors: string; defaultPercents: number }
 const items = ref<ShoeItem[]>([])
-const modules = import.meta.glob('@/assets/images/*.{png,jpg,jpeg,gif,svg}', { eager: true, import: 'default' }) as Record<string, string>
+const modules = import.meta.glob('/src/assets/images/*.{png,jpg,jpeg,gif,svg}', { eager: true, import: 'default' }) as Record<string, string>
 const srcList = Object.entries(modules)
   .sort(([a], [b]) => a.localeCompare(b))
   .map(([, v]) => v)
@@ -95,9 +97,37 @@ function getFillStyle(percent: number, color: string) {
 }
 
 
+const getVoteResult = async () => {
+  try {
+    const res = await http.get('/get-vote-count')
+    const list = Array.isArray(res.data?.data)
+      ? (res.data.data as Array<{ count: number | string, vote_value: number | string, percent?: number | string }>)
+      : []
+    if (list.length === 0) return
+
+    const percents: number[] = new Array(srcList.length).fill(0)
+    for (const r of list) {
+      const idx = Number(r.vote_value)
+      const raw = r.percent ?? 0
+      const p = Math.max(0, Math.min(100, Math.round(Number(raw))))
+      if (Number.isFinite(idx) && idx >= 0 && idx < percents.length) {
+        percents[idx] = p
+      }
+    }
+
+    items.value = items.value.map((it, i) => ({
+      ...it,
+      defaultPercents: percents[i] ?? 0,
+    }))
+  } catch (e) {
+    // ignore
+  }
+}
+
 
 // 在 onMounted 生命周期钩子中设置噪点背景，避免 SSR/TS 报错
 onMounted(() => {
+  getVoteResult()
   // 可在此处从接口获取真实投票百分比并更新 votes.value
 });
 
