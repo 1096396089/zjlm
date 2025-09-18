@@ -4,7 +4,7 @@
       <Title />
     </div>
     <div class="w-full p-2">
-      <div class="grid grid-cols-2 gap-4">
+      <div class="grid grid-cols-2 gap-4 pl-2.5">
         <div
           v-for="(item, i) in items"
           :key="item.url"
@@ -20,7 +20,7 @@
         >
           <div :style="getFillStyle(item.defaultPercents, item.bubblecolors)" class="progress-fill"></div>
           <img :src="item.url" alt="shoe" class="relative z-10 w-full h-full object-contain" />
-          <!-- <div class="absolute bottom-2 left-3 z-20 text-white text-xs font-bold drop-shadow">{{ item.defaultPercents }}%</div> -->
+         
         </div>
       </div>
       <div v-if="items.length === 0" class="mt-6 text-center text-gray-500 text-sm">暂无数据</div>

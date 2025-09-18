@@ -4,11 +4,11 @@
       <Title />
     </div>
     <div class="w-full p-2">
-      <div class="grid grid-cols-2 gap-4">
+      <div class="grid grid-cols-2 gap-4 pl-2">
         <div
           v-for="(src, i) in imageList"
           :key="src"
-          class="relative cursor-pointer overflow-hidden"
+          class="relative cursor-pointer overflow-hidden "
           :class="selectedImage === src ? 'ring-4 ring-black/50' : ''"
           @click="selectImage(src, i)"
           style="
@@ -17,6 +17,7 @@
                background: rgb(244, 241, 233);
                filter: drop-shadow(0px 0px 32.3px rgba(0, 0, 0, 0.03));
                border-radius: 45px;
+              
              "
         >
           <img :src="src" alt="shoe" class="w-full h-full object-contain transition-transform" :class="selectedImage === src ? 'scale-95' : ''" />
