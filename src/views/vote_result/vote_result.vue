@@ -4,7 +4,7 @@
       <Title />
     </div>
     <div class="w-full p-6">
-      <div class="grid grid-cols-2 gap-4 pl-2.5">
+      <div class="grid grid-cols-2 gap-4 ">
         <div
           v-for="(item, i) in items"
           :key="item.url"
