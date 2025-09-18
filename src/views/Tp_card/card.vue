@@ -1,6 +1,6 @@
 <template>
   <div class=" relative flex flex-col  h-screen ios-safe">
-    <div class="py-10 px-14">
+    <div class="pt-16 pb-4 px-14">
       <Title />
     </div>
 
