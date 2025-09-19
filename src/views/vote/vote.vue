@@ -30,7 +30,7 @@
 
     <div class="w-full p-4">
       <div class="grid grid-cols-2 gap-4 ">
-        <div v-for="(src, i) in imageList" :key="src" class="relative cursor-pointer overflow-hidden "
+        <div v-for="(src, i) in imageList" :key="src" class="relative cursor-pointer overflow-hidden px-4 "
           :class="selectedImage === src ? 'ring-4 ring-black/50' : ''" @click="selectImage(src, i)" style="
                width: 177.49px;
                height: 133.12px;
