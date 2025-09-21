@@ -66,10 +66,8 @@ import Title from './title.vue'
 import { http } from '@/util/http';
 interface ShoeItem { url: string; bubblecolors: string; defaultPercents: number }
 const items = ref<ShoeItem[]>([])
-const modules = import.meta.glob('/src/assets/images/*.{png,jpg,jpeg,gif,svg}', { eager: true, import: 'default' }) as Record<string, string>
-const srcList = Object.entries(modules)
-  .sort(([a], [b]) => a.localeCompare(b))
-  .map(([, v]) => v)
+const OSS_BASE = 'https://steppy-dev.oss-cn-guangzhou.aliyuncs.com/lotter/images'
+const srcList = Array.from({ length: 6 }, (_, i) => `${OSS_BASE}/${i + 1}.png`)
 
 // 示例百分比，可替换为接口返回
 const defaultPercents = [50, 20, 10, 9, 6, 5]

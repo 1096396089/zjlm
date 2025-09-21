@@ -103,11 +103,8 @@ import { useOpenIdStore } from '@/stores/openId'
 const openIdStore = useOpenIdStore()
 const router = useRouter()
 
-const imageList = ref<string[]>([])
-const modules = import.meta.glob('@/assets/images/*.{png,jpg,jpeg,gif,svg}', { eager: true, import: 'default' }) as Record<string, string>
-imageList.value = Object.entries(modules)
-  .sort(([a], [b]) => a.localeCompare(b))
-  .map(([, v]) => v)
+const OSS_BASE = 'https://steppy-dev.oss-cn-guangzhou.aliyuncs.com/lotter/images'
+const imageList = ref<string[]>(Array.from({ length: 6 }, (_, i) => `${OSS_BASE}/${i + 1}.png`))
 
 const selectedImage = ref<string | null>(null)
 const selectedIndex = ref<number | null>(null)
