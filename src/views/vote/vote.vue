@@ -133,11 +133,11 @@ const confirmSelection = async () => {
     ElMessage.warning('请先选择一张图片')
     return
   }
-  console.log('当前选择的图片:', selectedImage.value, '索引:', selectedIndex.value)
-  // await http.post('/save-vote', {
-  //   openId: openIdStore.openId,
-  //   vote_value: selectedIndex.value
-  // })
+  // console.log('当前选择的图片:', selectedImage.value, '索引:', selectedIndex.value)
+  await http.post('/save-vote', {
+    openId: openIdStore.openId,
+    vote_value: selectedIndex.value
+  })
   showConfirm.value = false
   await router.push({ path: '/vote_result', query: { openId: openIdStore.openId } })
 }

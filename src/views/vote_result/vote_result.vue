@@ -137,7 +137,7 @@ onMounted(() => {
 <style scoped>
 /* iOS bottom bar safe-area padding for full-bleed pages */
 .ios-safe {
-  padding-bottom: calc(constant(safe-area-inset-bottom) + 12px);
+  padding-bottom: calc(constant(safe-area-inset-bottom) + 12px);  
   padding-bottom: calc(env(safe-area-inset-bottom) + 12px);
 }
 

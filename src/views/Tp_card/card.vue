@@ -544,15 +544,15 @@ function handleClick() {
 }
 
 const handleVote = async () => {
-  // const res = await http.post('/get-vote',{
-  //   openId: openIdStore.openId
-  // })
-  // if (res.data.success) {
-  //   router.push('/vote_result')
-  // }else{
-  //   router.push('/vote')
-  // }
-  router.push('/vote')
+  const res = await http.post('/get-vote',{
+    openId: openIdStore.openId
+  })
+  if (res.data.success) {
+    router.push('/vote_result')
+  }else{
+    router.push('/vote')
+  }
+  // router.push('/vote')
 
 }
 
