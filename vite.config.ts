@@ -6,8 +6,8 @@ import vueDevTools from 'vite-plugin-vue-devtools'
 
 // https://vite.dev/config/
 export default defineConfig({
-  // base: '/', // 部署到子目录时使用子路径作为基础路径
-  base: '/ad_h5/', // 部署到子目录时使用子路径作为基础路径
+  base: '/', // 部署到子目录时使用子路径作为基础路径
+  // base: '/ad_h5/', // 部署到子目录时使用子路径作为基础路径
   plugins: [
     vue(),
     // vueDevTools(),
