@@ -1,6 +1,6 @@
 <template>
   <div class=" relative flex flex-col   h-dvh ios-safe zaodian">
-    <div class="p-14 flex justify-center items-center w-full">
+    <div class="pt-10 pb-6 flex justify-center items-center w-full">
       <Title />
     </div>
     <div class="w-full px-4">
@@ -8,7 +8,7 @@
         <div
           v-for="(item, i) in items"
           :key="item.url"
-          class=" p-4"
+          class=" p-4 flex justify-center items-center"
           style="
                width: 177.49px;
                height: 133.12px;
@@ -20,7 +20,7 @@
              "
         >
           <div :style="getFillStyle(item.defaultPercents, item.bubblecolors)" class="progress-fill"></div>
-          <img :src="item.url" alt="shoe" class="relative z-10 w-full h-full object-contain" />
+          <img :src="item.url" alt="shoe" class="relative z-10 w-full max-w-[114px] object-contain" />
          
         </div>
       </div>

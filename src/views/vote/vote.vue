@@ -30,7 +30,7 @@
 
     <div class="w-full p-4">
       <div class="grid grid-cols-2 gap-4 ">
-        <div v-for="(src, i) in imageList" :key="src" class="relative cursor-pointer overflow-hidden px-4 "
+        <div v-for="(src, i) in imageList" :key="src" class="relative cursor-pointer flex justify-center items-center overflow-hidden px-4 "
           :class="selectedImage === src ? 'ring-4 ring-black/50' : ''" @click="selectImage(src, i)" style="
                width: 177.49px;
                height: 133.12px;
@@ -39,8 +39,8 @@
                border-radius: 45px;
               
              ">
-          <img :src="src" alt="shoe" class="w-full h-full object-contain transition-transform"
-            :class="selectedImage === src ? 'scale-95' : ''" />
+          <img :src="src" alt="shoe" class="w-full max-w-[114px]  object-contain transition-transform "
+           />
           <div v-if="selectedImage === src" class="pointer-events-none absolute inset-0"
             style="border-radius: 45px; background: rgba(0,0,0,0.04);"></div>
         </div>
@@ -49,7 +49,7 @@
 
 
 
-    <div class=" mt-12 flex justify-center items-center">
+    <div class=" py-5 flex justify-center items-center">
 
       <svg width="120" height="29" viewBox="0 0 120 29" fill="none" xmlns="http://www.w3.org/2000/svg"
         @click="confirmSelection">
